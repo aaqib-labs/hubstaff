@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>allintalent – January 2026 Performance Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prop-types/15.8.1/prop-types.min.js"></script>
+<script src="https://unpkg.com/recharts@2.8.0/umd/Recharts.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #f0f2f5; color: #1a1d23; }
+  :root {
+    --red: #e53e3e; --red-light: #fff5f5; --red-border: #feb2b2;
+    --yellow: #d69e2e; --yellow-light: #fffff0; --yellow-border: #faf089;
+    --green: #38a169; --green-light: #f0fff4; --green-border: #9ae6b4;
+    --orange: #dd6b20; --orange-light: #fffaf0; --orange-border: #fbd38d;
+    --blue: #3182ce; --blue-light: #ebf8ff; --blue-border: #bee3f8;
+    --purple: #6b46c1;
+    --bg: #f0f2f5; --card: #ffffff;
+    --text: #1a1d23; --text-muted: #718096;
+    --border: #e2e8f0;
+  }
+  details > summary { list-style: none; }
+  details > summary::-webkit-details-marker { display: none; }
+  .tab-btn { cursor: pointer; border: none; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 14px; transition: all 0.2s; }
+  .tab-btn:focus { outline: none; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeIn 0.25s ease; }
+  .kpi-card { background: var(--card); border-radius: 12px; padding: 20px 16px; border: 1px solid var(--border); text-align: center; transition: transform 0.2s, box-shadow 0.2s; }
+  .kpi-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+  .metric-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .metric-table th { background: #f7fafc; color: var(--text-muted); font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; padding: 10px 12px; border-bottom: 2px solid var(--border); text-align: left; cursor: pointer; white-space: nowrap; }
+  .metric-table th:hover { background: #edf2f7; }
+  .metric-table td { padding: 11px 12px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+  .metric-table tr:last-child td { border-bottom: none; }
+  .metric-table tr:hover td { background: #f7fafc; }
+  .pill { display: inline-block; padding: 2px 8px; border-radius: 9999px; font-size: 11px; font-weight: 600; white-space: nowrap; }
+  .pill-red { background: var(--red-light); color: var(--red); border: 1px solid var(--red-border); }
+  .pill-yellow { background: var(--yellow-light); color: var(--yellow); border: 1px solid var(--yellow-border); }
+  .pill-green { background: var(--green-light); color: var(--green); border: 1px solid var(--green-border); }
+  .pill-orange { background: var(--orange-light); color: var(--orange); border: 1px solid var(--orange-border); }
+  .heatmap-cell { padding: 8px 10px; font-size: 12px; font-weight: 500; font-family: 'DM Mono', monospace; text-align: center; border-radius: 6px; white-space: nowrap; }
+  .cell-red { background: #fff5f5; color: #c53030; border: 1px solid #feb2b2; }
+  .cell-yellow { background: #fffff0; color: #b7791f; border: 1px solid #f6e05e; }
+  .cell-green { background: #f0fff4; color: #276749; border: 1px solid #9ae6b4; }
+  .cell-orange { background: #fffaf0; color: #c05621; border: 1px solid #fbd38d; }
+  .section-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-radius: 10px; cursor: pointer; user-select: none; transition: background 0.15s; }
+  .chevron { transition: transform 0.2s; }
+  details[open] .chevron { transform: rotate(180deg); }
+  .insight-card { background: var(--card); border-radius: 10px; padding: 18px; border: 1px solid var(--border); }
+  .insight-item { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; font-size: 13.5px; line-height: 1.5; }
+  .header-bar { background: linear-gradient(135deg, #1a1d23 0%, #2d3748 100%); color: white; padding: 24px 28px; border-radius: 14px; margin-bottom: 24px; }
+</style>
+</head>
+<body>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useMemo } = React;
+const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, ReferenceLine } = Recharts;
+
+// ============================================================================
+// DATA — allintalent, January 2026
+// !! THIS BLOCK IS AUTO-POPULATED BY CLAUDE EACH MONTH — DO NOT EDIT MANUALLY !!
+// ============================================================================
+const MONTH = "January";
+const YEAR  = "2026";
+const DEPT  = "allintalent";
+
+const data = [
+  { member: "Ali Asghar",              activityPercent: 26, totalHours: 146.3, breakHours: 16.7, breakPercent: 11.4, manualHours: 8.8, manualPercent: 6.0,  low20Hours: 29.8, low20Percent: 20.4, low30Hours: 84.3, low30Percent: 57.6, redFlags: 3, yellowFlags: 2, totalFlags: 5 },
+  { member: "Krishanthiny Krishnaraj", activityPercent: 61, totalHours: 189.9, breakHours: 16.7, breakPercent: 8.8,  manualHours: 0.0, manualPercent: 0.0,  low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 20.2, low30Percent: 10.7, redFlags: 0, yellowFlags: 1, totalFlags: 1 },
+  { member: "Kushani Kalpage",         activityPercent: 38, totalHours: 177.0, breakHours: 15.5, breakPercent: 8.8,  manualHours: 2.2, manualPercent: 1.2,  low20Hours: 26.3, low20Percent: 14.9, low30Hours: 55.4, low30Percent: 31.3, redFlags: 1, yellowFlags: 2, totalFlags: 3 },
+  { member: "Menara Kahatapitiya",     activityPercent: 44, totalHours: 165.0, breakHours: 14.1, breakPercent: 8.5,  manualHours: 0.0, manualPercent: 0.0,  low20Hours: 1.0,  low20Percent: 0.6,  low30Hours: 4.4,  low30Percent: 2.7,  redFlags: 0, yellowFlags: 1, totalFlags: 1 },
+  { member: "Natalia Jayasundera",     activityPercent: 31, totalHours: 153.2, breakHours: 14.6, breakPercent: 9.5,  manualHours: 1.8, manualPercent: 1.2,  low20Hours: 12.1, low20Percent: 7.9,  low30Hours: 51.4, low30Percent: 33.5, redFlags: 2, yellowFlags: 1, totalFlags: 3 },
+  { member: "Nireshwaran Aravinth",    activityPercent: 61, totalHours: 157.5, breakHours: 13.3, breakPercent: 8.5,  manualHours: 0.0, manualPercent: 0.0,  low20Hours: 2.7,  low20Percent: 1.7,  low30Hours: 3.7,  low30Percent: 2.3,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Rasma Rizwan",            activityPercent: 43, totalHours: 187.5, breakHours: 16.5, breakPercent: 8.8,  manualHours: 0.5, manualPercent: 0.3,  low20Hours: 9.0,  low20Percent: 4.8,  low30Hours: 40.9, low30Percent: 21.8, redFlags: 1, yellowFlags: 1, totalFlags: 2 },
+];
+// ============================================================================
+// END DATA BLOCK
+// ============================================================================
+
+// ============================================================================
+// SLA THRESHOLDS — locked, do not change
+// ============================================================================
+const SLA = {
+  activity:    { red: 35, yellow: 45 },
+  hours:       { red: 130, yellow: 150, orange: 190 },
+  breakPct:    { red: 12, yellow: 10 },
+  manualPct:   { red: 10, yellow: 5 },
+  low20Pct:    { red: 15, yellow: 7.5 },
+  low30Pct:    { red: 20, yellow: 10 },
+};
+
+const checkStatus = (metric, value) => {
+  const t = SLA[metric];
+  if (!t) return 'green';
+  if (metric === 'activity' || metric === 'hours') {
+    if (value < t.red) return 'red';
+    if (value < t.yellow) return 'yellow';
+    if (t.orange && value >= t.orange) return 'orange';
+    return 'green';
+  }
+  if (value >= t.red) return 'red';
+  if (value >= t.yellow) return 'yellow';
+  return 'green';
+};
+
+// ============================================================================
+// DERIVED STATS
+// ============================================================================
+const n = data.length;
+const avg = key => (data.reduce((s, m) => s + m[key], 0) / n);
+const avgActivity = avg('activityPercent');
+const avgHours = avg('totalHours');
+const avgBreakPct = avg('breakPercent');
+const avgLow30Pct = avg('low30Percent');
+const totalRedFlags = data.reduce((s, m) => s + m.redFlags, 0);
+const totalYellowFlags = data.reduce((s, m) => s + m.yellowFlags, 0);
+const membersWithFlags = data.filter(m => m.totalFlags > 0).length;
+const noViolations = data.filter(m => m.totalFlags === 0).length;
+
+const pieData = [
+  { name: 'Yellow Warnings', value: data.filter(m => m.redFlags === 0 && m.yellowFlags > 0).length, color: '#d69e2e' },
+  { name: 'No Violations',   value: noViolations, color: '#38a169' },
+];
+if (data.filter(m => m.redFlags > 0).length > 0) {
+  pieData.unshift({ name: 'Red Violations', value: data.filter(m => m.redFlags > 0).length, color: '#e53e3e' });
+}
+
+// ============================================================================
+// HELPERS
+// ============================================================================
+const StatusPill = ({ status, label }) => {
+  const cls = { red: 'pill pill-red', yellow: 'pill pill-yellow', green: 'pill pill-green', orange: 'pill pill-orange' };
+  return <span className={cls[status] || 'pill pill-green'}>{label}</span>;
+};
+
+const HeatCell = ({ metric, value, fmt }) => {
+  const s = checkStatus(metric, value);
+  const cls = { red: 'heatmap-cell cell-red', yellow: 'heatmap-cell cell-yellow', green: 'heatmap-cell cell-green', orange: 'heatmap-cell cell-orange' };
+  return <div className={cls[s] || 'heatmap-cell cell-green'}>{fmt ? fmt(value) : value}</div>;
+};
+
+// ============================================================================
+// MAIN COMPONENT
+// ============================================================================
+const Dashboard = () => {
+  const [tab, setTab] = useState(1);
+  const [sortKey, setSortKey] = useState(null);
+  const [sortDir, setSortDir] = useState('asc');
+
+  const sortedData = useMemo(() => {
+    if (!sortKey) return data;
+    return [...data].sort((a, b) => {
+      const av = a[sortKey], bv = b[sortKey];
+      if (typeof av === 'number') return sortDir === 'asc' ? av - bv : bv - av;
+      return sortDir === 'asc' ? String(av).localeCompare(String(bv)) : String(bv).localeCompare(String(av));
+    });
+  }, [sortKey, sortDir]);
+
+  const sort = (key) => {
+    if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+    else { setSortKey(key); setSortDir('asc'); }
+  };
+
+  const SortIcon = ({ k }) => {
+    if (sortKey !== k) return <span style={{color:'#cbd5e0',marginLeft:4}}>↕</span>;
+    return <span style={{color:'#3182ce',marginLeft:4}}>{sortDir === 'asc' ? '↑' : '↓'}</span>;
+  };
+
+  const tabStyle = (t, color) => ({
+    padding: '10px 20px', borderRadius: 8, border: 'none',
+    background: tab === t ? color : '#edf2f7',
+    color: tab === t ? 'white' : '#4a5568',
+    fontFamily: 'DM Sans, sans-serif', fontWeight: 600, fontSize: 13.5,
+    cursor: 'pointer', transition: 'all 0.2s',
+    boxShadow: tab === t ? '0 4px 12px rgba(0,0,0,0.15)' : 'none',
+    transform: tab === t ? 'translateY(-1px)' : 'none',
+  });
+
+  return (
+    <div style={{maxWidth:1200, margin:'0 auto', padding:'20px 16px'}}>
+
+      {/* Header */}
+      <div className="header-bar">
+        <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:12}}>
+          <div>
+            <div style={{fontSize:11,fontWeight:600,letterSpacing:'0.1em',color:'#a0aec0',textTransform:'uppercase',marginBottom:4}}>
+              WebLife · Monthly Performance Report
+            </div>
+            <h1 style={{fontSize:24,fontWeight:700,marginBottom:4}}>{DEPT} Department</h1>
+            <div style={{fontSize:15,color:'#a0aec0',fontWeight:400}}>{MONTH} {YEAR} · {n} team members</div>
+          </div>
+          <div style={{display:'flex',gap:12,flexWrap:'wrap'}}>
+            <div style={{textAlign:'center',background:'rgba(255,255,255,0.08)',borderRadius:10,padding:'10px 18px'}}>
+              <div style={{fontSize:22,fontWeight:700}}>{avgActivity.toFixed(0)}%</div>
+              <div style={{fontSize:11,color:'#a0aec0',marginTop:2}}>Avg Activity</div>
+            </div>
+            <div style={{textAlign:'center',background:'rgba(255,255,255,0.08)',borderRadius:10,padding:'10px 18px'}}>
+              <div style={{fontSize:22,fontWeight:700}}>{avgHours.toFixed(0)}</div>
+              <div style={{fontSize:11,color:'#a0aec0',marginTop:2}}>Avg Hours</div>
+            </div>
+            <div style={{textAlign:'center',background: membersWithFlags > 0 ? 'rgba(214,158,46,0.25)' : 'rgba(56,161,105,0.25)',borderRadius:10,padding:'10px 18px'}}>
+              <div style={{fontSize:22,fontWeight:700,color: membersWithFlags > 0 ? '#faf089' : '#9ae6b4'}}>{membersWithFlags}</div>
+              <div style={{fontSize:11,color:'#a0aec0',marginTop:2}}>With Flags</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tabs */}
+      <div style={{display:'flex',gap:8,marginBottom:20,background:'white',padding:10,borderRadius:10,border:'1px solid #e2e8f0',flexWrap:'wrap'}}>
+        <button className="tab-btn" style={tabStyle(1,'#3182ce')} onClick={() => setTab(1)}>📊 SLA Overview</button>
+        <button className="tab-btn" style={tabStyle(2,'#6b46c1')} onClick={() => setTab(2)}>🌡️ SLA Heatmap</button>
+        <button className="tab-btn" style={tabStyle(3,'#38a169')} onClick={() => setTab(3)}>📈 Comparisons</button>
+      </div>
+
+      {/* ── TAB 1: SLA OVERVIEW ── */}
+      {tab === 1 && (
+        <div className="fade-in">
+          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:12,marginBottom:20}}>
+            {[
+              { label:'Team Members',     value: n,                          color:'#3182ce', sub:'' },
+              { label:'Avg Activity',     value: avgActivity.toFixed(1)+'%', color: avgActivity<35?'#e53e3e':avgActivity<45?'#d69e2e':'#38a169', sub:'Target ≥45%' },
+              { label:'Avg Hours',        value: avgHours.toFixed(1),        color: avgHours<130?'#e53e3e':avgHours<150?'#d69e2e':'#38a169', sub:'Target 160-190' },
+              { label:'Avg Break %',      value: avgBreakPct.toFixed(1)+'%', color: avgBreakPct>=12?'#e53e3e':avgBreakPct>=10?'#d69e2e':'#38a169', sub:'Target <10%' },
+              { label:'Red Flags',        value: totalRedFlags,              color: totalRedFlags>0?'#e53e3e':'#38a169', sub:'Critical' },
+              { label:'Yellow Warnings',  value: totalYellowFlags,           color: totalYellowFlags>0?'#d69e2e':'#38a169', sub:'Monitor' },
+            ].map((k,i) => (
+              <div key={i} className="kpi-card">
+                <div style={{fontSize:11,color:'#718096',fontWeight:600,textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:6}}>{k.label}</div>
+                <div style={{fontSize:28,fontWeight:700,color:k.color,lineHeight:1}}>{k.value}</div>
+                {k.sub && <div style={{fontSize:11,color:'#a0aec0',marginTop:5}}>{k.sub}</div>}
+              </div>
+            ))}
+          </div>
+
+          <details open style={{marginBottom:12}}>
+            <summary className="section-header" style={{background:'linear-gradient(135deg,#ebf8ff,#e6fffa)'}}>
+              <div style={{display:'flex',alignItems:'center',gap:12}}>
+                <div style={{width:36,height:36,borderRadius:8,background:'#3182ce',display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:16}}>📋</div>
+                <span style={{fontWeight:700,fontSize:16,color:'#2c5282'}}>1. Team Overview Summary</span>
+              </div>
+              <svg className="chevron" width="20" height="20" fill="none" stroke="#718096" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+            </summary>
+            <div style={{padding:'16px 0 4px'}}>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+                <div className="insight-card">
+                  <div style={{fontWeight:700,fontSize:14,marginBottom:12,color:'#2c5282'}}>🏆 Highest Activity Levels</div>
+                  {[...data].sort((a,b)=>b.activityPercent-a.activityPercent).slice(0,3).map((m,i)=>(
+                    <div key={i} style={{display:'flex',alignItems:'center',gap:10,padding:'8px 0',borderBottom:i<2?'1px solid #e2e8f0':'none'}}>
+                      <div style={{width:32,height:32,borderRadius:8,background:['#3182ce','#4299e1','#63b3ed'][i],color:'white',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,flexShrink:0}}>{i+1}</div>
+                      <div style={{flex:1}}>
+                        <div style={{fontWeight:600,fontSize:13}}>{m.member}</div>
+                        <div style={{fontSize:12,color:'#718096'}}>{m.activityPercent}% activity · {m.totalHours} hrs</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="insight-card">
+                  <div style={{fontWeight:700,fontSize:14,marginBottom:12,color:'#553c9a'}}>⏱️ Most Hours Logged</div>
+                  {[...data].sort((a,b)=>b.totalHours-a.totalHours).slice(0,3).map((m,i)=>(
+                    <div key={i} style={{display:'flex',alignItems:'center',gap:10,padding:'8px 0',borderBottom:i<2?'1px solid #e2e8f0':'none'}}>
+                      <div style={{width:32,height:32,borderRadius:8,background:['#6b46c1','#805ad5','#9f7aea'][i],color:'white',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,flexShrink:0}}>{i+1}</div>
+                      <div style={{flex:1}}>
+                        <div style={{fontWeight:600,fontSize:13}}>{m.member}</div>
+                        <div style={{fontSize:12,color:'#718096'}}>{m.totalHours} hrs logged</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+                <div className="insight-card" style={{gridColumn:'span 2'}}>
+                  <div style={{fontWeight:700,fontSize:14,marginBottom:12,color:'#276749'}}>✅ Zero-Flag Champions</div>
+                  <div style={{display:'flex',flexWrap:'wrap',gap:10}}>
+                    {data.filter(m=>m.totalFlags===0).map((m,i)=>(
+                      <div key={i} style={{display:'flex',alignItems:'center',gap:8,background:'#f0fff4',border:'1px solid #9ae6b4',borderRadius:8,padding:'8px 12px'}}>
+                        <div style={{width:30,height:30,borderRadius:6,background:'#38a169',color:'white',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:11,flexShrink:0}}>
+                          {m.member.split(' ').map(w=>w[0]).slice(0,2).join('')}
+                        </div>
+                        <div>
+                          <div style={{fontWeight:600,fontSize:12}}>{m.member}</div>
+                          <div style={{fontSize:11,color:'#718096'}}>{m.activityPercent}% · {m.totalHours} hrs</div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details style={{marginBottom:12}}>
+            <summary className="section-header" style={{background:'linear-gradient(135deg,#f0fff4,#e6fffa)'}}>
+              <div style={{display:'flex',alignItems:'center',gap:12}}>
+                <div style={{width:36,height:36,borderRadius:8,background:'#38a169',display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:16}}>🌟</div>
+                <span style={{fontWeight:700,fontSize:16,color:'#276749'}}>2. Notable Achievements</span>
+              </div>
+              <svg className="chevron" width="20" height="20" fill="none" stroke="#718096" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+            </summary>
+            <div style={{padding:'16px 0 4px'}}>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+                <div className="insight-card">
+                  <div style={{fontWeight:700,marginBottom:10,color:'#2c5282',fontSize:14}}>📌 Activity Highlights</div>
+                  {(() => {
+                    const topAct = [...data].sort((a,b)=>b.activityPercent-a.activityPercent)[0];
+                    const avgAct = avgActivity;
+                    return (
+                      <div>
+                        <div className="insight-item"><span>🥇</span><span><strong>{topAct.member}</strong> led the team with <strong>{topAct.activityPercent}%</strong> activity — the highest this month.</span></div>
+                        <div className="insight-item"><span>{avgAct >= 45 ? '✅' : avgAct >= 35 ? '⚠️' : '🔴'}</span><span>Team average activity is <strong>{avgAct.toFixed(1)}%</strong> — {avgAct >= 45 ? 'within acceptable range.' : avgAct >= 35 ? 'below the 45% yellow threshold.' : 'below the critical 35% red threshold.'}</span></div>
+                        <div className="insight-item"><span>📊</span><span><strong>{data.filter(m=>m.activityPercent>=45).length}</strong> of {n} members meet the 45% activity target.</span></div>
+                      </div>
+                    );
+                  })()}
+                </div>
+                <div className="insight-card">
+                  <div style={{fontWeight:700,marginBottom:10,color:'#553c9a',fontSize:14}}>⏰ Hours Highlights</div>
+                  {(() => {
+                    const overwork = data.filter(m=>m.totalHours>=190);
+                    const underHours = data.filter(m=>m.totalHours<150);
+                    const fullTime = data.filter(m=>m.totalHours>=160&&m.totalHours<190);
+                    return (
+                      <div>
+                        <div className="insight-item"><span>✅</span><span><strong>{fullTime.length}</strong> member{fullTime.length!==1?'s':''} logged the target 160–190 hours.</span></div>
+                        {overwork.length>0 && <div className="insight-item"><span>🟠</span><span><strong>{overwork.map(m=>m.member).join(', ')}</strong> logged ≥190 hours — workload or time-tracking review recommended.</span></div>}
+                        {underHours.length>0 && <div className="insight-item"><span>⚠️</span><span><strong>{underHours.map(m=>m.member).join(', ')}</strong> logged under 150 hours this month.</span></div>}
+                        {overwork.length===0 && underHours.length===0 && <div className="insight-item"><span>🎯</span><span>All members logged hours within expected range.</span></div>}
+                      </div>
+                    );
+                  })()}
+                </div>
+              </div>
+            </div>
+          </details>
+
+          <details style={{marginBottom:12}}>
+            <summary className="section-header" style={{background:'linear-gradient(135deg,#faf5ff,#e9d8fd)'}}>
+              <div style={{display:'flex',alignItems:'center',gap:12}}>
+                <div style={{width:36,height:36,borderRadius:8,background:'#6b46c1',display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:16}}>🔎</div>
+                <span style={{fontWeight:700,fontSize:16,color:'#553c9a'}}>3. SLA Status Breakdown</span>
+              </div>
+              <svg className="chevron" width="20" height="20" fill="none" stroke="#718096" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+            </summary>
+            <div style={{padding:'16px 0 4px'}}>
+              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,alignItems:'start'}}>
+                <div className="insight-card">
+                  <div style={{fontWeight:700,marginBottom:12,fontSize:14,color:'#4a5568'}}>Violation Summary</div>
+                  <div style={{display:'flex',flexDirection:'column',gap:10}}>
+                    {totalRedFlags === 0 && totalYellowFlags === 0 ? (
+                      <div className="insight-item"><span>🎉</span><span style={{color:'#276749'}}><strong>Excellent!</strong> All {n} team members meet all SLA requirements this month.</span></div>
+                    ) : (
+                      <>
+                        {totalRedFlags > 0 && <div className="insight-item"><span>🔴</span><span style={{color:'#c53030'}}><strong>{totalRedFlags} red flag{totalRedFlags>1?'s':''}</strong> require immediate attention.</span></div>}
+                        <div className="insight-item"><span>⚠️</span><span style={{color:'#b7791f'}}><strong>{totalYellowFlags} yellow warning{totalYellowFlags>1?'s':''}</strong> need monitoring.</span></div>
+                        <div className="insight-item"><span>✅</span><span style={{color:'#276749'}}><strong>{noViolations} member{noViolations>1?'s':''}</strong> with zero violations.</span></div>
+                        {membersWithFlags > n/2 && <div className="insight-item"><span>❗</span><span style={{color:'#c53030'}}>Over half the team has violations — consider team-wide review.</span></div>}
+                      </>
+                    )}
+                  </div>
+                  {membersWithFlags > 0 && (
+                    <div style={{marginTop:14}}>
+                      <div style={{fontWeight:600,fontSize:12,color:'#718096',marginBottom:8,textTransform:'uppercase',letterSpacing:'0.05em'}}>Members with Flags</div>
+                      {data.filter(m=>m.totalFlags>0).sort((a,b)=>b.totalFlags-a.totalFlags).map((m,i)=>(
+                        <div key={i} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'7px 0',borderBottom:'1px solid #e2e8f0'}}>
+                          <span style={{fontWeight:500,fontSize:13}}>{m.member}</span>
+                          <div style={{display:'flex',gap:4}}>
+                            {m.redFlags>0 && <span className="pill pill-red">🔴 {m.redFlags} red</span>}
+                            {m.yellowFlags>0 && <span className="pill pill-yellow">⚠️ {m.yellowFlags} yellow</span>}
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                <div className="insight-card" style={{display:'flex',flexDirection:'column',alignItems:'center'}}>
+                  <div style={{fontWeight:700,marginBottom:12,fontSize:14,color:'#4a5568',alignSelf:'flex-start'}}>SLA Status Distribution</div>
+                  <ResponsiveContainer width="100%" height={200}>
+                    <PieChart>
+                      <Pie data={pieData} cx="50%" cy="50%" innerRadius={55} outerRadius={85} paddingAngle={3} dataKey="value" label={({value})=>`${value}`} labelLine={false}>
+                        {pieData.map((e,i)=><Cell key={i} fill={e.color} />)}
+                      </Pie>
+                      <Tooltip formatter={(v,n)=>[v+' members',n]} />
+                    </PieChart>
+                  </ResponsiveContainer>
+                  <div style={{display:'flex',flexWrap:'wrap',gap:8,justifyContent:'center',marginTop:8}}>
+                    {pieData.map((e,i)=>(
+                      <div key={i} style={{display:'flex',alignItems:'center',gap:5,fontSize:12}}>
+                        <div style={{width:10,height:10,borderRadius:2,background:e.color}}/>
+                        <span>{e.name} ({e.value})</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </details>
+
+          {membersWithFlags > 0 && (
+            <details style={{marginBottom:12}}>
+              <summary className="section-header" style={{background:'linear-gradient(135deg,#fff5f5,#fed7d7)'}}>
+                <div style={{display:'flex',alignItems:'center',gap:12}}>
+                  <div style={{width:36,height:36,borderRadius:8,background:'#e53e3e',display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:16}}>⚠️</div>
+                  <span style={{fontWeight:700,fontSize:16,color:'#c53030'}}>4. Members Requiring Attention</span>
+                </div>
+                <svg className="chevron" width="20" height="20" fill="none" stroke="#718096" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+              </summary>
+              <div style={{padding:'16px 0 4px',display:'flex',flexDirection:'column',gap:10}}>
+                {data.filter(m=>m.totalFlags>0).sort((a,b)=>b.totalFlags-a.totalFlags).map((m,i)=>{
+                  const issues = [];
+                  if(checkStatus('activity',m.activityPercent)==='red') issues.push({label:`Activity ${m.activityPercent}% — below 35% red threshold`,sev:'red'});
+                  else if(checkStatus('activity',m.activityPercent)==='yellow') issues.push({label:`Activity ${m.activityPercent}% — below 45% warning threshold`,sev:'yellow'});
+                  if(checkStatus('hours',m.totalHours)==='red') issues.push({label:`Worked ${m.totalHours} hrs — below 130hr red threshold`,sev:'red'});
+                  else if(checkStatus('hours',m.totalHours)==='yellow') issues.push({label:`Worked ${m.totalHours} hrs — below 150hr warning threshold`,sev:'yellow'});
+                  else if(checkStatus('hours',m.totalHours)==='orange') issues.push({label:`Worked ${m.totalHours} hrs — above 190hr orange threshold (overwork review)`,sev:'orange'});
+                  if(checkStatus('breakPct',m.breakPercent)==='red') issues.push({label:`Break time ${m.breakPercent}% — above 12% red threshold`,sev:'red'});
+                  else if(checkStatus('breakPct',m.breakPercent)==='yellow') issues.push({label:`Break time ${m.breakPercent}% — above 10% warning threshold`,sev:'yellow'});
+                  if(checkStatus('manualPct',m.manualPercent)==='red') issues.push({label:`Manual hours ${m.manualPercent}% — above 10% red threshold`,sev:'red'});
+                  else if(checkStatus('manualPct',m.manualPercent)==='yellow') issues.push({label:`Manual hours ${m.manualPercent}% — above 5% warning threshold`,sev:'yellow'});
+                  if(checkStatus('low20Pct',m.low20Percent)==='red') issues.push({label:`Low activity ≤20%: ${m.low20Percent}% — above 15% red threshold`,sev:'red'});
+                  else if(checkStatus('low20Pct',m.low20Percent)==='yellow') issues.push({label:`Low activity ≤20%: ${m.low20Percent}% — above 7.5% warning threshold`,sev:'yellow'});
+                  if(checkStatus('low30Pct',m.low30Percent)==='red') issues.push({label:`Low activity ≤30%: ${m.low30Percent}% — above 20% red threshold`,sev:'red'});
+                  else if(checkStatus('low30Pct',m.low30Percent)==='yellow') issues.push({label:`Low activity ≤30%: ${m.low30Percent}% — above 10% warning threshold`,sev:'yellow'});
+                  return (
+                    <div key={i} className="insight-card" style={{borderLeft:`4px solid ${m.redFlags>0?'#e53e3e':'#d69e2e'}`}}>
+                      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:10,flexWrap:'wrap',gap:8}}>
+                        <div style={{fontWeight:700,fontSize:14}}>{m.member}</div>
+                        <div style={{display:'flex',gap:6}}>
+                          {m.redFlags>0 && <span className="pill pill-red">🔴 {m.redFlags} red</span>}
+                          {m.yellowFlags>0 && <span className="pill pill-yellow">⚠️ {m.yellowFlags} yellow</span>}
+                        </div>
+                      </div>
+                      <div style={{display:'flex',flexDirection:'column',gap:5}}>
+                        {issues.map((iss,j)=>(
+                          <div key={j} className="insight-item">
+                            <span>{iss.sev==='red'?'🔴':iss.sev==='orange'?'🟠':'⚠️'}</span>
+                            <span style={{fontSize:13,color:iss.sev==='red'?'#c53030':iss.sev==='orange'?'#c05621':'#b7791f'}}>{iss.label}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div style={{marginTop:10,paddingTop:10,borderTop:'1px solid #e2e8f0',display:'flex',flexWrap:'wrap',gap:6,fontSize:11}}>
+                        {[
+                          {k:'activityPercent',label:'Activity',fmt:v=>v+'%'},
+                          {k:'totalHours',label:'Hours',fmt:v=>v},
+                          {k:'breakPercent',label:'Break%',fmt:v=>v+'%'},
+                          {k:'manualPercent',label:'Manual%',fmt:v=>v+'%'},
+                          {k:'low20Percent',label:'Low20%',fmt:v=>v+'%'},
+                          {k:'low30Percent',label:'Low30%',fmt:v=>v+'%'},
+                        ].map((f,j)=>(
+                          <span key={j} style={{background:'#f7fafc',border:'1px solid #e2e8f0',borderRadius:6,padding:'2px 8px',fontFamily:'DM Mono, monospace'}}>
+                            {f.label}: <strong>{f.fmt(m[f.k])}</strong>
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </details>
+          )}
+        </div>
+      )}
+
+      {/* ── TAB 2: SLA HEATMAP ── */}
+      {tab === 2 && (
+        <div className="fade-in" style={{background:'white',borderRadius:12,padding:20,border:'1px solid #e2e8f0',overflowX:'auto'}}>
+          <h2 style={{fontWeight:700,fontSize:18,marginBottom:4,color:'#1a1d23'}}>SLA Heatmap — {MONTH} {YEAR}</h2>
+          <p style={{fontSize:13,color:'#718096',marginBottom:16}}>Click column headers to sort. Colors reflect SLA thresholds.</p>
+          <div style={{display:'flex',gap:12,marginBottom:16,flexWrap:'wrap'}}>
+            {[['🔴 Red','Critical violation','#fff5f5','#e53e3e','#feb2b2'],['⚠️ Yellow','Warning','#fffff0','#d69e2e','#f6e05e'],['✅ Green','Within target','#f0fff4','#38a169','#9ae6b4'],['🟠 Orange','Overwork flag','#fffaf0','#dd6b20','#fbd38d']].map(([ico,label,bg,clr,brd],i)=>(
+              <div key={i} style={{display:'flex',alignItems:'center',gap:6,padding:'5px 10px',borderRadius:6,background:bg,border:`1px solid ${brd}`,fontSize:12,color:clr,fontWeight:600}}>{ico} {label}</div>
+            ))}
+          </div>
+          <table className="metric-table">
+            <thead>
+              <tr>
+                {[{key:'member',label:'Member'},{key:'activityPercent',label:'Activity %'},{key:'totalHours',label:'Total Hours'},{key:'breakPercent',label:'Break %'},{key:'manualPercent',label:'Manual %'},{key:'low20Percent',label:'Low ≤20%'},{key:'low30Percent',label:'Low ≤30%'},{key:'totalFlags',label:'Flags'}].map(col=>(
+                  <th key={col.key} onClick={()=>sort(col.key)}>{col.label}<SortIcon k={col.key}/></th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {sortedData.map((m,i)=>(
+                <tr key={i}>
+                  <td style={{fontWeight:600,fontSize:13,whiteSpace:'nowrap'}}>{m.member}</td>
+                  <td><HeatCell metric="activity" value={m.activityPercent} fmt={v=>v+'%'}/></td>
+                  <td><HeatCell metric="hours" value={m.totalHours} fmt={v=>v+' hrs'}/></td>
+                  <td><HeatCell metric="breakPct" value={m.breakPercent} fmt={v=>v+'%'}/></td>
+                  <td><HeatCell metric="manualPct" value={m.manualPercent} fmt={v=>v+'%'}/></td>
+                  <td><HeatCell metric="low20Pct" value={m.low20Percent} fmt={v=>v+'%'}/></td>
+                  <td><HeatCell metric="low30Pct" value={m.low30Percent} fmt={v=>v+'%'}/></td>
+                  <td>{m.totalFlags===0?<span className="pill pill-green">✅ Clean</span>:<div style={{display:'flex',gap:4,flexWrap:'wrap'}}>{m.redFlags>0&&<span className="pill pill-red">🔴{m.redFlags}</span>}{m.yellowFlags>0&&<span className="pill pill-yellow">⚠️{m.yellowFlags}</span>}</div>}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <div style={{marginTop:16,padding:'12px 16px',background:'#f7fafc',borderRadius:8,border:'1px solid #e2e8f0'}}>
+            <div style={{fontWeight:700,fontSize:12,color:'#718096',marginBottom:8,textTransform:'uppercase',letterSpacing:'0.05em'}}>Team Averages</div>
+            <div style={{display:'flex',gap:16,flexWrap:'wrap',fontSize:13}}>
+              {[
+                {label:'Activity',val:avgActivity.toFixed(1)+'%',status:checkStatus('activity',avgActivity)},
+                {label:'Hours',val:avgHours.toFixed(1)+' hrs',status:checkStatus('hours',avgHours)},
+                {label:'Break%',val:avgBreakPct.toFixed(1)+'%',status:checkStatus('breakPct',avgBreakPct)},
+                {label:'Manual%',val:avg('manualPercent').toFixed(1)+'%',status:checkStatus('manualPct',avg('manualPercent'))},
+                {label:'Low20%',val:avg('low20Percent').toFixed(1)+'%',status:checkStatus('low20Pct',avg('low20Percent'))},
+                {label:'Low30%',val:avg('low30Percent').toFixed(1)+'%',status:checkStatus('low30Pct',avg('low30Percent'))},
+              ].map((a,i)=>(
+                <div key={i} style={{display:'flex',gap:6,alignItems:'center'}}>
+                  <span style={{color:'#718096'}}>{a.label}:</span>
+                  <span className={`pill pill-${a.status}`} style={{fontFamily:'DM Mono,monospace'}}>{a.val}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── TAB 3: COMPARISONS ── */}
+      {tab === 3 && (
+        <div className="fade-in" style={{display:'flex',flexDirection:'column',gap:16}}>
+          <div style={{background:'white',borderRadius:12,padding:20,border:'1px solid #e2e8f0'}}>
+            <h3 style={{fontWeight:700,fontSize:15,marginBottom:4}}>Activity Level by Member</h3>
+            <p style={{fontSize:12,color:'#718096',marginBottom:14}}>Red line = 35% critical · Yellow line = 45% warning</p>
+            <ResponsiveContainer width="100%" height={240}>
+              <BarChart data={[...data].sort((a,b)=>b.activityPercent-a.activityPercent)} margin={{top:5,right:10,left:0,bottom:60}}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false}/>
+                <XAxis dataKey="member" tick={{fontSize:11,fill:'#4a5568'}} angle={-35} textAnchor="end" interval={0}/>
+                <YAxis tick={{fontSize:11}} domain={[0,100]} tickFormatter={v=>v+'%'}/>
+                <Tooltip formatter={v=>[v+'%','Activity']}/>
+                <ReferenceLine y={35} stroke="#e53e3e" strokeDasharray="4 3" strokeWidth={1.5} label={{value:'35% Red',fontSize:10,fill:'#e53e3e',position:'right'}}/>
+                <ReferenceLine y={45} stroke="#d69e2e" strokeDasharray="4 3" strokeWidth={1.5} label={{value:'45% Yellow',fontSize:10,fill:'#d69e2e',position:'right'}}/>
+                <Bar dataKey="activityPercent" name="Activity %" radius={[4,4,0,0]}>
+                  {[...data].sort((a,b)=>b.activityPercent-a.activityPercent).map((m,i)=>(
+                    <Cell key={i} fill={m.activityPercent<35?'#fc8181':m.activityPercent<45?'#f6e05e':'#68d391'}/>
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div style={{background:'white',borderRadius:12,padding:20,border:'1px solid #e2e8f0'}}>
+            <h3 style={{fontWeight:700,fontSize:15,marginBottom:4}}>Total Hours Logged</h3>
+            <p style={{fontSize:12,color:'#718096',marginBottom:14}}>Red = below 130 · Yellow = below 150 · Orange = above 190</p>
+            <ResponsiveContainer width="100%" height={240}>
+              <BarChart data={[...data].sort((a,b)=>b.totalHours-a.totalHours)} margin={{top:5,right:10,left:0,bottom:60}}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false}/>
+                <XAxis dataKey="member" tick={{fontSize:11,fill:'#4a5568'}} angle={-35} textAnchor="end" interval={0}/>
+                <YAxis tick={{fontSize:11}} domain={[0,220]} tickFormatter={v=>v+'h'}/>
+                <Tooltip formatter={v=>[v+' hrs','Hours']}/>
+                <ReferenceLine y={160} stroke="#38a169" strokeDasharray="4 3" strokeWidth={1.5} label={{value:'160 Target',fontSize:10,fill:'#38a169',position:'right'}}/>
+                <ReferenceLine y={130} stroke="#e53e3e" strokeDasharray="4 3" strokeWidth={1.5} label={{value:'130 Red',fontSize:10,fill:'#e53e3e',position:'right'}}/>
+                <ReferenceLine y={190} stroke="#dd6b20" strokeDasharray="4 3" strokeWidth={1.5} label={{value:'190 Orange',fontSize:10,fill:'#dd6b20',position:'right'}}/>
+                <Bar dataKey="totalHours" name="Total Hours" radius={[4,4,0,0]}>
+                  {[...data].sort((a,b)=>b.totalHours-a.totalHours).map((m,i)=>(
+                    <Cell key={i} fill={m.totalHours>=190?'#f6ad55':m.totalHours<130?'#fc8181':m.totalHours<150?'#f6e05e':'#68d391'}/>
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div style={{background:'white',borderRadius:12,padding:20,border:'1px solid #e2e8f0'}}>
+            <h3 style={{fontWeight:700,fontSize:15,marginBottom:4}}>Low Activity ≤30% Percentage</h3>
+            <p style={{fontSize:12,color:'#718096',marginBottom:14}}>Red = ≥20% · Yellow = ≥10%</p>
+            <ResponsiveContainer width="100%" height={240}>
+              <BarChart data={[...data].sort((a,b)=>b.low30Percent-a.low30Percent)} margin={{top:5,right:10,left:0,bottom:60}}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" vertical={false}/>
+                <XAxis dataKey="member" tick={{fontSize:11,fill:'#4a5568'}} angle={-35} textAnchor="end" interval={0}/>
+                <YAxis tick={{fontSize:11}} tickFormatter={v=>v+'%'}/>
+                <Tooltip formatter={v=>[v+'%','Low Activity ≤30%']}/>
+                <ReferenceLine y={20} stroke="#e53e3e" strokeDasharray="4 3" strokeWidth={1.5} label={{value:'20% Red',fontSize:10,fill:'#e53e3e',position:'right'}}/>
+                <ReferenceLine y={10} stroke="#d69e2e" strokeDasharray="4 3" strokeWidth={1.5} label={{value:'10% Yellow',fontSize:10,fill:'#d69e2e',position:'right'}}/>
+                <Bar dataKey="low30Percent" name="Low Activity ≤30%" radius={[4,4,0,0]}>
+                  {[...data].sort((a,b)=>b.low30Percent-a.low30Percent).map((m,i)=>(
+                    <Cell key={i} fill={m.low30Percent>=20?'#fc8181':m.low30Percent>=10?'#f6e05e':'#68d391'}/>
+                  ))}
+                </Bar>
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+          <div style={{background:'white',borderRadius:12,padding:20,border:'1px solid #e2e8f0'}}>
+            <h3 style={{fontWeight:700,fontSize:15,marginBottom:14}}>📊 Analysis Insights</h3>
+            <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
+              {[
+                { title:'Activity Level', color:'#3182ce', body:()=>{
+                  const top=[...data].sort((a,b)=>b.activityPercent-a.activityPercent)[0];
+                  const bot=[...data].sort((a,b)=>a.activityPercent-b.activityPercent)[0];
+                  return <><div className="insight-item"><span>📈</span><span>Team average activity is <strong>{avgActivity.toFixed(1)}%</strong>{avgActivity>=45?' — within the acceptable range.':' — below the 45% target. Coaching recommended.'}</span></div><div className="insight-item"><span>🏆</span><span><strong>{top.member}</strong> has the highest activity at <strong>{top.activityPercent}%</strong>.</span></div><div className="insight-item"><span>📉</span><span><strong>{bot.member}</strong> has the lowest at <strong>{bot.activityPercent}%</strong>{bot.activityPercent<35?' — critical red flag.':bot.activityPercent<45?' — yellow warning territory.':'.'}.</span></div></>;
+                }},
+                { title:'Worked Hours', color:'#6b46c1', body:()=>{
+                  const maxH=[...data].sort((a,b)=>b.totalHours-a.totalHours)[0];
+                  const minH=[...data].sort((a,b)=>a.totalHours-b.totalHours)[0];
+                  const range=maxH.totalHours-minH.totalHours;
+                  return <><div className="insight-item"><span>📊</span><span>Average hours: <strong>{avgHours.toFixed(1)} hrs</strong>{avgHours>=160&&avgHours<190?' — on target (160–190)':avgHours>=190?' — above 190hr threshold':' — below target.'}</span></div><div className="insight-item"><span>⬆️</span><span><strong>{maxH.member}</strong> logged the most at <strong>{maxH.totalHours} hrs</strong>{maxH.totalHours>=190?' (🟠 overwork flag)':''}.</span></div><div className="insight-item"><span>{range>50?'⚠️':'✅'}</span><span>Hours range: <strong>{range.toFixed(0)} hrs</strong> — {range>50?'significant variance worth investigating.':'relatively consistent.'}</span></div></>;
+                }},
+                { title:'Break Time Patterns', color:'#d69e2e', body:()=>{
+                  const maxB=[...data].sort((a,b)=>b.breakPercent-a.breakPercent)[0];
+                  return <><div className="insight-item"><span>{avgBreakPct>=12?'🔴':avgBreakPct>=10?'⚠️':'✅'}</span><span>Team avg break: <strong>{avgBreakPct.toFixed(1)}%</strong> — {avgBreakPct<10?'within healthy range (< 10%).':avgBreakPct<12?'in yellow warning zone (10–12%).':'exceeds red threshold (≥ 12%).'}</span></div><div className="insight-item"><span>📌</span><span><strong>{maxB.member}</strong> has the highest break time at <strong>{maxB.breakPercent}%</strong>{maxB.breakPercent>=12?' (red flag)':maxB.breakPercent>=10?' (yellow warning)':''}.</span></div></>;
+                }},
+                { title:'Low Activity ≤30%', color:'#dd6b20', body:()=>{
+                  const maxL=[...data].sort((a,b)=>b.low30Percent-a.low30Percent)[0];
+                  return <><div className="insight-item"><span>{avgLow30Pct>=20?'🔴':avgLow30Pct>=10?'⚠️':'✅'}</span><span>Team avg low-activity time: <strong>{avgLow30Pct.toFixed(1)}%</strong> — {avgLow30Pct<10?'healthy (below 10%).':avgLow30Pct<20?'yellow warning zone (10–20%).':'exceeds red threshold (≥ 20%).'}</span></div><div className="insight-item"><span>📌</span><span><strong>{maxL.member}</strong> has the highest at <strong>{maxL.low30Percent}%</strong>{maxL.low30Percent>=20?' (red flag — investigate)':maxL.low30Percent>=10?' (yellow — monitor)':''}.</span></div><div className="insight-item"><span>ℹ️</span><span>Note: low activity may reflect meetings or legitimate non-keyboard work — apply role context.</span></div></>;
+                }},
+              ].map((s,i)=>(
+                <div key={i} className="insight-card" style={{borderTop:`3px solid ${s.color}`}}>
+                  <div style={{fontWeight:700,fontSize:13,marginBottom:10,color:s.color}}>{s.title}</div>
+                  {s.body()}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div style={{marginTop:24,textAlign:'center',fontSize:11,color:'#a0aec0',padding:'12px 0'}}>
+        Generated for WebLife · {DEPT} · {MONTH} {YEAR} · SLA thresholds per WebLife SLA Violation Legend v1.0
+      </div>
+    </div>
+  );
+};
+
+ReactDOM.render(<Dashboard />, document.getElementById('root'));
+</script>
+</body>
+</html>
