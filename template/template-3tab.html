@@ -60,7 +60,6 @@
 <div id="root"></div>
 <script type="text/babel">
 const { useState, useMemo } = React;
-const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, ReferenceLine } = Recharts;
 
 // ============================================================================
 // DATA — {{DEPT}}, {{MONTH}} {{YEAR}}
@@ -86,7 +85,7 @@ const TEAM_CATEGORIES = {{TEAM_CATEGORIES}};
 // ============================================================================
 const SLA = {
   activity:    { red: 35, yellow: 45 },
-  hours:       { red: 130, yellow: 150, orange: 190 },
+  hours:       { red: 130, yellow: 150, orange: 200 },
   breakPct:    { red: 12, yellow: 10 },
   manualPct:   { red: 10, yellow: 5 },
   low20Pct:    { red: 15, yellow: 7.5 },
@@ -115,19 +114,10 @@ const avg = key => (data.reduce((s, m) => s + m[key], 0) / n);
 const avgActivity = avg('activityPercent');
 const avgHours = avg('totalHours');
 const avgBreakPct = avg('breakPercent');
-const avgLow30Pct = avg('low30Percent');
 const totalRedFlags = data.reduce((s, m) => s + m.redFlags, 0);
 const totalYellowFlags = data.reduce((s, m) => s + m.yellowFlags, 0);
 const membersWithFlags = data.filter(m => m.totalFlags > 0).length;
 const noViolations = data.filter(m => m.totalFlags === 0).length;
-
-const pieData = [
-  { name: 'Yellow Warnings', value: data.filter(m => m.redFlags === 0 && m.yellowFlags > 0).length, color: '#d69e2e' },
-  { name: 'No Violations',   value: noViolations, color: '#38a169' },
-];
-if (data.filter(m => m.redFlags > 0).length > 0) {
-  pieData.unshift({ name: 'Red Violations', value: data.filter(m => m.redFlags > 0).length, color: '#e53e3e' });
-}
 
 // ============================================================================
 // HELPERS
@@ -151,6 +141,8 @@ const Dashboard = () => {
   const [sortKey, setSortKey] = useState(null);
   const [sortDir, setSortDir] = useState('asc');
   const [selectedTeam, setSelectedTeam] = useState(Object.keys(TEAM_CATEGORIES)[0]);
+  const [teamSortKey, setTeamSortKey] = useState(null);
+  const [teamSortDir, setTeamSortDir] = useState('asc');
 
   const sortedData = useMemo(() => {
     if (!sortKey) return data;
@@ -161,14 +153,33 @@ const Dashboard = () => {
     });
   }, [sortKey, sortDir]);
 
+  const teamSortedMembers = (members) => {
+    if (!teamSortKey) return members;
+    return [...members].sort((a, b) => {
+      const av = a[teamSortKey], bv = b[teamSortKey];
+      if (typeof av === 'number') return teamSortDir === 'asc' ? av - bv : bv - av;
+      return teamSortDir === 'asc' ? String(av).localeCompare(String(bv)) : String(bv).localeCompare(String(av));
+    });
+  };
+
   const sort = (key) => {
     if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
     else { setSortKey(key); setSortDir('asc'); }
   };
 
+  const teamSort = (key) => {
+    if (teamSortKey === key) setTeamSortDir(d => d === 'asc' ? 'desc' : 'asc');
+    else { setTeamSortKey(key); setTeamSortDir('asc'); }
+  };
+
   const SortIcon = ({ k }) => {
     if (sortKey !== k) return <span style={{color:'#cbd5e0',marginLeft:4}}>↕</span>;
     return <span style={{color:'#3182ce',marginLeft:4}}>{sortDir === 'asc' ? '↑' : '↓'}</span>;
+  };
+
+  const TeamSortIcon = ({ k }) => {
+    if (teamSortKey !== k) return <span style={{color:'#cbd5e0',marginLeft:4}}>↕</span>;
+    return <span style={{color:'#38a169',marginLeft:4}}>{teamSortDir === 'asc' ? '↑' : '↓'}</span>;
   };
 
   const tabStyle = (t, color) => ({
@@ -184,7 +195,7 @@ const Dashboard = () => {
   return (
     <div style={{maxWidth:1200, margin:'0 auto', padding:'20px 16px'}}>
 
-      {/* Header */}
+      {/* ── HEADER ── */}
       <div className="header-bar">
         <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',flexWrap:'wrap',gap:12}}>
           <div>
@@ -211,36 +222,20 @@ const Dashboard = () => {
         </div>
       </div>
 
-      {/* Tabs */}
+      {/* ── TAB ROW ── */}
       <div style={{display:'flex',gap:8,marginBottom:20,background:'white',padding:10,borderRadius:10,border:'1px solid #e2e8f0',flexWrap:'wrap'}}>
-        <button className="tab-btn" style={tabStyle(1,'#3182ce')} onClick={() => setTab(1)}>📊 Team Overview</button>
+        <button className="tab-btn" style={tabStyle(1,'#3182ce')} onClick={() => setTab(1)}>📊 SLA Overview</button>
         <button className="tab-btn" style={tabStyle(2,'#6b46c1')} onClick={() => setTab(2)}>🌡️ SLA Heatmap</button>
         <button className="tab-btn" style={tabStyle(3,'#38a169')} onClick={() => setTab(3)}>📈 Team Analytics</button>
       </div>
 
-      {/* ── TAB 1: TEAM OVERVIEW ── */}
+      {/* ══════════════════════════════════════════════════════
+          TAB 1 — SLA OVERVIEW
+      ══════════════════════════════════════════════════════ */}
       {tab === 1 && (
         <div className="fade-in">
 
-          {/* KPI Row */}
-          <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:12,marginBottom:20}}>
-            {[
-              { label:'Team Members',     value: n,                          color:'#3182ce', sub:'' },
-              { label:'Avg Activity',     value: avgActivity.toFixed(1)+'%', color: avgActivity<35?'#e53e3e':avgActivity<45?'#d69e2e':'#38a169', sub:'Target ≥45%' },
-              { label:'Avg Hours',        value: avgHours.toFixed(1),        color: avgHours<130?'#e53e3e':avgHours<150?'#d69e2e':'#38a169', sub:'Target 160-190' },
-              { label:'Avg Break %',      value: avgBreakPct.toFixed(1)+'%', color: avgBreakPct>=12?'#e53e3e':avgBreakPct>=10?'#d69e2e':'#38a169', sub:'Target <10%' },
-              { label:'Red Flags',        value: totalRedFlags,              color: totalRedFlags>0?'#e53e3e':'#38a169', sub:'Critical' },
-              { label:'Yellow Warnings',  value: totalYellowFlags,           color: totalYellowFlags>0?'#d69e2e':'#38a169', sub:'Monitor' },
-            ].map((k,i) => (
-              <div key={i} className="kpi-card">
-                <div style={{fontSize:11,color:'#718096',fontWeight:600,textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:6}}>{k.label}</div>
-                <div style={{fontSize:28,fontWeight:700,color:k.color,lineHeight:1}}>{k.value}</div>
-                {k.sub && <div style={{fontSize:11,color:'#a0aec0',marginTop:5}}>{k.sub}</div>}
-              </div>
-            ))}
-          </div>
-
-          {/* Section 1: Team Overview Summary */}
+          {/* SECTION 1 — Team Overview Summary */}
           <details open style={{marginBottom:12}}>
             <summary className="section-header" style={{background:'linear-gradient(135deg,#ebf8ff,#e6fffa)'}}>
               <div style={{display:'flex',alignItems:'center',gap:12}}>
@@ -250,52 +245,59 @@ const Dashboard = () => {
               <svg className="chevron" width="20" height="20" fill="none" stroke="#718096" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
             </summary>
             <div style={{padding:'16px 0 4px'}}>
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
-                <div className="insight-card">
-                  <div style={{fontWeight:700,fontSize:14,marginBottom:12,color:'#2c5282'}}>🏆 Highest Activity Levels</div>
-                  {[...data].sort((a,b)=>b.activityPercent-a.activityPercent).slice(0,3).map((m,i)=>(
-                    <div key={i} style={{display:'flex',alignItems:'center',gap:10,padding:'8px 0',borderBottom:i<2?'1px solid #e2e8f0':'none'}}>
-                      <div style={{width:32,height:32,borderRadius:8,background:['#3182ce','#4299e1','#63b3ed'][i],color:'white',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,flexShrink:0}}>{i+1}</div>
-                      <div style={{flex:1}}>
-                        <div style={{fontWeight:600,fontSize:13}}>{m.member}</div>
-                        <div style={{fontSize:12,color:'#718096'}}>{m.activityPercent}% activity · {m.totalHours} hrs</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="insight-card">
-                  <div style={{fontWeight:700,fontSize:14,marginBottom:12,color:'#553c9a'}}>⏱️ Most Hours Logged</div>
-                  {[...data].sort((a,b)=>b.totalHours-a.totalHours).slice(0,3).map((m,i)=>(
-                    <div key={i} style={{display:'flex',alignItems:'center',gap:10,padding:'8px 0',borderBottom:i<2?'1px solid #e2e8f0':'none'}}>
-                      <div style={{width:32,height:32,borderRadius:8,background:['#6b46c1','#805ad5','#9f7aea'][i],color:'white',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,flexShrink:0}}>{i+1}</div>
-                      <div style={{flex:1}}>
-                        <div style={{fontWeight:600,fontSize:13}}>{m.member}</div>
-                        <div style={{fontSize:12,color:'#718096'}}>{m.totalHours} hrs logged</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-                <div className="insight-card" style={{gridColumn:'span 2'}}>
-                  <div style={{fontWeight:700,fontSize:14,marginBottom:12,color:'#276749'}}>✅ Zero-Flag Champions</div>
-                  <div style={{display:'flex',flexWrap:'wrap',gap:10}}>
-                    {data.filter(m=>m.totalFlags===0).map((m,i)=>(
-                      <div key={i} style={{display:'flex',alignItems:'center',gap:8,background:'#f0fff4',border:'1px solid #9ae6b4',borderRadius:8,padding:'8px 12px'}}>
-                        <div style={{width:30,height:30,borderRadius:6,background:'#38a169',color:'white',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:11,flexShrink:0}}>
-                          {m.member.split(' ').map(w=>w[0]).slice(0,2).join('')}
-                        </div>
-                        <div>
-                          <div style={{fontWeight:600,fontSize:12}}>{m.member}</div>
-                          <div style={{fontSize:11,color:'#718096'}}>{m.activityPercent}% · {m.totalHours} hrs</div>
-                        </div>
-                      </div>
+
+              {/* 5 KPI tiles — no Avg Break % */}
+              <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:12,marginBottom:20}}>
+                {[
+                  { label:'Total Members',  value: n,                           color:'#3182ce',  sub:'' },
+                  { label:'Avg Activity %', value: avgActivity.toFixed(1)+'%',  color: avgActivity<35?'#e53e3e':avgActivity<45?'#d69e2e':'#38a169', sub:'Target ≥45%' },
+                  { label:'Avg Hours',      value: avgHours.toFixed(1),          color: avgHours<130?'#e53e3e':avgHours<150?'#d69e2e':'#38a169', sub:'Target 160–190' },
+                  { label:'Red Flags',      value: totalRedFlags,               color: totalRedFlags>0?'#e53e3e':'#38a169', sub:'Critical' },
+                  { label:'Yellow Flags',   value: totalYellowFlags,            color: totalYellowFlags>0?'#d69e2e':'#38a169', sub:'Monitor' },
+                ].map((k,i) => (
+                  <div key={i} className="kpi-card">
+                    <div style={{fontSize:11,color:'#718096',fontWeight:600,textTransform:'uppercase',letterSpacing:'0.05em',marginBottom:6}}>{k.label}</div>
+                    <div style={{fontSize:28,fontWeight:700,color:k.color,lineHeight:1}}>{k.value}</div>
+                    {k.sub && <div style={{fontSize:11,color:'#a0aec0',marginTop:5}}>{k.sub}</div>}
+                  </div>
+                ))}
+              </div>
+
+              {/* Performance Highlights */}
+              {(() => {
+                const bothFlags = data.filter(m => m.redFlags > 0 && m.yellowFlags > 0).length;
+                const redCount  = data.filter(m => m.redFlags > 0).length;
+                const sentences = [];
+                if (noViolations === n) {
+                  sentences.push(`All ${n} team members met every SLA requirement this month — an excellent result.`);
+                } else {
+                  sentences.push(`${noViolations} of ${n} member${noViolations !== 1 ? 's' : ''} met all SLA requirements with zero violations.`);
+                  if (redCount > 0) {
+                    sentences.push(`${redCount} member${redCount !== 1 ? 's' : ''} had red flags requiring immediate attention.`);
+                  }
+                  if (bothFlags > 0) {
+                    sentences.push(`${bothFlags} member${bothFlags !== 1 ? 's' : ''} had both red and yellow flags.`);
+                  }
+                }
+                const improvements = [];
+                if (avgActivity < 45) improvements.push('activity levels (team avg ' + avgActivity.toFixed(1) + '% — target ≥45%)');
+                if (avgHours < 160)    improvements.push('total hours logged (team avg ' + avgHours.toFixed(1) + ' hrs — target 160+)');
+                if (improvements.length > 0) {
+                  sentences.push('Key areas needing improvement: ' + improvements.join(' and ') + '.');
+                }
+                return (
+                  <div style={{background:'#ebf8ff',border:'1px solid #bee3f8',borderRadius:10,padding:'14px 18px'}}>
+                    <div style={{fontWeight:700,fontSize:14,color:'#2c5282',marginBottom:8}}>Performance Highlights</div>
+                    {sentences.map((s,i) => (
+                      <div key={i} style={{fontSize:13.5,color:'#2d3748',lineHeight:1.6,marginBottom: i < sentences.length-1 ? 4 : 0}}>{s}</div>
                     ))}
                   </div>
-                </div>
-              </div>
+                );
+              })()}
             </div>
           </details>
 
-          {/* Section 2: Notable Achievements */}
+          {/* SECTION 2 — Notable Achievements */}
           <details style={{marginBottom:12}}>
             <summary className="section-header" style={{background:'linear-gradient(135deg,#f0fff4,#e6fffa)'}}>
               <div style={{display:'flex',alignItems:'center',gap:12}}>
@@ -306,253 +308,291 @@ const Dashboard = () => {
             </summary>
             <div style={{padding:'16px 0 4px'}}>
               <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12}}>
-                <div className="insight-card">
-                  <div style={{fontWeight:700,marginBottom:10,color:'#2c5282',fontSize:14}}>📌 Activity Highlights</div>
-                  {(() => {
-                    const topAct = [...data].sort((a,b)=>b.activityPercent-a.activityPercent)[0];
-                    const avgAct = avgActivity;
-                    return (
-                      <div>
-                        <div className="insight-item"><span>🥇</span><span><strong>{topAct.member}</strong> led the team with <strong>{topAct.activityPercent}%</strong> activity — the highest this month.</span></div>
-                        <div className="insight-item"><span>{avgAct >= 45 ? '✅' : avgAct >= 35 ? '⚠️' : '🔴'}</span><span>Team average activity is <strong>{avgAct.toFixed(1)}%</strong> — {avgAct >= 45 ? 'within acceptable range.' : avgAct >= 35 ? 'below the 45% yellow threshold.' : 'below the critical 35% red threshold.'}</span></div>
-                        <div className="insight-item"><span>📊</span><span><strong>{data.filter(m=>m.activityPercent>=45).length}</strong> of {n} members meet the 45% activity target.</span></div>
-                      </div>
-                    );
-                  })()}
-                </div>
-                <div className="insight-card">
-                  <div style={{fontWeight:700,marginBottom:10,color:'#553c9a',fontSize:14}}>⏰ Hours Highlights</div>
-                  {(() => {
-                    const overwork = data.filter(m=>m.totalHours>=190);
-                    const underHours = data.filter(m=>m.totalHours<150);
-                    const fullTime = data.filter(m=>m.totalHours>=160&&m.totalHours<190);
-                    return (
-                      <div>
-                        <div className="insight-item"><span>✅</span><span><strong>{fullTime.length}</strong> member{fullTime.length!==1?'s':''} logged the target 160–190 hours.</span></div>
-                        {overwork.length>0 && <div className="insight-item"><span>🟠</span><span><strong>{overwork.map(m=>m.member).join(', ')}</strong> logged ≥190 hours — workload or time-tracking review recommended.</span></div>}
-                        {underHours.length>0 && <div className="insight-item"><span>⚠️</span><span><strong>{underHours.map(m=>m.member).join(', ')}</strong> logged under 150 hours this month.</span></div>}
-                        {overwork.length===0 && underHours.length===0 && <div className="insight-item"><span>🎯</span><span>All members logged hours within expected range.</span></div>}
-                      </div>
-                    );
-                  })()}
-                </div>
-              </div>
-            </div>
-          </details>
 
-          {/* Section 3: SLA Status Breakdown */}
-          <details style={{marginBottom:12}}>
-            <summary className="section-header" style={{background:'linear-gradient(135deg,#faf5ff,#e9d8fd)'}}>
-              <div style={{display:'flex',alignItems:'center',gap:12}}>
-                <div style={{width:36,height:36,borderRadius:8,background:'#6b46c1',display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:16}}>🔎</div>
-                <span style={{fontWeight:700,fontSize:16,color:'#553c9a'}}>3. SLA Status Breakdown</span>
-              </div>
-              <svg className="chevron" width="20" height="20" fill="none" stroke="#718096" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-            </summary>
-            <div style={{padding:'16px 0 4px'}}>
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:12,alignItems:'start'}}>
-                <div className="insight-card">
-                  <div style={{fontWeight:700,marginBottom:12,fontSize:14,color:'#4a5568'}}>Violation Summary</div>
-                  <div style={{display:'flex',flexDirection:'column',gap:10}}>
-                    {totalRedFlags === 0 && totalYellowFlags === 0 ? (
-                      <div className="insight-item"><span>🎉</span><span style={{color:'#276749'}}><strong>Excellent!</strong> All {n} team members meet all SLA requirements this month.</span></div>
-                    ) : (
-                      <>
-                        {totalRedFlags > 0 && <div className="insight-item"><span>🔴</span><span style={{color:'#c53030'}}><strong>{totalRedFlags} red flag{totalRedFlags>1?'s':''}</strong> require immediate attention.</span></div>}
-                        <div className="insight-item"><span>⚠️</span><span style={{color:'#b7791f'}}><strong>{totalYellowFlags} yellow warning{totalYellowFlags>1?'s':''}</strong> need monitoring.</span></div>
-                        <div className="insight-item"><span>✅</span><span style={{color:'#276749'}}><strong>{noViolations} member{noViolations>1?'s':''}</strong> with zero violations.</span></div>
-                        {membersWithFlags > n/2 && <div className="insight-item"><span>❗</span><span style={{color:'#c53030'}}>Over half the team has violations — consider team-wide review.</span></div>}
-                      </>
-                    )}
-                  </div>
-                  {membersWithFlags > 0 && (
-                    <div style={{marginTop:14}}>
-                      <div style={{fontWeight:600,fontSize:12,color:'#718096',marginBottom:8,textTransform:'uppercase',letterSpacing:'0.05em'}}>Members with Flags</div>
-                      {data.filter(m=>m.totalFlags>0).sort((a,b)=>b.totalFlags-a.totalFlags).map((m,i)=>(
-                        <div key={i} style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'7px 0',borderBottom:'1px solid #e2e8f0'}}>
-                          <span style={{fontWeight:500,fontSize:13}}>{m.member}</span>
-                          <div style={{display:'flex',gap:4}}>
-                            {m.redFlags>0 && <span className="pill pill-red">🔴 {m.redFlags} red</span>}
-                            {m.yellowFlags>0 && <span className="pill pill-yellow">⚠️ {m.yellowFlags} yellow</span>}
+                {/* Top Performers — all members ranked */}
+                <div className="insight-card" style={{borderTop:'3px solid #3182ce'}}>
+                  <div style={{fontWeight:700,fontSize:14,marginBottom:12,color:'#2c5282'}}>🏆 Top Performers</div>
+                  {[...data].sort((a,b) => b.activityPercent - a.activityPercent).map((m,i) => {
+                    let badge;
+                    if (m.activityPercent >= 45) {
+                      badge = <span className="pill pill-green" style={{marginLeft:6}}>⭐ Above Target</span>;
+                    } else if (m.activityPercent < 35) {
+                      badge = <span className="pill pill-red" style={{marginLeft:6}}>🔴 Below SLA</span>;
+                    } else {
+                      badge = <span className="pill pill-yellow" style={{marginLeft:6}}>⚠️ Monitor</span>;
+                    }
+                    return (
+                      <div key={i} style={{display:'flex',alignItems:'center',gap:10,padding:'8px 0',borderBottom: i < data.length-1 ? '1px solid #e2e8f0' : 'none'}}>
+                        <div style={{width:28,height:28,borderRadius:6,background:'#3182ce',color:'white',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:12,flexShrink:0}}>{i+1}</div>
+                        <div style={{flex:1,minWidth:0}}>
+                          <div style={{fontWeight:600,fontSize:13,display:'flex',alignItems:'center',flexWrap:'wrap',gap:4}}>
+                            {m.member}{badge}
+                          </div>
+                          <div style={{fontSize:12,color:'#718096'}}>{m.activityPercent}% activity · {m.totalHours} hrs</div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+
+                {/* High Hours — top 3 */}
+                <div className="insight-card" style={{borderTop:'3px solid #6b46c1'}}>
+                  <div style={{fontWeight:700,fontSize:14,marginBottom:12,color:'#553c9a'}}>⏱️ High Hours</div>
+                  {[...data].sort((a,b) => b.totalHours - a.totalHours).slice(0,3).map((m,i) => (
+                    <div key={i} style={{display:'flex',alignItems:'center',gap:10,padding:'8px 0',borderBottom:i<2?'1px solid #e2e8f0':'none'}}>
+                      <div style={{width:28,height:28,borderRadius:6,background:['#6b46c1','#805ad5','#9f7aea'][i],color:'white',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:12,flexShrink:0}}>{i+1}</div>
+                      <div style={{flex:1}}>
+                        <div style={{fontWeight:600,fontSize:13,display:'flex',alignItems:'center',gap:6,flexWrap:'wrap'}}>
+                          {m.member}
+                          {m.totalHours >= 200 && <span className="pill pill-orange">🟠 High</span>}
+                        </div>
+                        <div style={{fontSize:12,color:'#718096'}}>{m.totalHours} hrs logged</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Zero Violations — spanning card */}
+                <div className="insight-card" style={{gridColumn:'span 2',borderTop:'3px solid #38a169'}}>
+                  <div style={{fontWeight:700,fontSize:14,marginBottom:12,color:'#276749'}}>✅ Zero Violations</div>
+                  {noViolations === 0 ? (
+                    <div style={{fontSize:13,color:'#718096'}}>No members achieved zero violations this month.</div>
+                  ) : (
+                    <div style={{display:'flex',flexWrap:'wrap',gap:10}}>
+                      {data.filter(m => m.totalFlags === 0).map((m,i) => (
+                        <div key={i} style={{display:'flex',alignItems:'center',gap:8,background:'#f0fff4',border:'1px solid #9ae6b4',borderRadius:8,padding:'8px 12px'}}>
+                          <div style={{width:30,height:30,borderRadius:6,background:'#38a169',color:'white',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:11,flexShrink:0}}>
+                            {m.member.split(' ').map(w=>w[0]).slice(0,2).join('')}
+                          </div>
+                          <div>
+                            <div style={{fontWeight:600,fontSize:12}}>{m.member}</div>
+                            <div style={{fontSize:11,color:'#718096'}}>{m.activityPercent}% · {m.totalHours} hrs</div>
                           </div>
                         </div>
                       ))}
                     </div>
                   )}
                 </div>
-                <div className="insight-card" style={{display:'flex',flexDirection:'column',alignItems:'center'}}>
-                  <div style={{fontWeight:700,marginBottom:12,fontSize:14,color:'#4a5568',alignSelf:'flex-start'}}>SLA Status Distribution</div>
-                  <ResponsiveContainer width="100%" height={200}>
-                    <PieChart>
-                      <Pie data={pieData} cx="50%" cy="50%" innerRadius={55} outerRadius={85} paddingAngle={3} dataKey="value" label={({name,value})=>`${value}`} labelLine={false}>
-                        {pieData.map((e,i)=><Cell key={i} fill={e.color} />)}
-                      </Pie>
-                      <Tooltip formatter={(v,n)=>[v+' members',n]} />
-                    </PieChart>
-                  </ResponsiveContainer>
-                  <div style={{display:'flex',flexWrap:'wrap',gap:8,justifyContent:'center',marginTop:8}}>
-                    {pieData.map((e,i)=>(
-                      <div key={i} style={{display:'flex',alignItems:'center',gap:5,fontSize:12}}>
-                        <div style={{width:10,height:10,borderRadius:2,background:e.color}}/>
-                        <span>{e.name} ({e.value})</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
+
               </div>
             </div>
           </details>
-
-          {/* Section 4: Members Requiring Attention */}
-          {membersWithFlags > 0 && (
-            <details style={{marginBottom:12}}>
-              <summary className="section-header" style={{background:'linear-gradient(135deg,#fff5f5,#fed7d7)'}}>
-                <div style={{display:'flex',alignItems:'center',gap:12}}>
-                  <div style={{width:36,height:36,borderRadius:8,background:'#e53e3e',display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:16}}>⚠️</div>
-                  <span style={{fontWeight:700,fontSize:16,color:'#c53030'}}>4. Members Requiring Attention</span>
-                </div>
-                <svg className="chevron" width="20" height="20" fill="none" stroke="#718096" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-              </summary>
-              <div style={{padding:'16px 0 4px',display:'flex',flexDirection:'column',gap:10}}>
-                {data.filter(m=>m.totalFlags>0).sort((a,b)=>b.totalFlags-a.totalFlags).map((m,i)=>{
-                  const issues = [];
-                  if(checkStatus('activity',m.activityPercent)==='red') issues.push({label:`Activity ${m.activityPercent}% — below 35% red threshold`,sev:'red'});
-                  else if(checkStatus('activity',m.activityPercent)==='yellow') issues.push({label:`Activity ${m.activityPercent}% — below 45% warning threshold`,sev:'yellow'});
-                  if(checkStatus('hours',m.totalHours)==='red') issues.push({label:`Worked ${m.totalHours} hrs — below 130hr red threshold`,sev:'red'});
-                  else if(checkStatus('hours',m.totalHours)==='yellow') issues.push({label:`Worked ${m.totalHours} hrs — below 150hr warning threshold`,sev:'yellow'});
-                  else if(checkStatus('hours',m.totalHours)==='orange') issues.push({label:`Worked ${m.totalHours} hrs — above 190hr orange threshold (overwork review)`,sev:'orange'});
-                  if(checkStatus('breakPct',m.breakPercent)==='red') issues.push({label:`Break time ${m.breakPercent}% — above 12% red threshold`,sev:'red'});
-                  else if(checkStatus('breakPct',m.breakPercent)==='yellow') issues.push({label:`Break time ${m.breakPercent}% — above 10% warning threshold`,sev:'yellow'});
-                  if(checkStatus('manualPct',m.manualPercent)==='red') issues.push({label:`Manual hours ${m.manualPercent}% — above 10% red threshold`,sev:'red'});
-                  else if(checkStatus('manualPct',m.manualPercent)==='yellow') issues.push({label:`Manual hours ${m.manualPercent}% — above 5% warning threshold`,sev:'yellow'});
-                  if(checkStatus('low20Pct',m.low20Percent)==='red') issues.push({label:`Low activity ≤20%: ${m.low20Percent}% — above 15% red threshold`,sev:'red'});
-                  else if(checkStatus('low20Pct',m.low20Percent)==='yellow') issues.push({label:`Low activity ≤20%: ${m.low20Percent}% — above 7.5% warning threshold`,sev:'yellow'});
-                  if(checkStatus('low30Pct',m.low30Percent)==='red') issues.push({label:`Low activity ≤30%: ${m.low30Percent}% — above 20% red threshold`,sev:'red'});
-                  else if(checkStatus('low30Pct',m.low30Percent)==='yellow') issues.push({label:`Low activity ≤30%: ${m.low30Percent}% — above 10% warning threshold`,sev:'yellow'});
-                  return (
-                    <div key={i} className="insight-card" style={{borderLeft:`4px solid ${m.redFlags>0?'#e53e3e':'#d69e2e'}`}}>
-                      <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:10,flexWrap:'wrap',gap:8}}>
-                        <div style={{fontWeight:700,fontSize:14}}>{m.member}</div>
-                        <div style={{display:'flex',gap:6}}>
-                          {m.redFlags>0 && <span className="pill pill-red">🔴 {m.redFlags} red</span>}
-                          {m.yellowFlags>0 && <span className="pill pill-yellow">⚠️ {m.yellowFlags} yellow</span>}
-                        </div>
-                      </div>
-                      <div style={{display:'flex',flexDirection:'column',gap:5}}>
-                        {issues.map((iss,j)=>(
-                          <div key={j} className="insight-item">
-                            <span>{iss.sev==='red'?'🔴':iss.sev==='orange'?'🟠':'⚠️'}</span>
-                            <span style={{fontSize:13,color:iss.sev==='red'?'#c53030':iss.sev==='orange'?'#c05621':'#b7791f'}}>{iss.label}</span>
-                          </div>
-                        ))}
-                      </div>
-                      <div style={{marginTop:10,paddingTop:10,borderTop:'1px solid #e2e8f0',display:'flex',flexWrap:'wrap',gap:6,fontSize:11}}>
-                        {[
-                          {k:'activityPercent', label:'Activity', fmt:v=>v+'%'},
-                          {k:'totalHours', label:'Hours', fmt:v=>v},
-                          {k:'breakPercent', label:'Break%', fmt:v=>v+'%'},
-                          {k:'manualPercent', label:'Manual%', fmt:v=>v+'%'},
-                          {k:'low20Percent', label:'Low20%', fmt:v=>v+'%'},
-                          {k:'low30Percent', label:'Low30%', fmt:v=>v+'%'},
-                        ].map((f,j)=>(
-                          <span key={j} style={{background:'#f7fafc',border:'1px solid #e2e8f0',borderRadius:6,padding:'2px 8px',fontFamily:'DM Mono, monospace'}}>
-                            {f.label}: <strong>{f.fmt(m[f.k])}</strong>
-                          </span>
-                        ))}
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            </details>
-          )}
         </div>
       )}
 
-      {/* ── TAB 2: SLA HEATMAP ── */}
+      {/* ══════════════════════════════════════════════════════
+          TAB 2 — SLA HEATMAP
+      ══════════════════════════════════════════════════════ */}
       {tab === 2 && (
-        <div className="fade-in" style={{background:'white',borderRadius:12,padding:20,border:'1px solid #e2e8f0',overflowX:'auto'}}>
-          <h2 style={{fontWeight:700,fontSize:18,marginBottom:4,color:'#1a1d23'}}>SLA Heatmap — {MONTH} {YEAR}</h2>
-          <p style={{fontSize:13,color:'#718096',marginBottom:16}}>Click column headers to sort. Colors reflect SLA thresholds.</p>
+        <div className="fade-in" style={{display:'flex',flexDirection:'column',gap:20}}>
 
-          <div style={{display:'flex',gap:12,marginBottom:16,flexWrap:'wrap'}}>
-            {[['🔴 Red','Critical violation','#fff5f5','#e53e3e','#feb2b2'],['⚠️ Yellow','Warning','#fffff0','#d69e2e','#f6e05e'],['✅ Green','Within target','#f0fff4','#38a169','#9ae6b4'],['🟠 Orange','Overwork flag','#fffaf0','#dd6b20','#fbd38d']].map(([ico,label,bg,clr,brd],i)=>(
-              <div key={i} style={{display:'flex',alignItems:'center',gap:6,padding:'5px 10px',borderRadius:6,background:bg,border:`1px solid ${brd}`,fontSize:12,color:clr,fontWeight:600}}>
-                {ico} {label}
+          {/* PART 1 — SLA Violation Legend */}
+          <div style={{background:'white',borderRadius:12,padding:20,border:'1px solid #e2e8f0'}}>
+            <h2 style={{fontWeight:700,fontSize:17,marginBottom:4,color:'#1a1d23'}}>SLA Violation Legend</h2>
+            <p style={{fontSize:13,color:'#718096',marginBottom:16}}>Click each metric card to expand full detail.</p>
+
+            {/* Metric A */}
+            <details style={{background:'white',borderRadius:10,border:'1px solid #e2e8f0',overflow:'hidden',marginBottom:8}}>
+              <summary style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px 16px',cursor:'pointer',userSelect:'none',background:'#f7fafc',listStyle:'none'}}>
+                <div style={{display:'flex',alignItems:'center',gap:12}}>
+                  <div style={{width:32,height:32,borderRadius:6,background:'#3182ce',color:'white',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:14,fontFamily:'DM Mono, monospace',flexShrink:0}}>A</div>
+                  <span style={{fontWeight:600,fontSize:14}}>Activity Level</span>
+                  <span style={{fontSize:12,color:'#718096'}}>🔴 &lt;35% · 🟡 &lt;45%</span>
+                </div>
+                <svg className="chevron" width="18" height="18" fill="none" stroke="#718096" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+              </summary>
+              <div style={{padding:'16px 18px',borderTop:'1px solid #e2e8f0',fontSize:13,lineHeight:1.7,color:'#4a5568'}}>
+                <p><strong>What it measures:</strong> Employee engagement via keyboard and mouse activity during tracked work time.</p>
+                <p><strong>How it's measured:</strong> Tracks mouse movements, keyboard activity, and application focus time. Represents the percentage of working time where active engagement with work tools is detected.</p>
+                <p>🔴 <strong>Red Violation (Critical): &lt; 35% activity</strong> → Very low engagement indicating potential productivity issues. Requires immediate review.</p>
+                <p>🟡 <strong>Yellow Warning: &lt; 45% activity</strong> → Low engagement that warrants attention but is not critically low. Needs monitoring.</p>
+                <p><strong>Expected Range:</strong> Varies by role and department expectations.</p>
               </div>
-            ))}
+            </details>
+
+            {/* Metric H */}
+            <details style={{background:'white',borderRadius:10,border:'1px solid #e2e8f0',overflow:'hidden',marginBottom:8}}>
+              <summary style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px 16px',cursor:'pointer',userSelect:'none',background:'#f7fafc',listStyle:'none'}}>
+                <div style={{display:'flex',alignItems:'center',gap:12}}>
+                  <div style={{width:32,height:32,borderRadius:6,background:'#6b46c1',color:'white',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:14,fontFamily:'DM Mono, monospace',flexShrink:0}}>H</div>
+                  <span style={{fontWeight:600,fontSize:14}}>Total Worked Hours</span>
+                  <span style={{fontSize:12,color:'#718096'}}>🔴 &lt;130h · 🟡 &lt;150h · 🟠 ≥200h</span>
+                </div>
+                <svg className="chevron" width="18" height="18" fill="none" stroke="#718096" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+              </summary>
+              <div style={{padding:'16px 18px',borderTop:'1px solid #e2e8f0',fontSize:13,lineHeight:1.7,color:'#4a5568'}}>
+                <p><strong>What it measures:</strong> Total logged hours in Hubstaff during the month relative to expected hours.</p>
+                <p><strong>How it's measured:</strong> Captures all time logged by the team member the month, including both active and inactive periods. Target is 160+ hours per month (full-time schedule).</p>
+                <p>🔴 <strong>Red Violation (Critical): &lt; 130 hours</strong> → Significantly below expected monthly hours. Requires immediate attention.</p>
+                <p>🟡 <strong>Yellow Warning: &lt; 150 hours</strong> → Below expected hours but not critical. Should be monitored.</p>
+                <p>🟠 <strong>Orange Flag (Investigation Required): ≥ 200 hours</strong> → Exceeding reasonable monthly hours. May indicate workload issues, inefficiency, or time tracking misuse.</p>
+                <p><strong>Target Range:</strong> 160–190 hours per month.</p>
+              </div>
+            </details>
+
+            {/* Metric B */}
+            <details style={{background:'white',borderRadius:10,border:'1px solid #e2e8f0',overflow:'hidden',marginBottom:8}}>
+              <summary style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px 16px',cursor:'pointer',userSelect:'none',background:'#f7fafc',listStyle:'none'}}>
+                <div style={{display:'flex',alignItems:'center',gap:12}}>
+                  <div style={{width:32,height:32,borderRadius:6,background:'#d69e2e',color:'white',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:14,fontFamily:'DM Mono, monospace',flexShrink:0}}>B</div>
+                  <span style={{fontWeight:600,fontSize:14}}>Total Break Time</span>
+                  <span style={{fontSize:12,color:'#718096'}}>🔴 ≥12% · 🟡 &gt;10%</span>
+                </div>
+                <svg className="chevron" width="18" height="18" fill="none" stroke="#718096" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+              </summary>
+              <div style={{padding:'16px 18px',borderTop:'1px solid #e2e8f0',fontSize:13,lineHeight:1.7,color:'#4a5568'}}>
+                <p><strong>What it measures:</strong> Total time spent on breaks as a percentage of total worked hours.</p>
+                <p><strong>How it's measured:</strong> Tracks periods when team members are on official breaks and not actively working. Displayed as "X.X (X.X%)" showing both actual hours on break and percentage of total logged time. Target is to keep breaks below 10% of total productive hours.</p>
+                <p>🔴 <strong>Red Violation (Critical): ≥ 12% of Total Worked Hours</strong> → Excessive break time reducing overall productive hours. Requires immediate intervention.</p>
+                <p>🟡 <strong>Yellow Warning: &gt; 10% and &lt; 12% of Total Worked Hours</strong> → Higher than target break time. Not critical but needs attention.</p>
+                <p><strong>Target:</strong> &lt; 10% of total worked hours.</p>
+              </div>
+            </details>
+
+            {/* Metric M */}
+            <details style={{background:'white',borderRadius:10,border:'1px solid #e2e8f0',overflow:'hidden',marginBottom:8}}>
+              <summary style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px 16px',cursor:'pointer',userSelect:'none',background:'#f7fafc',listStyle:'none'}}>
+                <div style={{display:'flex',alignItems:'center',gap:12}}>
+                  <div style={{width:32,height:32,borderRadius:6,background:'#38a169',color:'white',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:14,fontFamily:'DM Mono, monospace',flexShrink:0}}>M</div>
+                  <span style={{fontWeight:600,fontSize:14}}>Total Manual Hours</span>
+                  <span style={{fontSize:12,color:'#718096'}}>🔴 ≥10% · 🟡 ≥5%</span>
+                </div>
+                <svg className="chevron" width="18" height="18" fill="none" stroke="#718096" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+              </summary>
+              <div style={{padding:'16px 18px',borderTop:'1px solid #e2e8f0',fontSize:13,lineHeight:1.7,color:'#4a5568'}}>
+                <p><strong>What it measures:</strong> Time manually entered instead of using the Hubstaff desktop app for automatic tracking.</p>
+                <p><strong>How it's measured:</strong> Tracks time manually entered by team members rather than automatically captured through the desktop application. High manual entry may indicate attempts to bypass monitoring or technical issues with the desktop app.</p>
+                <p>🔴 <strong>Red Violation (Critical): ≥ 10% of Total Worked Hours</strong> → Excessive manual entry suggesting potential monitoring bypass. Requires immediate investigation.</p>
+                <p>🟡 <strong>Yellow Warning: ≥ 5% of Total Worked Hours</strong> → High manual entry that should be monitored. May indicate technical issues or policy non-compliance.</p>
+                <p><strong>Expected Range:</strong> Minimal — most time should be automatically tracked.</p>
+              </div>
+            </details>
+
+            {/* Metric 20 */}
+            <details style={{background:'white',borderRadius:10,border:'1px solid #e2e8f0',overflow:'hidden',marginBottom:8}}>
+              <summary style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px 16px',cursor:'pointer',userSelect:'none',background:'#f7fafc',listStyle:'none'}}>
+                <div style={{display:'flex',alignItems:'center',gap:12}}>
+                  <div style={{width:32,height:32,borderRadius:6,background:'#e53e3e',color:'white',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:14,fontFamily:'DM Mono, monospace',flexShrink:0}}>20</div>
+                  <span style={{fontWeight:600,fontSize:14}}>Low Activity Hours ≤20%</span>
+                  <span style={{fontSize:12,color:'#718096'}}>🔴 ≥15% · 🟡 ≥7.5%</span>
+                </div>
+                <svg className="chevron" width="18" height="18" fill="none" stroke="#718096" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+              </summary>
+              <div style={{padding:'16px 18px',borderTop:'1px solid #e2e8f0',fontSize:13,lineHeight:1.7,color:'#4a5568'}}>
+                <p><strong>What it measures:</strong> Time spent with activity level at or below 20%, indicating very minimal engagement.</p>
+                <p><strong>How it's measured:</strong> Tracks periods when an employee's activity fell below 20%. Displayed as "X.X (X.X%)" showing both hours at this level and percentage of total logged time. May indicate stepping away from work, distractions, or system idle time.</p>
+                <p>🔴 <strong>Red Violation (Critical): ≥ 15% of Total Worked Hours</strong> → Excessive very low activity requiring intervention. Indicates significant productivity concerns.</p>
+                <p>🟡 <strong>Yellow Warning: ≥ 7.5% of Total Worked Hours</strong> → Higher than ideal very low activity. Should be investigated.</p>
+              </div>
+            </details>
+
+            {/* Metric 30 */}
+            <details style={{background:'white',borderRadius:10,border:'1px solid #e2e8f0',overflow:'hidden',marginBottom:8}}>
+              <summary style={{display:'flex',alignItems:'center',justifyContent:'space-between',padding:'12px 16px',cursor:'pointer',userSelect:'none',background:'#f7fafc',listStyle:'none'}}>
+                <div style={{display:'flex',alignItems:'center',gap:12}}>
+                  <div style={{width:32,height:32,borderRadius:6,background:'#dd6b20',color:'white',display:'flex',alignItems:'center',justifyContent:'center',fontWeight:700,fontSize:14,fontFamily:'DM Mono, monospace',flexShrink:0}}>30</div>
+                  <span style={{fontWeight:600,fontSize:14}}>Low Activity Hours ≤30%</span>
+                  <span style={{fontSize:12,color:'#718096'}}>🔴 ≥20% · 🟡 ≥10%</span>
+                </div>
+                <svg className="chevron" width="18" height="18" fill="none" stroke="#718096" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
+              </summary>
+              <div style={{padding:'16px 18px',borderTop:'1px solid #e2e8f0',fontSize:13,lineHeight:1.7,color:'#4a5568'}}>
+                <p><strong>What it measures:</strong> Time spent with activity level at or below 30%, representing low but not necessarily inactive engagement.</p>
+                <p><strong>How it's measured:</strong> Broader metric capturing time when activity falls below 30%. Displayed as "X.X (X.X%)" showing hours and percentage of total time. Captures both ≤20% activity PLUS additional low activity between 20–30%. May indicate reduced productivity, meetings without computer interaction, or reading activities.</p>
+                <p>🔴 <strong>Red Violation (Critical): ≥ 20% of Total Worked Hours</strong> → Excessive low activity indicating potential productivity issues. Requires investigation.</p>
+                <p>🟡 <strong>Yellow Warning: ≥ 10% of Total Worked Hours</strong> → Moderate low activity levels. May require context before escalation.</p>
+              </div>
+            </details>
           </div>
 
-          <table className="metric-table">
-            <thead>
-              <tr>
-                {[
-                  {key:'member',label:'Member'},
-                  {key:'activityPercent',label:'Activity %'},
-                  {key:'totalHours',label:'Total Hours'},
-                  {key:'breakPercent',label:'Break %'},
-                  {key:'manualPercent',label:'Manual %'},
-                  {key:'low20Percent',label:'Low ≤20%'},
-                  {key:'low30Percent',label:'Low ≤30%'},
-                  {key:'totalFlags',label:'Flags'},
-                ].map(col=>(
-                  <th key={col.key} onClick={()=>sort(col.key)}>{col.label}<SortIcon k={col.key}/></th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {sortedData.map((m,i)=>(
-                <tr key={i}>
-                  <td style={{fontWeight:600,fontSize:13,whiteSpace:'nowrap'}}>{m.member}</td>
-                  <td><HeatCell metric="activity" value={m.activityPercent} fmt={v=>v+'%'}/></td>
-                  <td><HeatCell metric="hours" value={m.totalHours} fmt={v=>v+' hrs'}/></td>
-                  <td><HeatCell metric="breakPct" value={m.breakPercent} fmt={v=>v+'%'}/></td>
-                  <td><HeatCell metric="manualPct" value={m.manualPercent} fmt={v=>v+'%'}/></td>
-                  <td><HeatCell metric="low20Pct" value={m.low20Percent} fmt={v=>v+'%'}/></td>
-                  <td><HeatCell metric="low30Pct" value={m.low30Percent} fmt={v=>v+'%'}/></td>
-                  <td>
-                    {m.totalFlags === 0
-                      ? <span className="pill pill-green">✅ Clean</span>
-                      : <div style={{display:'flex',gap:4,flexWrap:'wrap'}}>
-                          {m.redFlags>0 && <span className="pill pill-red">🔴{m.redFlags}</span>}
-                          {m.yellowFlags>0 && <span className="pill pill-yellow">⚠️{m.yellowFlags}</span>}
-                        </div>
-                    }
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          {/* PART 2 — Heatmap Table */}
+          <div style={{background:'white',borderRadius:12,padding:20,border:'1px solid #e2e8f0',overflowX:'auto'}}>
+            <h2 style={{fontWeight:700,fontSize:18,marginBottom:4,color:'#1a1d23'}}>SLA Heatmap — {MONTH} {YEAR}</h2>
+            <p style={{fontSize:13,color:'#718096',marginBottom:16}}>Click column headers to sort. Colors reflect SLA thresholds.</p>
 
-          <div style={{marginTop:16,padding:'12px 16px',background:'#f7fafc',borderRadius:8,border:'1px solid #e2e8f0'}}>
-            <div style={{fontWeight:700,fontSize:12,color:'#718096',marginBottom:8,textTransform:'uppercase',letterSpacing:'0.05em'}}>Team Averages</div>
-            <div style={{display:'flex',gap:16,flexWrap:'wrap',fontSize:13}}>
+            <div style={{display:'flex',gap:12,marginBottom:16,flexWrap:'wrap'}}>
               {[
-                {label:'Activity', val:avgActivity.toFixed(1)+'%', status:checkStatus('activity',avgActivity)},
-                {label:'Hours', val:avgHours.toFixed(1)+' hrs', status:checkStatus('hours',avgHours)},
-                {label:'Break%', val:avgBreakPct.toFixed(1)+'%', status:checkStatus('breakPct',avgBreakPct)},
-                {label:'Manual%', val:avg('manualPercent').toFixed(1)+'%', status:checkStatus('manualPct',avg('manualPercent'))},
-                {label:'Low20%', val:avg('low20Percent').toFixed(1)+'%', status:checkStatus('low20Pct',avg('low20Percent'))},
-                {label:'Low30%', val:avg('low30Percent').toFixed(1)+'%', status:checkStatus('low30Pct',avg('low30Percent'))},
-              ].map((a,i)=>(
-                <div key={i} style={{display:'flex',gap:6,alignItems:'center'}}>
-                  <span style={{color:'#718096'}}>{a.label}:</span>
-                  <span className={`pill pill-${a.status}`} style={{fontFamily:'DM Mono,monospace'}}>{a.val}</span>
+                ['🔴 Red','Critical violation','#fff5f5','#e53e3e','#feb2b2'],
+                ['⚠️ Yellow','Warning','#fffff0','#d69e2e','#f6e05e'],
+                ['✅ Green','Within target','#f0fff4','#38a169','#9ae6b4'],
+                ['🟠 Orange','Overwork flag','#fffaf0','#dd6b20','#fbd38d'],
+              ].map(([ico,label,bg,clr,brd],i) => (
+                <div key={i} style={{display:'flex',alignItems:'center',gap:6,padding:'5px 10px',borderRadius:6,background:bg,border:`1px solid ${brd}`,fontSize:12,color:clr,fontWeight:600}}>
+                  {ico} {label}
                 </div>
               ))}
+            </div>
+
+            <table className="metric-table">
+              <thead>
+                <tr>
+                  <th onClick={() => sort('member')}>Member<SortIcon k="member"/></th>
+                  <th onClick={() => sort('activityPercent')}>A<SortIcon k="activityPercent"/></th>
+                  <th onClick={() => sort('totalHours')}>H<SortIcon k="totalHours"/></th>
+                  <th onClick={() => sort('breakPercent')}>B<SortIcon k="breakPercent"/></th>
+                  <th onClick={() => sort('manualPercent')}>M<SortIcon k="manualPercent"/></th>
+                  <th onClick={() => sort('low20Percent')}>20<SortIcon k="low20Percent"/></th>
+                  <th onClick={() => sort('low30Percent')}>30<SortIcon k="low30Percent"/></th>
+                  <th onClick={() => sort('totalFlags')}>Flags<SortIcon k="totalFlags"/></th>
+                </tr>
+              </thead>
+              <tbody>
+                {sortedData.map((m,i) => (
+                  <tr key={i}>
+                    <td style={{fontWeight:600,fontSize:13,whiteSpace:'nowrap'}}>{m.member}</td>
+                    <td><HeatCell metric="activity"   value={m.activityPercent} fmt={v=>v+'%'}/></td>
+                    <td><HeatCell metric="hours"      value={m.totalHours}      fmt={v=>v+' hrs'}/></td>
+                    <td><HeatCell metric="breakPct"   value={m.breakPercent}    fmt={v=>v+'%'}/></td>
+                    <td><HeatCell metric="manualPct"  value={m.manualPercent}   fmt={v=>v+'%'}/></td>
+                    <td><HeatCell metric="low20Pct"   value={m.low20Percent}    fmt={v=>v+'%'}/></td>
+                    <td><HeatCell metric="low30Pct"   value={m.low30Percent}    fmt={v=>v+'%'}/></td>
+                    <td>
+                      {m.totalFlags === 0
+                        ? <span className="pill pill-green">✅ Clean</span>
+                        : <div style={{display:'flex',gap:4,flexWrap:'wrap'}}>
+                            {m.redFlags>0    && <span className="pill pill-red">🔴{m.redFlags}</span>}
+                            {m.yellowFlags>0 && <span className="pill pill-yellow">⚠️{m.yellowFlags}</span>}
+                          </div>
+                      }
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+
+            {/* Team Averages row */}
+            <div style={{marginTop:16,padding:'12px 16px',background:'#f7fafc',borderRadius:8,border:'1px solid #e2e8f0'}}>
+              <div style={{fontWeight:700,fontSize:12,color:'#718096',marginBottom:8,textTransform:'uppercase',letterSpacing:'0.05em'}}>Team Averages</div>
+              <div style={{display:'flex',gap:16,flexWrap:'wrap',fontSize:13}}>
+                {[
+                  {label:'Activity', val:avgActivity.toFixed(1)+'%',          status:checkStatus('activity',avgActivity)},
+                  {label:'Hours',    val:avgHours.toFixed(1)+' hrs',           status:checkStatus('hours',avgHours)},
+                  {label:'Break%',   val:avgBreakPct.toFixed(1)+'%',           status:checkStatus('breakPct',avgBreakPct)},
+                  {label:'Manual%',  val:avg('manualPercent').toFixed(1)+'%',  status:checkStatus('manualPct',avg('manualPercent'))},
+                  {label:'Low20%',   val:avg('low20Percent').toFixed(1)+'%',   status:checkStatus('low20Pct',avg('low20Percent'))},
+                  {label:'Low30%',   val:avg('low30Percent').toFixed(1)+'%',   status:checkStatus('low30Pct',avg('low30Percent'))},
+                ].map((a,i) => (
+                  <div key={i} style={{display:'flex',gap:6,alignItems:'center'}}>
+                    <span style={{color:'#718096'}}>{a.label}:</span>
+                    <span className={`pill pill-${a.status}`} style={{fontFamily:'DM Mono,monospace'}}>{a.val}</span>
+                  </div>
+                ))}
+              </div>
             </div>
           </div>
         </div>
       )}
 
-      {/* ── TAB 3: TEAM ANALYTICS ── */}
+      {/* ══════════════════════════════════════════════════════
+          TAB 3 — TEAM ANALYTICS
+      ══════════════════════════════════════════════════════ */}
       {tab === 3 && (
         <div className="fade-in" style={{display:'flex',flexDirection:'column',gap:16}}>
 
-          {/* Sub-Team Selector */}
+          {/* Team selector */}
           <div style={{background:'white',borderRadius:12,padding:20,border:'1px solid #e2e8f0'}}>
             <div style={{fontWeight:700,fontSize:14,color:'#4a5568',marginBottom:12}}>Select Sub-Team to Analyse:</div>
-            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:10}}>
+            <div style={{display:'flex',flexWrap:'wrap',gap:10}}>
               {Object.keys(TEAM_CATEGORIES).map(teamName => (
                 <button
                   key={teamName}
@@ -580,7 +620,7 @@ const Dashboard = () => {
             </div>
           </div>
 
-          {/* Analytics for Selected Sub-Team */}
+          {/* Analytics content IIFE */}
           {(() => {
             const teamMembers = data.filter(m => TEAM_CATEGORIES[selectedTeam].includes(m.member));
 
@@ -592,43 +632,66 @@ const Dashboard = () => {
               );
             }
 
-            const tAvgActivity  = teamMembers.reduce((s,m) => s + m.activityPercent, 0) / teamMembers.length;
-            const tMaxActivity  = Math.max(...teamMembers.map(m => m.activityPercent));
-            const tMinActivity  = Math.min(...teamMembers.map(m => m.activityPercent));
-            const tAvgHours     = teamMembers.reduce((s,m) => s + m.totalHours, 0) / teamMembers.length;
-            const tMaxHours     = Math.max(...teamMembers.map(m => m.totalHours));
-            const tMinHours     = Math.min(...teamMembers.map(m => m.totalHours));
-            const tAvgBreak     = teamMembers.reduce((s,m) => s + m.breakPercent, 0) / teamMembers.length;
-            const tMaxBreak     = Math.max(...teamMembers.map(m => m.breakPercent));
-            const tMinBreak     = Math.min(...teamMembers.map(m => m.breakPercent));
-            const tAvgLow30     = teamMembers.reduce((s,m) => s + m.low30Percent, 0) / teamMembers.length;
-            const tMaxLow30     = Math.max(...teamMembers.map(m => m.low30Percent));
-            const tTotalRed     = teamMembers.reduce((s,m) => s + m.redFlags, 0);
-            const tTotalYellow  = teamMembers.reduce((s,m) => s + m.yellowFlags, 0);
-            const tWithFlags    = teamMembers.filter(m => m.totalFlags > 0).length;
+            const tAvgActivity = teamMembers.reduce((s,m) => s+m.activityPercent,0) / teamMembers.length;
+            const tAvgHours    = teamMembers.reduce((s,m) => s+m.totalHours,0)      / teamMembers.length;
+            const tTotalRed    = teamMembers.reduce((s,m) => s+m.redFlags,0);
+            const tTotalYellow = teamMembers.reduce((s,m) => s+m.yellowFlags,0);
+            const tCompliant   = teamMembers.filter(m => m.totalFlags===0).length;
+            const tWithFlags   = teamMembers.filter(m => m.totalFlags>0).length;
+            const tHighActivity = teamMembers.reduce((a,b) => a.activityPercent>b.activityPercent ? a : b);
+            const tLowActivity  = teamMembers.reduce((a,b) => a.activityPercent<b.activityPercent ? a : b);
 
-            const tHighActivity = teamMembers.reduce((a,b) => a.activityPercent > b.activityPercent ? a : b);
-            const tLowActivity  = teamMembers.reduce((a,b) => a.activityPercent < b.activityPercent ? a : b);
-            const tMostHours    = teamMembers.reduce((a,b) => a.totalHours > b.totalHours ? a : b);
-            const tLeastHours   = teamMembers.reduce((a,b) => a.totalHours < b.totalHours ? a : b);
-            const tHighBreak    = teamMembers.reduce((a,b) => a.breakPercent > b.breakPercent ? a : b);
-            const tHighLow30    = teamMembers.reduce((a,b) => a.low30Percent > b.low30Percent ? a : b);
+            // Build conclusions
+            const conclusions = [];
+            conclusions.push(
+              `${tHighActivity.member} leads the team with ${tHighActivity.activityPercent}% activity, setting the benchmark for the group.`
+            );
+            const redMembers = teamMembers.filter(m => m.redFlags > 0);
+            if (redMembers.length > 0) {
+              conclusions.push(
+                `${redMembers.map(m=>m.member).join(', ')} ${redMembers.length===1?'has':'have'} red flags requiring immediate attention.`
+              );
+            }
+            conclusions.push(
+              `${tCompliant} of ${teamMembers.length} member${tCompliant===1?'':'s'} ${tCompliant===1?'is':'are'} fully SLA-compliant this month.`
+            );
+            const hoursStatus = tAvgHours>=160 && tAvgHours<200
+              ? 'within the 160–190 target range'
+              : tAvgHours>=200
+                ? 'above the 200-hour orange threshold — workload review recommended'
+                : 'below the 160-hour target';
+            conclusions.push(`Team average hours of ${tAvgHours.toFixed(1)} are ${hoursStatus}.`);
+            if (tLowActivity.member !== tHighActivity.member && tLowActivity.activityPercent < 45) {
+              if (tLowActivity.activityPercent < 35) {
+                conclusions.push(
+                  `${tLowActivity.member} has the lowest activity at ${tLowActivity.activityPercent}% — below the critical 35% threshold, immediate review needed.`
+                );
+              } else {
+                conclusions.push(
+                  `${tLowActivity.member} is at ${tLowActivity.activityPercent}% activity — in the yellow warning zone, close monitoring recommended.`
+                );
+              }
+            }
+            if (tWithFlags > teamMembers.length / 2) {
+              conclusions.push(
+                `Over half the sub-team (${tWithFlags} of ${teamMembers.length} members) have flags — a team-wide review is recommended.`
+              );
+            }
 
             return (
               <>
-                {/* Summary Card */}
+                {/* 1. Performance Summary */}
                 <div style={{background:'linear-gradient(135deg,#f0fff4,#ebf8ff)',borderRadius:12,padding:20,border:'1px solid #9ae6b4'}}>
                   <div style={{fontWeight:700,fontSize:16,color:'#276749',marginBottom:8}}>{selectedTeam} — Performance Summary</div>
                   <p style={{fontSize:13,color:'#4a5568',marginBottom:16}}>
-                    Analysis of {teamMembers.length} member{teamMembers.length !== 1 ? 's' : ''} in {selectedTeam} during {MONTH} {YEAR}.
+                    This analysis compares {teamMembers.length} member{teamMembers.length!==1?'s':''} in {selectedTeam} during {MONTH} {YEAR}.
                   </p>
                   <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(120px,1fr))',gap:10}}>
                     {[
-                      {label:'Members',      val:teamMembers.length,           color:'#3182ce'},
-                      {label:'Avg Activity', val:tAvgActivity.toFixed(1)+'%',  color:tAvgActivity<35?'#e53e3e':tAvgActivity<45?'#d69e2e':'#38a169'},
-                      {label:'Avg Hours',    val:tAvgHours.toFixed(1),         color:tAvgHours<130?'#e53e3e':tAvgHours<150?'#d69e2e':'#38a169'},
-                      {label:'Red Flags',    val:tTotalRed,                    color:tTotalRed>0?'#e53e3e':'#38a169'},
-                      {label:'Yellow Flags', val:tTotalYellow,                 color:tTotalYellow>0?'#d69e2e':'#38a169'},
+                      {label:'Avg Activity %',    val:tAvgActivity.toFixed(1)+'%', color:tAvgActivity<35?'#e53e3e':tAvgActivity<45?'#d69e2e':'#38a169'},
+                      {label:'Avg Hours',          val:tAvgHours.toFixed(1),        color:tAvgHours<130?'#e53e3e':tAvgHours<150?'#d69e2e':'#38a169'},
+                      {label:'Total Red Flags',    val:tTotalRed,                   color:tTotalRed>0?'#e53e3e':'#38a169'},
+                      {label:'Total Yellow Flags', val:tTotalYellow,                color:tTotalYellow>0?'#d69e2e':'#38a169'},
                     ].map((k,i) => (
                       <div key={i} style={{background:'white',borderRadius:8,padding:12,textAlign:'center',border:'1px solid #e2e8f0'}}>
                         <div style={{fontSize:11,color:'#718096',fontWeight:600,textTransform:'uppercase',letterSpacing:'0.04em',marginBottom:4}}>{k.label}</div>
@@ -638,35 +701,35 @@ const Dashboard = () => {
                   </div>
                 </div>
 
-                {/* Member Metrics Table */}
+                {/* 2. Individual Member Metrics — sortable */}
                 <div style={{background:'white',borderRadius:12,padding:20,border:'1px solid #e2e8f0',overflowX:'auto'}}>
                   <div style={{fontWeight:700,fontSize:15,marginBottom:12,color:'#1a1d23'}}>Individual Member Metrics</div>
                   <table className="metric-table">
                     <thead>
                       <tr>
-                        <th>Member</th>
-                        <th>Activity %</th>
-                        <th>Total Hours</th>
-                        <th>Break %</th>
-                        <th>Low ≤20%</th>
-                        <th>Low ≤30%</th>
-                        <th>Flags</th>
+                        <th onClick={() => teamSort('member')}>Member<TeamSortIcon k="member"/></th>
+                        <th onClick={() => teamSort('activityPercent')}>Activity %<TeamSortIcon k="activityPercent"/></th>
+                        <th onClick={() => teamSort('totalHours')}>Hours<TeamSortIcon k="totalHours"/></th>
+                        <th onClick={() => teamSort('breakPercent')}>Break %<TeamSortIcon k="breakPercent"/></th>
+                        <th onClick={() => teamSort('low20Percent')}>Low Act ≤20%<TeamSortIcon k="low20Percent"/></th>
+                        <th onClick={() => teamSort('low30Percent')}>Low Act ≤30%<TeamSortIcon k="low30Percent"/></th>
+                        <th onClick={() => teamSort('totalFlags')}>Flags<TeamSortIcon k="totalFlags"/></th>
                       </tr>
                     </thead>
                     <tbody>
-                      {[...teamMembers].sort((a,b) => b.activityPercent - a.activityPercent).map((m,i) => (
-                        <tr key={i} style={{background:m.totalFlags>0?'#fff5f5':'white'}}>
+                      {teamSortedMembers(teamMembers).map((m,i) => (
+                        <tr key={i}>
                           <td style={{fontWeight:600,fontSize:13,whiteSpace:'nowrap'}}>{m.member}</td>
-                          <td><HeatCell metric="activity" value={m.activityPercent} fmt={v=>v+'%'}/></td>
-                          <td><HeatCell metric="hours" value={m.totalHours} fmt={v=>v+' hrs'}/></td>
-                          <td><HeatCell metric="breakPct" value={m.breakPercent} fmt={v=>v+'%'}/></td>
-                          <td><HeatCell metric="low20Pct" value={m.low20Percent} fmt={v=>v+'%'}/></td>
-                          <td><HeatCell metric="low30Pct" value={m.low30Percent} fmt={v=>v+'%'}/></td>
+                          <td><HeatCell metric="activity"  value={m.activityPercent} fmt={v=>v+'%'}/></td>
+                          <td><HeatCell metric="hours"     value={m.totalHours}      fmt={v=>v+' hrs'}/></td>
+                          <td><HeatCell metric="breakPct"  value={m.breakPercent}    fmt={v=>v+'%'}/></td>
+                          <td><HeatCell metric="low20Pct"  value={m.low20Percent}    fmt={v=>v+'%'}/></td>
+                          <td><HeatCell metric="low30Pct"  value={m.low30Percent}    fmt={v=>v+'%'}/></td>
                           <td>
                             {m.totalFlags === 0
                               ? <span className="pill pill-green">✅ Clean</span>
                               : <div style={{display:'flex',gap:4,flexWrap:'wrap'}}>
-                                  {m.redFlags>0 && <span className="pill pill-red">🔴{m.redFlags}</span>}
+                                  {m.redFlags>0    && <span className="pill pill-red">🔴{m.redFlags}</span>}
                                   {m.yellowFlags>0 && <span className="pill pill-yellow">⚠️{m.yellowFlags}</span>}
                                 </div>
                             }
@@ -677,60 +740,15 @@ const Dashboard = () => {
                   </table>
                 </div>
 
-                {/* Analysis Grid */}
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
-
-                  <div className="insight-card" style={{borderTop:'3px solid #3182ce'}}>
-                    <div style={{fontWeight:700,fontSize:13,marginBottom:10,color:'#3182ce'}}>Activity Performance</div>
-                    <div className="insight-item"><span>📈</span><span>Avg activity: <strong>{tAvgActivity.toFixed(1)}%</strong> — {tAvgActivity>=45?'within target.':tAvgActivity>=35?'below 45% target. Coaching recommended.':'below 35% critical threshold.'}</span></div>
-                    <div className="insight-item"><span>🏆</span><span><strong>{tHighActivity.member}</strong> leads at <strong>{tHighActivity.activityPercent}%</strong>.</span></div>
-                    <div className="insight-item"><span>📉</span><span><strong>{tLowActivity.member}</strong> lowest at <strong>{tLowActivity.activityPercent}%</strong>{tLowActivity.activityPercent<35?' — 🔴 red flag.':tLowActivity.activityPercent<45?' — ⚠️ yellow warning.':''}.</span></div>
-                    {(tMaxActivity - tMinActivity) > 30
-                      ? <div className="insight-item"><span>⚠️</span><span style={{color:'#c53030'}}><strong>{tMaxActivity - tMinActivity}%</strong> gap — significant variation worth investigating.</span></div>
-                      : <div className="insight-item"><span>✅</span><span style={{color:'#276749'}}>Only <strong>{tMaxActivity - tMinActivity}%</strong> variation — consistent engagement.</span></div>
-                    }
-                  </div>
-
-                  <div className="insight-card" style={{borderTop:'3px solid #6b46c1'}}>
-                    <div style={{fontWeight:700,fontSize:13,marginBottom:10,color:'#6b46c1'}}>Hours &amp; Availability</div>
-                    <div className="insight-item"><span>📊</span><span>Avg hours: <strong>{tAvgHours.toFixed(1)} hrs</strong>{tAvgHours>=160&&tAvgHours<190?' — on target (160–190).':tAvgHours>=190?' — above 190hr threshold.':' — below target.'}</span></div>
-                    <div className="insight-item"><span>⬆️</span><span><strong>{tMostHours.member}</strong> logged most at <strong>{tMostHours.totalHours} hrs</strong>{tMostHours.totalHours>=190?' (🟠 overwork flag)':''}.</span></div>
-                    <div className="insight-item"><span>⬇️</span><span><strong>{tLeastHours.member}</strong> logged least at <strong>{tLeastHours.totalHours} hrs</strong>{tLeastHours.totalHours<130?' (🔴 red flag)':tLeastHours.totalHours<150?' (⚠️ warning)':''}.</span></div>
-                    {(tMaxHours - tMinHours) > 50
-                      ? <div className="insight-item"><span>⚠️</span><span style={{color:'#b7791f'}}><strong>{(tMaxHours - tMinHours).toFixed(0)}-hr</strong> range — notable availability variance.</span></div>
-                      : <div className="insight-item"><span>✅</span><span style={{color:'#276749'}}><strong>{(tMaxHours - tMinHours).toFixed(0)}-hr</strong> range — consistent availability.</span></div>
-                    }
-                  </div>
-
-                  <div className="insight-card" style={{borderTop:'3px solid #d69e2e'}}>
-                    <div style={{fontWeight:700,fontSize:13,marginBottom:10,color:'#d69e2e'}}>Break Time Patterns</div>
-                    <div className="insight-item"><span>{tAvgBreak>=12?'🔴':tAvgBreak>=10?'⚠️':'✅'}</span><span>Avg break: <strong>{tAvgBreak.toFixed(1)}%</strong> — {tAvgBreak<10?'healthy (< 10%).':tAvgBreak<12?'yellow zone (10–12%).':'exceeds red threshold (≥ 12%).'}</span></div>
-                    <div className="insight-item"><span>📌</span><span><strong>{tHighBreak.member}</strong> has highest break at <strong>{tHighBreak.breakPercent}%</strong>{tHighBreak.breakPercent>=12?' (🔴 red flag)':tHighBreak.breakPercent>=10?' (⚠️ yellow)':''}.</span></div>
-                    <div className="insight-item"><span>ℹ️</span><span>Range: <strong>{tMinBreak.toFixed(1)}%–{tMaxBreak.toFixed(1)}%</strong> across sub-team members.</span></div>
-                  </div>
-
-                  <div className="insight-card" style={{borderTop:'3px solid #dd6b20'}}>
-                    <div style={{fontWeight:700,fontSize:13,marginBottom:10,color:'#dd6b20'}}>Low Activity ≤30%</div>
-                    <div className="insight-item"><span>{tAvgLow30>=20?'🔴':tAvgLow30>=10?'⚠️':'✅'}</span><span>Avg low-activity: <strong>{tAvgLow30.toFixed(1)}%</strong> — {tAvgLow30<10?'healthy.':tAvgLow30<20?'yellow zone (10–20%).':'exceeds red (≥ 20%).'}</span></div>
-                    <div className="insight-item"><span>📌</span><span><strong>{tHighLow30.member}</strong> has highest at <strong>{tHighLow30.low30Percent}%</strong>{tHighLow30.low30Percent>=20?' (🔴 red)':tHighLow30.low30Percent>=10?' (⚠️ yellow)':''}.</span></div>
-                    <div className="insight-item"><span>ℹ️</span><span>Note: low activity may reflect meetings, reading, or legitimate non-keyboard work — apply role context.</span></div>
-                  </div>
-                </div>
-
-                {/* SLA Compliance */}
-                <div className="insight-card" style={{borderLeft:`4px solid ${tTotalRed>0?'#e53e3e':'#d69e2e'}`}}>
-                  <div style={{fontWeight:700,fontSize:15,marginBottom:12,color:'#1a1d23'}}>⚖️ SLA Compliance — {selectedTeam}</div>
-                  {tWithFlags === 0 ? (
-                    <div className="insight-item"><span>🎉</span><span style={{color:'#276749'}}><strong>Excellent!</strong> All {teamMembers.length} members meet all SLA requirements with zero flags.</span></div>
-                  ) : (
-                    <>
-                      <div className="insight-item"><span>📊</span><span><strong>{tWithFlags}</strong> of {teamMembers.length} members ({((tWithFlags/teamMembers.length)*100).toFixed(0)}%) have flags.</span></div>
-                      {tTotalRed > 0 && <div className="insight-item"><span>🔴</span><span style={{color:'#c53030'}}><strong>{tTotalRed} red flag{tTotalRed>1?'s':''}</strong> require immediate attention.</span></div>}
-                      {tTotalYellow > 0 && <div className="insight-item"><span>⚠️</span><span style={{color:'#b7791f'}}><strong>{tTotalYellow} yellow warning{tTotalYellow>1?'s':''}</strong> need monitoring.</span></div>}
-                      {(teamMembers.length - tWithFlags) > 0 && <div className="insight-item"><span>✅</span><span style={{color:'#276749'}}><strong>{teamMembers.length - tWithFlags}</strong> member{(teamMembers.length-tWithFlags)!==1?'s':''} fully compliant.</span></div>}
-                      {tWithFlags > teamMembers.length / 2 && <div className="insight-item"><span>❗</span><span style={{color:'#c53030'}}>Over half the sub-team has violations — consider targeted group review.</span></div>}
-                    </>
-                  )}
+                {/* 3. Key Conclusions */}
+                <div className="insight-card">
+                  <div style={{fontWeight:700,fontSize:15,marginBottom:12,color:'#1a1d23'}}>📌 Key Conclusions</div>
+                  {conclusions.map((c,i) => (
+                    <div key={i} style={{display:'flex',alignItems:'flex-start',gap:8,padding:'5px 0',fontSize:13.5,lineHeight:1.6}}>
+                      <span style={{color:'#276749',fontWeight:700,flexShrink:0}}>•</span>
+                      <span>{c}</span>
+                    </div>
+                  ))}
                 </div>
               </>
             );
