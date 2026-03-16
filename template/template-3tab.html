@@ -274,10 +274,6 @@ const Dashboard = () => {
               <div style={{fontSize:22,fontWeight:700}}>{avgHours.toFixed(0)}</div>
               <div style={{fontSize:11,color:'#a0aec0',marginTop:2}}>Avg Hours</div>
             </div>
-            <div style={{textAlign:'center',background: membersWithFlags > 0 ? 'rgba(214,158,46,0.25)' : 'rgba(56,161,105,0.25)',borderRadius:10,padding:'10px 18px'}}>
-              <div style={{fontSize:22,fontWeight:700,color: membersWithFlags > 0 ? '#faf089' : '#9ae6b4'}}>{membersWithFlags}</div>
-              <div style={{fontSize:11,color:'#a0aec0',marginTop:2}}>With Flags</div>
-            </div>
           </div>
         </div>
       </div>
@@ -419,61 +415,6 @@ const Dashboard = () => {
             </div>
           </details>
 
-          {/* ── Section 3: SLA Status Breakdown ── */}
-          <details style={{marginBottom:12}}>
-            <summary className="section-header" style={{background:'linear-gradient(135deg,#faf5ff,#e9d8fd50)'}}>
-              <div style={{display:'flex',alignItems:'center',gap:12}}>
-                <div style={{width:36,height:36,borderRadius:8,background:'#6b46c1',display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:16}}>📊</div>
-                <span style={{fontWeight:700,fontSize:16,color:'#553c9a'}}>3. SLA Status Breakdown</span>
-              </div>
-              <svg className="chevron" width="20" height="20" fill="none" stroke="#718096" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-            </summary>
-            <div style={{padding:'16px 0 4px'}}>
-              <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16,alignItems:'start'}}>
-
-                {/* Pie chart */}
-                <div style={{background:'white',borderRadius:10,padding:16,border:'1px solid #e2e8f0'}}>
-                  <div style={{fontWeight:600,fontSize:14,marginBottom:12,color:'#1a1d23'}}>Violation Distribution</div>
-                  {n === 0
-                    ? <div style={{fontSize:13,color:'#718096',textAlign:'center',padding:40}}>No data.</div>
-                    : (
-                      <ResponsiveContainer width="100%" height={320}>
-                        <PieChart>
-                          <Pie data={pieData} cx="50%" cy="50%" outerRadius={110} dataKey="value" label={({name,percent}) => `${name}: ${(percent*100).toFixed(0)}%`} labelLine={true}>
-                            {pieData.map((entry, i) => (
-                              <Cell key={i} fill={entry.color} />
-                            ))}
-                          </Pie>
-                          <Tooltip formatter={(value, name) => [value + ' member' + (value !== 1 ? 's' : ''), name]} />
-                        </PieChart>
-                      </ResponsiveContainer>
-                    )
-                  }
-                </div>
-
-                {/* 4 stat cards */}
-                <div style={{display:'flex',flexDirection:'column',gap:10}}>
-                  {[
-                    { label:'Red Violations Only',    count: redOnly,    pct: n>0?((redOnly/n)*100).toFixed(0):0,    bg:'#fff5f5', border:'#fc8181', textColor:'#c53030', leftBorder:'#e53e3e', desc:'Members with red flags only' },
-                    { label:'Yellow Warnings Only',   count: yellowOnly, pct: n>0?((yellowOnly/n)*100).toFixed(0):0, bg:'#fffff0', border:'#f6e05e', textColor:'#b7791f', leftBorder:'#d69e2e', desc:'Members with yellow flags only' },
-                    { label:'Both Red & Yellow',      count: both,       pct: n>0?((both/n)*100).toFixed(0):0,       bg:'#fffaf0', border:'#fbd38d', textColor:'#c05621', leftBorder:'#dd6b20', desc:'Members with both flag types' },
-                    { label:'No Violations',          count: noViol,     pct: n>0?((noViol/n)*100).toFixed(0):0,     bg:'#f0fff4', border:'#9ae6b4', textColor:'#276749', leftBorder:'#38a169', desc:'Fully SLA-compliant members' },
-                  ].map((card, i) => (
-                    <div key={i} style={{background:card.bg,border:`1px solid ${card.border}`,borderLeft:`4px solid ${card.leftBorder}`,borderRadius:8,padding:'12px 16px',display:'flex',alignItems:'center',justifyContent:'space-between'}}>
-                      <div>
-                        <div style={{fontWeight:700,fontSize:13,color:card.textColor}}>{card.label}</div>
-                        <div style={{fontSize:11,color:'#718096',marginTop:2}}>{card.desc}</div>
-                      </div>
-                      <div style={{textAlign:'right'}}>
-                        <div style={{fontSize:24,fontWeight:700,color:card.textColor}}>{card.count}</div>
-                        <div style={{fontSize:11,color:'#718096'}}>{card.pct}% of team</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </details>
 
         </div>
       )}
