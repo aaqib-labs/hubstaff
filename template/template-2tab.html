@@ -274,17 +274,26 @@ const Dashboard = () => {
 
               {/* PERFORMANCE HIGHLIGHTS */}
               {(() => {
-                const bothFlags = filteredData.filter(m => m.redFlags > 0 && m.yellowFlags > 0).length;
-                const redCount  = filteredData.filter(m => m.redFlags > 0).length;
-                const over160   = filteredData.filter(m => m.totalHours > 160);
+                const redCount    = filteredData.filter(m => m.redFlags > 0).length;
+                const yellowOnly  = filteredData.filter(m => m.yellowFlags > 0 && m.redFlags === 0).length;
+                const bothFlags   = filteredData.filter(m => m.redFlags > 0 && m.yellowFlags > 0).length;
+                const over160     = filteredData.filter(m => m.totalHours > 160);
+                const flagSummary = (() => {
+                  const parts = [];
+                  if (redCount > 0)   parts.push(`${redCount} member${redCount !== 1 ? 's' : ''} had red/orange flags requiring immediate attention`);
+                  if (yellowOnly > 0) parts.push(`${yellowOnly} member${yellowOnly !== 1 ? 's' : ''} had yellow warnings requiring monitoring`);
+                  if (bothFlags > 0)  parts.push(`${bothFlags} member${bothFlags !== 1 ? 's' : ''} had both red/orange and yellow flags`);
+                  if (parts.length === 0) return `all ${n} member${n !== 1 ? 's' : ''} met SLA requirements with zero flags`;
+                  return parts.join(', and ');
+                })();
                 return (
                   <div style={{background: '#ebf8ff', padding: 16, borderRadius: 8, border: '1px solid #90cdf4', marginBottom: 8}}>
                     <div style={{fontSize: 18, fontWeight: 600, color: '#1e4e8c', marginBottom: 8}}>{MONTH} {YEAR} Performance Highlights</div>
                     <div style={{fontSize: 14, color: '#4a5568', lineHeight: 1.6}}>
                       The {activeSubTeam !== 'All' ? activeSubTeam : DEPT} team maintained an average activity level of {avgActivity.toFixed(1)}% across {n} team member{n !== 1 ? 's' : ''} in {MONTH} {YEAR}.
                       {' '}The team logged an average of {avgHours.toFixed(1)} hours per person, with {over160.length} member{over160.length !== 1 ? 's' : ''} exceeding 160 hours for the month.
-                      {' '}Performance highlights include {noViolations} member{noViolations !== 1 ? 's' : ''} meeting all SLA requirements with zero flags, while {redCount} member{redCount !== 1 ? 's' : ''} had red/orange flags requiring attention.
-                      {' '}{bothFlags} member{bothFlags !== 1 ? 's' : ''} have both red/orange and yellow flags.
+                      {' '}{noViolations} member{noViolations !== 1 ? 's' : ''} met all SLA requirements with zero flags
+                      {(redCount > 0 || yellowOnly > 0 || bothFlags > 0) ? `, while ${flagSummary}.` : '.'}
                     </div>
                   </div>
                 );
@@ -305,14 +314,14 @@ const Dashboard = () => {
             </summary>
             <div style={{paddingTop: 20}}>
 
-              {/* 2-col: Top Performers + High Hours */}
+              {/* 2-col: Highest Activity Levels + High Hours */}
               <div style={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, marginBottom: 16}}>
 
-                {/* Top Performers */}
+                {/* Highest Activity Levels */}
                 <div style={{padding: 16, borderRadius: 8, background: 'linear-gradient(135deg, #ebf8ff, #bee3f8)', border: '1px solid #90cdf4'}}>
                   <div style={{fontSize: 18, fontWeight: 600, color: '#1e4e8c', marginBottom: 12, display: 'flex', alignItems: 'center'}}>
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="#1e4e8c" style={{marginRight: 8}}><path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd"/></svg>
-                    Top Performers
+                    Highest Activity Levels
                   </div>
                   {[...filteredData].sort((a,b) => b.activityPercent - a.activityPercent).slice(0,3).map((m, i) => (
                     <div key={i} style={{display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i < 2 ? '1px solid rgba(49,130,206,0.15)' : 'none'}}>
@@ -383,40 +392,55 @@ const Dashboard = () => {
 
           {/* CARD 1 — SLA Violation Legend */}
           <div style={{background:'#ffffff', borderRadius:8, padding:24, border:'1px solid #e2e8f0', boxShadow:'0 2px 8px rgba(0,0,0,0.08)', marginBottom:24}}>
-            <h2 style={{fontSize:24, fontWeight:700, color:'#2d3748', borderBottom:'2px solid #e2e8f0', paddingBottom:12, marginBottom:20}}>SLA Violation Legend</h2>
-            <p style={{fontSize:14, color:'#4a5568', marginBottom:20}}>Click a card to expand thresholds and measurement details. Only one card opens at a time.</p>
-            <div style={{display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:12}}>
-            {[
+            <h2 style={{fontSize:20, fontWeight:700, color:'#2d3748', marginBottom:16}}>SLA Violation Legend</h2>
+            {(() => {
+              const legendMetrics = [
               { notation: 'A', label: 'Activity Level',          summary: 'Red < 35%  |  Yellow < 45%', headerBg:'linear-gradient(135deg,#ebf8ff,#e6fffa)', badgeBg:'#3182ce',
-                body: <><p><strong>What it measures:</strong> Employee engagement via keyboard and mouse activity during tracked work time.</p><p style={{marginTop:8}}><strong>How it's measured:</strong> Tracks mouse movements, keyboard activity, and application focus time. Represents the percentage of working time where active engagement with work tools is detected.</p><p style={{marginTop:8,color:'#c53030',fontWeight:600}}>🔴 Red Violation (Critical): &lt; 35% activity</p><p style={{marginLeft:16,fontSize:13,marginTop:4}}>→ Very low engagement indicating potential productivity issues. Requires immediate review.</p><p style={{marginTop:8,color:'#b7791f',fontWeight:600}}>🟡 Yellow Warning: &lt; 45% activity</p><p style={{marginLeft:16,fontSize:13,marginTop:4}}>→ Low engagement that warrants attention but is not critically low. Needs monitoring.</p><p style={{marginTop:8}}><strong>Expected Range:</strong> Varies by role and department expectations.</p></> },
+                body: <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:14}}><div style={{display:'flex', flexDirection:'column', gap:8}}><div style={{background:'#fff5f5', border:'1px solid #fed7d7', borderRadius:6, padding:'10px 12px'}}><p style={{color:'#c53030', fontWeight:600, fontSize:13}}>🔴 Red Violation (Critical): &lt; 35% activity</p><p style={{fontSize:13, marginTop:4, color:'#4a5568'}}>→ Very low engagement indicating potential productivity issues. Requires immediate review.</p></div><div style={{background:'#fffff0', border:'1px solid #fefcbf', borderRadius:6, padding:'10px 12px'}}><p style={{color:'#b7791f', fontWeight:600, fontSize:13}}>🟡 Yellow Warning: &lt; 45% activity</p><p style={{fontSize:13, marginTop:4, color:'#4a5568'}}>→ Low engagement that warrants attention but is not critically low. Needs monitoring.</p></div></div><div style={{background:'#f8fafc', borderRadius:8, padding:12}}><p><strong>What it measures:</strong> Employee engagement via keyboard and mouse activity during tracked work time.</p><p style={{marginTop:8}}><strong>How it's measured:</strong> Tracks mouse movements, keyboard activity, and application focus time. Represents the percentage of working time where active engagement with work tools is detected.</p><p style={{marginTop:10, fontSize:12, color:'#718096'}}><strong>Expected Range:</strong> Varies by role and department expectations.</p></div></div> },
               { notation: 'H', label: 'Total Worked Hours',       summary: 'Red < 130h  |  Yellow < 150h  |  Orange ≥ 200h', headerBg:'linear-gradient(135deg,#ebf8ff,#e6fffa)', badgeBg:'#6b46c1',
-                body: <><p><strong>What it measures:</strong> Total logged hours in Hubstaff during the month relative to expected hours.</p><p style={{marginTop:8}}><strong>How it's measured:</strong> Captures all time logged by the team member during the month, including both active and inactive periods. Target is 160+ hours per month (full-time schedule).</p><p style={{marginTop:8,color:'#c53030',fontWeight:600}}>🔴 Red Violation (Critical): &lt; 130 hours</p><p style={{marginLeft:16,fontSize:13,marginTop:4}}>→ Significantly below expected monthly hours. Requires immediate attention.</p><p style={{marginTop:8,color:'#b7791f',fontWeight:600}}>🟡 Yellow Warning: &lt; 150 hours</p><p style={{marginLeft:16,fontSize:13,marginTop:4}}>→ Below expected hours but not critical. Should be monitored.</p><p style={{marginTop:8,color:'#c05621',fontWeight:600}}>🟠 Orange Flag (Investigation Required): ≥ 200 hours</p><p style={{marginLeft:16,fontSize:13,marginTop:4}}>→ Exceeding reasonable monthly workload — may indicate issues, inefficiency, or time tracking misuse.</p><p style={{marginTop:8}}><strong>Target Range:</strong> 160–190 hours per month.</p></> },
+                body: <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:14}}><div style={{display:'flex', flexDirection:'column', gap:8}}><div style={{background:'#fff5f5', border:'1px solid #fed7d7', borderRadius:6, padding:'10px 12px'}}><p style={{color:'#c53030', fontWeight:600, fontSize:13}}>🔴 Red Violation (Critical): &lt; 130 hours</p><p style={{fontSize:13, marginTop:4, color:'#4a5568'}}>→ Significantly below expected monthly hours. Requires immediate attention.</p></div><div style={{background:'#fffff0', border:'1px solid #fefcbf', borderRadius:6, padding:'10px 12px'}}><p style={{color:'#b7791f', fontWeight:600, fontSize:13}}>🟡 Yellow Warning: &lt; 150 hours</p><p style={{fontSize:13, marginTop:4, color:'#4a5568'}}>→ Below expected hours but not critical. Should be monitored.</p></div><div style={{background:'#fffaf0', border:'1px solid #fbd38d', borderRadius:6, padding:'10px 12px'}}><p style={{color:'#c05621', fontWeight:600, fontSize:13}}>🟠 Orange Flag (Investigation Required): ≥ 200 hours</p><p style={{fontSize:13, marginTop:4, color:'#4a5568'}}>→ Exceeding reasonable monthly workload — may indicate work life balance issues, workload adjustments.</p></div></div><div style={{background:'#f8fafc', borderRadius:8, padding:12}}><p><strong>What it measures:</strong> Total logged hours in Hubstaff during the month relative to expected hours.</p><p style={{marginTop:8}}><strong>How it's measured:</strong> Captures all time logged by the team member during the month, including both active and inactive periods. Target is 160+ hours per month (full-time schedule).</p><p style={{marginTop:10, fontSize:12, color:'#718096'}}><strong>Target Range:</strong> 160–190 hours per month.</p></div></div> },
               { notation: 'B', label: 'Total Break Time',         summary: 'Red ≥ 12%  |  Yellow > 10%', headerBg:'linear-gradient(135deg,#ebf8ff,#e6fffa)', badgeBg:'#d69e2e',
-                body: <><p><strong>What it measures:</strong> Total time spent on breaks as a percentage of total worked hours.</p><p style={{marginTop:8}}><strong>How it's measured:</strong> Tracks periods when team members are on official breaks and not actively working. Displayed as "X.X (X.X%)" showing both actual hours on break and percentage of total logged time. Target is to keep breaks below 10% to maximise productive hours.</p><p style={{marginTop:8,color:'#c53030',fontWeight:600}}>🔴 Red Violation (Critical): ≥ 12% of Total Worked Hours</p><p style={{marginLeft:16,fontSize:13,marginTop:4}}>→ Excessive break time reducing overall productive hours. Requires immediate intervention.</p><p style={{marginTop:8,color:'#b7791f',fontWeight:600}}>🟡 Yellow Warning: &gt; 10% and &lt; 12% of Total Worked Hours</p><p style={{marginLeft:16,fontSize:13,marginTop:4}}>→ Higher than target break time. Not critical but needs attention.</p><p style={{marginTop:8}}><strong>Target:</strong> &lt; 10% of total worked hours.</p></> },
-              { notation: '20', label: 'Low Activity Hours ≤20%', summary: 'Red ≥ 15%  |  Yellow ≥ 7.5%', headerBg:'linear-gradient(135deg,#ebf8ff,#e6fffa)', badgeBg:'#e53e3e',
-                body: <><p><strong>What it measures:</strong> Time spent with activity level at or below 20%, indicating very minimal engagement.</p><p style={{marginTop:8}}><strong>How it's measured:</strong> Tracks periods when an employee's activity fell below 20%. Displayed as "X.X (X.X%)" showing both hours at this level and percentage of total logged time. May indicate stepping away from work, distractions, or system idle time.</p><p style={{marginTop:8,color:'#c53030',fontWeight:600}}>🔴 Red Violation (Critical): ≥ 15% of Total Worked Hours</p><p style={{marginLeft:16,fontSize:13,marginTop:4}}>→ Excessive very low activity requiring intervention. Indicates significant productivity concerns.</p><p style={{marginTop:8,color:'#b7791f',fontWeight:600}}>🟡 Yellow Warning: ≥ 7.5% of Total Worked Hours</p><p style={{marginLeft:16,fontSize:13,marginTop:4}}>→ Higher than ideal very low activity. Should be investigated.</p></> },
-              { notation: '30', label: 'Low Activity Hours ≤30%', summary: 'Red ≥ 20%  |  Yellow ≥ 10%', headerBg:'linear-gradient(135deg,#ebf8ff,#e6fffa)', badgeBg:'#dd6b20',
-                body: <><p><strong>What it measures:</strong> Time spent with activity level at or below 30%, representing low but not necessarily inactive engagement.</p><p style={{marginTop:8}}><strong>How it's measured:</strong> Broader metric capturing time when activity falls below 30%. Displayed as "X.X (X.X%)" showing hours and percentage of total time. Captures both ≤20% activity PLUS additional low activity between 20–30%. May indicate reduced productivity, meetings without computer interaction, or reading activities.</p><p style={{marginTop:8,color:'#c53030',fontWeight:600}}>🔴 Red Violation (Critical): ≥ 20% of Total Worked Hours</p><p style={{marginLeft:16,fontSize:13,marginTop:4}}>→ Excessive low activity indicating potential productivity issues. Requires investigation.</p><p style={{marginTop:8,color:'#b7791f',fontWeight:600}}>🟡 Yellow Warning: ≥ 10% of Total Worked Hours</p><p style={{marginLeft:16,fontSize:13,marginTop:4}}>→ Moderate low activity levels. May require context before escalation.</p></> },
-            ].map(metric => {
-              const isOpen = openMetric === metric.notation;
+                body: <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:14}}><div style={{display:'flex', flexDirection:'column', gap:8}}><div style={{background:'#fff5f5', border:'1px solid #fed7d7', borderRadius:6, padding:'10px 12px'}}><p style={{color:'#c53030', fontWeight:600, fontSize:13}}>🔴 Red Violation (Critical): ≥ 12% of Total Worked Hours</p><p style={{fontSize:13, marginTop:4, color:'#4a5568'}}>→ Excessive break time reducing overall productive hours. Requires immediate intervention.</p></div><div style={{background:'#fffff0', border:'1px solid #fefcbf', borderRadius:6, padding:'10px 12px'}}><p style={{color:'#b7791f', fontWeight:600, fontSize:13}}>🟡 Yellow Warning: &gt; 10% and &lt; 12% of Total Worked Hours</p><p style={{fontSize:13, marginTop:4, color:'#4a5568'}}>→ Higher than target break time. Not critical but needs attention.</p></div></div><div style={{background:'#f8fafc', borderRadius:8, padding:12}}><p><strong>What it measures:</strong> Total time spent on breaks as a percentage of total worked hours.</p><p style={{marginTop:8}}><strong>How it's measured:</strong> Tracks periods when team members are on official breaks and not actively working. Displayed as "X.X (X.X%)" showing both actual hours on break and percentage of total logged time. Target is to keep breaks below 10% to maximise productive hours.</p><p style={{marginTop:10, fontSize:12, color:'#718096'}}><strong>Target:</strong> &lt; 10% of total worked hours.</p></div></div> },
+              { notation: '20', label: 'Low Activity ≤20%', summary: 'Red ≥ 15%  |  Yellow ≥ 7.5%', headerBg:'linear-gradient(135deg,#ebf8ff,#e6fffa)', badgeBg:'#e53e3e',
+                body: <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:14}}><div style={{display:'flex', flexDirection:'column', gap:8}}><div style={{background:'#fff5f5', border:'1px solid #fed7d7', borderRadius:6, padding:'10px 12px'}}><p style={{color:'#c53030', fontWeight:600, fontSize:13}}>🔴 Red Violation (Critical): ≥ 15% of Total Worked Hours</p><p style={{fontSize:13, marginTop:4, color:'#4a5568'}}>→ Excessive very low activity requiring intervention. Indicates significant productivity concerns.</p></div><div style={{background:'#fffff0', border:'1px solid #fefcbf', borderRadius:6, padding:'10px 12px'}}><p style={{color:'#b7791f', fontWeight:600, fontSize:13}}>🟡 Yellow Warning: ≥ 7.5% of Total Worked Hours</p><p style={{fontSize:13, marginTop:4, color:'#4a5568'}}>→ Higher than ideal very low activity. Should be investigated.</p></div></div><div style={{background:'#f8fafc', borderRadius:8, padding:12}}><p><strong>What it measures:</strong> Time spent with activity level at or below 20%, indicating very minimal engagement.</p><p style={{marginTop:8}}><strong>How it's measured:</strong> Tracks periods when an employee's activity fell below 20%. Displayed as "X.X (X.X%)" showing both hours at this level and percentage of total logged time. May indicate stepping away from work, distractions, or system idle time.</p></div></div> },
+              { notation: '30', label: 'Low Activity ≤30%', summary: 'Red ≥ 20%  |  Yellow ≥ 10%', headerBg:'linear-gradient(135deg,#ebf8ff,#e6fffa)', badgeBg:'#dd6b20',
+                body: <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:14}}><div style={{display:'flex', flexDirection:'column', gap:8}}><div style={{background:'#fff5f5', border:'1px solid #fed7d7', borderRadius:6, padding:'10px 12px'}}><p style={{color:'#c53030', fontWeight:600, fontSize:13}}>🔴 Red Violation (Critical): ≥ 20% of Total Worked Hours</p><p style={{fontSize:13, marginTop:4, color:'#4a5568'}}>→ Excessive low activity indicating potential productivity issues. Requires investigation.</p></div><div style={{background:'#fffff0', border:'1px solid #fefcbf', borderRadius:6, padding:'10px 12px'}}><p style={{color:'#b7791f', fontWeight:600, fontSize:13}}>🟡 Yellow Warning: ≥ 10% of Total Worked Hours</p><p style={{fontSize:13, marginTop:4, color:'#4a5568'}}>→ Moderate low activity levels. May require context before escalation.</p></div></div><div style={{background:'#f8fafc', borderRadius:8, padding:12}}><p><strong>What it measures:</strong> Time spent with activity level at or below 30%, representing low but not necessarily inactive engagement.</p><p style={{marginTop:8}}><strong>How it's measured:</strong> Broader metric capturing time when activity falls below 30%. Displayed as "X.X (X.X%)" showing hours and percentage of total time. Captures both ≤20% activity PLUS additional low activity between 20–30%. May indicate reduced productivity, meetings without computer interaction, or reading activities.</p></div></div> },
+              ];
+              const active = legendMetrics.find(m => m.notation === openMetric);
               return (
-                <div key={metric.notation} style={{border:'1px solid #90cdf4', borderRadius:8, overflow:'hidden', boxShadow:'0 1px 3px rgba(0,0,0,0.1)'}}>
-                  <div onClick={() => setOpenMetric(isOpen ? null : metric.notation)} style={{background:metric.headerBg, padding:16, cursor:'pointer', display:'flex', alignItems:'center', gap:8}}>
-                    <span style={{display:'inline-flex', alignItems:'center', justifyContent:'center', width:36, height:36, borderRadius:9999, background:metric.badgeBg, color:'white', fontSize:13, fontWeight:700, flexShrink:0}}>{metric.notation}</span>
-                    <span style={{fontWeight:700, fontSize:20, color:'#1e4e8c', flex:1}}>{metric.label}</span>
-                    <span style={{fontSize:14, color:'#4a5568', flexShrink:0}}>{metric.summary}</span>
-                    <svg style={{flexShrink:0, transform:isOpen?'rotate(180deg)':'rotate(0deg)', transition:'transform 0.2s'}} width="24" height="24" fill="none" stroke="#718096" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                <>
+                  {/* Blue selector container */}
+                  <div style={{background:'#dbeafe', borderRadius:8, padding:16}}>
+                    <div style={{marginBottom:12}}>
+                      <span style={{fontWeight:700, fontSize:13, color:'#1e40af'}}>How SLA Metrics Are Monitored: </span>
+                      <span style={{fontSize:13, color:'#4a5568'}}>Click on each category below to see thresholds and violation criteria</span>
+                    </div>
+                    <div style={{display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:10}}>
+                      {legendMetrics.map(metric => {
+                        const isActive = openMetric === metric.notation;
+                        return (
+                          <button key={metric.notation}
+                            onClick={() => setOpenMetric(isActive ? null : metric.notation)}
+                            style={{padding:'11px 16px', borderRadius:8, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'space-between', fontFamily:'DM Sans, sans-serif', fontSize:14, fontWeight: isActive ? 600 : 400, background: isActive ? '#3b82f6' : '#ffffff', color: isActive ? '#ffffff' : '#374151', border: isActive ? 'none' : '1px solid #e2e8f0', boxShadow:'0 1px 3px rgba(0,0,0,0.06)', transition:'all 0.15s'}}
+                          >
+                            <span>{metric.label} ({metric.notation})</span>
+                            <svg style={{flexShrink:0, transform:isActive?'rotate(180deg)':'rotate(0deg)', transition:'transform 0.2s'}} width="16" height="16" fill="none" stroke={isActive?'#ffffff':'#9ca3af'} strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                          </button>
+                        );
+                      })}
+                      <div />{/* empty — row 3 col 2 */}
+                    </div>
                   </div>
-                  {isOpen && (
-                    <div style={{padding:'16px 20px', fontSize:14, color:'#4a5568', lineHeight:1.7, borderTop:'1px solid #90cdf4', background:'#ffffff'}}>
-                      {metric.body}
+                  {/* Detail panel */}
+                  {active && (
+                    <div style={{marginTop:16, background:'#ffffff', borderRadius:8, padding:'16px 20px', border:'1px solid #bfdbfe'}}>
+                      <h3 style={{fontSize:16, fontWeight:700, color:'#1e40af', marginBottom:12}}>{active.label} ({active.notation}) — Monitoring Criteria</h3>
+                      <div style={{fontSize:14, color:'#4a5568', lineHeight:1.7}}>{active.body}</div>
                     </div>
                   )}
-                </div>
+                </>
               );
-            })}
-            <div />{/* empty — row 3 col 2 */}
-          </div>
+            })()}
           </div>
 
           {/* CARD 2 — Full SLA Heatmap */}
@@ -444,18 +468,19 @@ const Dashboard = () => {
             const avgYel = n > 0 ? filteredData.reduce((s,m) => s + m.yellowFlags, 0) / n : 0;
             const avgTot = n > 0 ? filteredData.reduce((s,m) => s + m.totalFlags, 0) / n : 0;
             return (
+              <>
               <div style={{width:'100%', overflowX:'auto'}}>
-                <table style={{width:'100%', borderCollapse:'collapse', fontSize:15, tableLayout:'fixed'}}>
+                <table style={{width:'100%', minWidth:1080, borderCollapse:'collapse', fontSize:15, tableLayout:'fixed'}}>
                   <colgroup>
-                    <col style={{width:'17%'}} />
-                    <col style={{width:'10.4%'}} />
-                    <col style={{width:'10.4%'}} />
-                    <col style={{width:'10.4%'}} />
-                    <col style={{width:'10.4%'}} />
-                    <col style={{width:'10.4%'}} />
-                    <col style={{width:'10.4%'}} />
-                    <col style={{width:'10.4%'}} />
-                    <col style={{width:'10.4%'}} />
+                    <col style={{width:'20%'}} />
+                    <col style={{width:'10%'}} />
+                    <col style={{width:'10%'}} />
+                    <col style={{width:'10%'}} />
+                    <col style={{width:'12%'}} />
+                    <col style={{width:'12%'}} />
+                    <col style={{width:'10%'}} />
+                    <col style={{width:'9%'}} />
+                    <col style={{width:'7%'}} />
                   </colgroup>
                   <thead>
                     <tr>
@@ -492,20 +517,20 @@ const Dashboard = () => {
                         <td style={td}><span style={{fontWeight:700, color:m.totalFlags===0?'#276749':m.redFlags>0?'#c53030':'#b7791f'}}>{m.totalFlags}</span></td>
                       </tr>
                     ))}
-                    <tr style={{background:'#f7fafc'}}>
-                      <td style={{...td, textAlign:'left', fontWeight:700, fontSize:12, color:'#4a5568'}}>Team Averages:</td>
-                      <td style={td}><span style={pillStyle('activity',  avgActivity)}>{avgActivity.toFixed(1)}%</span></td>
-                      <td style={td}><span style={pillStyle('hours',     avgHours)}>{avgHours.toFixed(1)} hrs</span></td>
-                      <td style={td}><span style={pillStyle('breakPct',  avgBrk)}>{avgBrk.toFixed(1)}%</span></td>
-                      <td style={td}><span style={pillStyle('low20Pct',  avgL20)}>{avgL20.toFixed(1)}%</span></td>
-                      <td style={td}><span style={pillStyle('low30Pct',  avgL30)}>{avgL30.toFixed(1)}%</span></td>
-                      <td style={{...td, color:'#718096', fontWeight:600, fontSize:12}}>{avgRed.toFixed(1)}</td>
-                      <td style={{...td, color:'#718096', fontWeight:600, fontSize:12}}>{avgYel.toFixed(1)}</td>
-                      <td style={{...td, color:'#4a5568', fontWeight:700, fontSize:12}}>{avgTot.toFixed(1)}</td>
-                    </tr>
                   </tbody>
                 </table>
               </div>
+              <div style={{marginTop:12, background:'#f7fafc', border:'1px solid #e2e8f0', borderRadius:8, padding:'10px 16px'}}>
+                <div style={{fontSize:11, fontWeight:700, color:'#a0aec0', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:8}}>Team Averages</div>
+                <div style={{display:'flex', flexWrap:'wrap', alignItems:'center', gap:'6px 20px'}}>
+                  <span style={{fontSize:13, color:'#4a5568'}}>Activity: <span style={{...pillStyle('activity', avgActivity), padding:'3px 10px', fontSize:13}}>{avgActivity.toFixed(1)}%</span></span>
+                  <span style={{fontSize:13, color:'#4a5568'}}>Hours: <span style={{...pillStyle('hours', avgHours), padding:'3px 10px', fontSize:13}}>{avgHours.toFixed(1)} hrs</span></span>
+                  <span style={{fontSize:13, color:'#4a5568'}}>Break%: <span style={{...pillStyle('breakPct', avgBrk), padding:'3px 10px', fontSize:13}}>{avgBrk.toFixed(1)}%</span></span>
+                  <span style={{fontSize:13, color:'#4a5568'}}>Low20%: <span style={{...pillStyle('low20Pct', avgL20), padding:'3px 10px', fontSize:13}}>{avgL20.toFixed(1)}%</span></span>
+                  <span style={{fontSize:13, color:'#4a5568'}}>Low30%: <span style={{...pillStyle('low30Pct', avgL30), padding:'3px 10px', fontSize:13}}>{avgL30.toFixed(1)}%</span></span>
+                </div>
+              </div>
+              </>
             );
           })()}
           </div>
@@ -519,5 +544,10 @@ const Dashboard = () => {
 
 ReactDOM.render(<Dashboard />, document.getElementById('root'));
 </script>
+<div style="background:#f0f2f5; padding:32px 16px; text-align:center; margin-top:0;">
+  <p style="font-family:'DM Sans',sans-serif; font-size:13px; color:#a0aec0; letter-spacing:0.02em;">
+    Generated for WebLife &middot; {{DEPT}} &middot; {{MONTH}} {{YEAR}} &middot; SLA thresholds per WebLife SLA Violation Legend v1.0
+  </p>
+</div>
 </body>
 </html>
