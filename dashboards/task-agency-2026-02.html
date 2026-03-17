@@ -317,7 +317,7 @@ const Dashboard = () => {
                 <div style={{padding: 16, borderRadius: 8, background: 'linear-gradient(135deg, #ebf8ff, #bee3f8)', border: '1px solid #90cdf4'}}>
                   <div style={{fontSize: 18, fontWeight: 600, color: '#1e4e8c', marginBottom: 12, display: 'flex', alignItems: 'center'}}>
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="#1e4e8c" style={{marginRight: 8}}><path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd"/></svg>
-                    Top Performers
+                    Highest Activity Levels
                   </div>
                   {[...filteredData].sort((a,b) => b.activityPercent - a.activityPercent).slice(0,3).map((m, i) => (
                     <div key={i} style={{display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i < 2 ? '1px solid rgba(49,130,206,0.15)' : 'none'}}>
