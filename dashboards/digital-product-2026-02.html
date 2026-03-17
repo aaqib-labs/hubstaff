@@ -53,16 +53,17 @@ const data = [
   { member: "Ramez Sedra",            activityPercent: 54.0, totalHours: 177.0, breakHours: 11.4, breakPercent: 6.4,  manualHours: 0.3, manualPercent: 0.2, low20Hours: 2.6, low20Percent: 1.5,  low30Hours: 6.0,  low30Percent: 3.4,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
   { member: "Shehara Meadows",        activityPercent: 42.0, totalHours: 155.9, breakHours: 13.1, breakPercent: 8.4,  manualHours: 0.0, manualPercent: 0.0, low20Hours: 9.6, low20Percent: 6.1,  low30Hours: 24.0, low30Percent: 15.4, redFlags: 0, yellowFlags: 2, totalFlags: 2 },
   { member: "Thushan Fernando",       activityPercent: 52.0, totalHours: 178.5, breakHours: 11.9, breakPercent: 6.7,  manualHours: 0.0, manualPercent: 0.0, low20Hours: 11.1,low20Percent: 6.2,  low30Hours: 24.6, low30Percent: 13.8, redFlags: 0, yellowFlags: 1, totalFlags: 1 },
+  { member: "Upeksha Liyanage",       activityPercent: 60.0, totalHours: 170.8, breakHours: 15.8, breakPercent: 9.3,  manualHours: 0.0, manualPercent: 0.0, low20Hours: 0.0, low20Percent: 0.0,  low30Hours: 7.3,  low30Percent: 4.3,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
 ];
 
 // Team sub-categories for Tab 3: Team Analytics
 // Format: { "Sub-Team Name": ["Member 1", "Member 2"], ... }
 const TEAM_CATEGORIES = {
-  "Site Content Team": ["Kunchana Prabashwara", "Ramez Sedra", "Shehara Meadows"],
-  "Catalog Team": ["Laleesha Wijeratne"],
-  "BI Team": ["Bihani Madushika", "Modhuka Paranagama"],
-  "Platform & Engineering Team": ["Hasala Jayasuriya", "Thushan Fernando"],
-  "CRM Team": ["Adam Burdeshaw", "Chathuranga Weerakoon", "Dr. Yashoda Velananda", "Muhammad Usman"],
+  "Site Content Team": ["Kunchana Prabashwara", "Ramez Sedra"],
+  "BI Team": ["Modhuka Paranagama"],
+  "Platform & Engineering Team": ["Hasala Jayasuriya", "Thushan Fernando", "Upeksha Liyanage"],
+  "CRM Team": ["Chathuranga Weerakoon", "Muhammad Usman"],
+  "DP - Leads": ["Adam Burdeshaw", "Bihani Madushika", "Dr. Yashoda Velananda", "Laleesha Wijeratne", "Shehara Meadows"],
 };
 // ============================================================================
 // END DATA BLOCK
@@ -94,14 +95,14 @@ const checkStatus = (metric, value) => {
   return 'green';
 };
 
-// Compute flags from SLA thresholds — covers all 6 metrics shown in the heatmap table
+// Compute flags from SLA thresholds — 5 metrics shown in heatmap table
+// Manual % is excluded (not displayed in heatmap, not counted in flags)
 // orange (hours ≥200) counts as red/orange flag
 const computeFlags = (m) => {
   const statuses = [
     checkStatus('activity',  m.activityPercent),
     checkStatus('hours',     m.totalHours),
     checkStatus('breakPct',  m.breakPercent),
-    checkStatus('manualPct', m.manualPercent),
     checkStatus('low20Pct',  m.low20Percent),
     checkStatus('low30Pct',  m.low30Percent),
   ];
