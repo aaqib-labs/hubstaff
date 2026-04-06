@@ -31,10 +31,10 @@ Converts raw Hubstaff time-tracking CSV exports into standalone, interactive HTM
 
 | Department | File Slug | Template |
 |---|---|---|
-| Task Agency | `task-agency` | `dashboard-template.html` (3 tabs: Overview / Heatmap / Comparisons) |
-| allintalent | `allintalent` | `dashboard-template.html` (3 tabs: Overview / Heatmap / Comparisons) |
+| Task Agency | `task-agency` | `template-2tab.html` (2 tabs: Overview / Heatmap) |
+| allintalent | `allintalent` | `template-2tab.html` (2 tabs: Overview / Heatmap) |
 | Digital Product | `digital-product` | `template-3tab.html` (3 tabs: Overview / Heatmap / Team Analytics — has sub-teams) |
-| Media | `media` | `dashboard-template.html` (3 tabs: Overview / Heatmap / Comparisons) |
+| Media | `media` | `template-2tab.html` (2 tabs: Overview / Heatmap) |
 | Marketing + Media | `marketing-media` | `template-2tab.html` (2 tabs: Overview / Heatmap) |
 | Venia Products | `venia-products` | `template-3tab.html` (3 tabs: Overview / Heatmap / Team Analytics — has sub-teams) |
 
