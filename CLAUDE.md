@@ -31,12 +31,12 @@ Converts raw Hubstaff time-tracking CSV exports into standalone, interactive HTM
 
 | Department | File Slug | Template |
 |---|---|---|
-| Task Agency | `task-agency` | single-tab |
-| allintalent | `allintalent` | single-tab |
-| Digital Product | `digital-product` | 3-tab (has sub-teams) |
-| Media | `media` | single-tab |
-| Marketing + Media | `marketing-media` | 2-tab |
-| Venia Products | `venia-products` | 3-tab (has sub-teams) |
+| Task Agency | `task-agency` | `dashboard-template.html` (3 tabs: Overview / Heatmap / Comparisons) |
+| allintalent | `allintalent` | `dashboard-template.html` (3 tabs: Overview / Heatmap / Comparisons) |
+| Digital Product | `digital-product` | `template-3tab.html` (3 tabs: Overview / Heatmap / Team Analytics — has sub-teams) |
+| Media | `media` | `dashboard-template.html` (3 tabs: Overview / Heatmap / Comparisons) |
+| Marketing + Media | `marketing-media` | `template-2tab.html` (2 tabs: Overview / Heatmap) |
+| Venia Products | `venia-products` | `template-3tab.html` (3 tabs: Overview / Heatmap / Team Analytics — has sub-teams) |
 
 **File naming convention:** `{slug}-YYYY-MM.html` — e.g. `task-agency-2026-03.html`
 
@@ -102,6 +102,16 @@ The data block in each dashboard is marked with:
 - **Font:** DM Sans + DM Mono (Google Fonts)
 - **No build step** — files open directly in a browser or are served as static files
 - **No backend** — everything is embedded in the HTML file
+
+---
+
+## Template Guide
+
+| Template file | Tabs | When to use |
+|---|---|---|
+| `dashboard-template.html` | 3 (Overview / Heatmap / Comparisons) | Departments with no sub-teams |
+| `template-2tab.html` | 2 (Overview / Heatmap) | Departments that only need two views |
+| `template-3tab.html` | 3 (Overview / Heatmap / Team Analytics) | Departments with sub-teams |
 
 ---
 
