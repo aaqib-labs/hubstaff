@@ -71,7 +71,7 @@ Raw file location: `data/YYYY-MM-master.csv`
 | Metric | Red | Yellow | Orange |
 |---|---|---|---|
 | Activity % | < 35% | < 45% | — |
-| Total Hours | < 130 hrs | < 150 hrs | ≥ 200 hrs |
+| Total Hours | < 160 hrs | — | ≥ 200 hrs |
 | Break % | ≥ 12% | ≥ 10% | — |
 | Manual % | ≥ 10% | ≥ 5% | — |
 | Low Activity ≤20% | ≥ 15% | ≥ 7.5% | — |
