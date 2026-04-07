@@ -272,9 +272,10 @@ print(f"Saved {len(df)} members → {out_path}")
 2. **Extract department data** — Use Python to filter rows by `Team(s)` column for each department
 3. **Pick the right template** — See template column in the department table above
 4. **Populate the dashboard** — Copy the template, embed the JSON data in the `DATA BLOCK` section, fill in month/year/member counts
-5. **Save to `dashboards/{slug}/`** — e.g. `dashboards/task-agency/task-agency-2026-03.html`
-6. **Update the department hub page** (e.g. `hubs/task-agency.html`) — add a new card at the top as "Latest Report", move the old latest to "Previous Reports"; set back nav href in the new dashboard to `../../hubs/{slug}.html`
-7. **Commit and push** — Use descriptive commit messages; credit Claude as co-author
+5. **Replace all template placeholders** — `{{DEPT}}`, `{{MONTH}}`, `{{YEAR}}`, and **`{{DEPT_HUB_LINK}}`** (e.g. `../../hubs/task-agency.html`). The `{{DEPT_HUB_LINK}}` powers the back nav bar — if left unfilled it will be a broken link.
+6. **Save to `dashboards/{slug}/`** — e.g. `dashboards/task-agency/task-agency-2026-03.html`
+7. **Update the department hub page** (`hubs/{slug}.html`) — promote the new month to "Latest Report", move the previous latest down to "Previous Reports"; update the `index.html` card-meta months line (e.g. `Jan · Feb · Mar · Apr 2026`)
+8. **Commit and push** — Use descriptive commit messages; credit Claude as co-author
 
 The data block in each dashboard is marked with:
 ```
