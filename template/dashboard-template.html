@@ -53,6 +53,12 @@
 </style>
 </head>
 <body>
+<nav style="background:#1a1d23;border-bottom:1px solid #2d3748;padding:11px 24px;display:flex;align-items:center;font-family:'DM Sans',sans-serif;position:sticky;top:0;z-index:999;">
+  <a href="{{DEPT_HUB_LINK}}" style="display:inline-flex;align-items:center;gap:6px;color:#a0aec0;text-decoration:none;font-size:13px;font-weight:500;transition:color 0.15s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#a0aec0'">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+    {{DEPT}}
+  </a>
+</nav>
 <div id="root"></div>
 <script type="text/babel">
 const { useState, useMemo } = React;
@@ -78,7 +84,7 @@ const data = [
 // ============================================================================
 const SLA = {
   activity:    { red: 35, yellow: 45 },
-  hours:       { red: 130, yellow: 150, orange: 190 },
+  hours:       { red: 160, orange: 200 },
   breakPct:    { red: 12, yellow: 10 },
   manualPct:   { red: 10, yellow: 5 },
   low20Pct:    { red: 15, yellow: 7.5 },
@@ -194,8 +200,8 @@ const Dashboard = () => {
     },
     hours: {
       title: 'Total Worked Hours',
-      red:    { label: 'Red Violation (Critical)', desc: '< 130 hours', threshold: '< 130h' },
-      yellow: { label: 'Yellow Warning', desc: '130–150 hours', threshold: '130–150h' },
+      red:    { label: 'Red Violation (Critical)', desc: '< 160 hours', threshold: '< 160h' },
+      orange: { label: 'Orange Flag (Overwork)', desc: '≥ 200 hours', threshold: '≥ 200h' },
       how: 'Total hours tracked during the month. For full-time team members, expected range is 160–190 hours per month.',
     },
     break: {
@@ -258,14 +264,13 @@ const Dashboard = () => {
         <div className="fade-in">
 
           {/* ── Section 1: Team Overview Summary ── */}
-          <details open style={{marginBottom:12}}>
-            <summary className="section-header" style={{background:'linear-gradient(135deg,#ebf8ff,#e6fffa)'}}>
+          <div style={{marginBottom:12}}>
+            <div className="section-header" style={{background:'linear-gradient(135deg,#ebf8ff,#e6fffa)', cursor:'default'}}>
               <div style={{display:'flex',alignItems:'center',gap:12}}>
                 <div style={{width:36,height:36,borderRadius:8,background:'#3182ce',display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:16}}>📋</div>
                 <span style={{fontWeight:700,fontSize:16,color:'#2c5282'}}>1. Team Overview Summary</span>
               </div>
-              <svg className="chevron" width="20" height="20" fill="none" stroke="#718096" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-            </summary>
+            </div>
             <div style={{padding:'16px 0 4px'}}>
 
               {/* 6 KPI tiles */}
@@ -273,7 +278,7 @@ const Dashboard = () => {
                 {[
                   { label:'Total Members',      value: n,                              color:'#3182ce',                                                              sub:'' },
                   { label:'Average Activity %', value: avgActivity.toFixed(1)+'%',     color: avgActivity<35?'#e53e3e':avgActivity<45?'#d69e2e':'#38a169',          sub:'Target ≥45%' },
-                  { label:'Avg Hours Logged',   value: avgHours.toFixed(1),            color: avgHours<130?'#e53e3e':avgHours<150?'#d69e2e':'#38a169',               sub:'Target 160–190' },
+                  { label:'Avg Hours Logged',   value: avgHours.toFixed(1),            color: avgHours<160?'#e53e3e':'#38a169',               sub:'Target 160–190h' },
                   { label:'Total Red Flags',    value: totalRedFlags,                  color: totalRedFlags>0?'#e53e3e':'#38a169',                                   sub:'Critical' },
                   { label:'Total Yellow Flags', value: totalYellowFlags,               color: totalYellowFlags>0?'#d69e2e':'#38a169',                                sub:'Monitor' },
                   { label:'Total Flags',        value: totalAllFlags,                  color: totalAllFlags>0?'#718096':'#38a169',                                   sub:'All violations' },
@@ -296,14 +301,13 @@ const Dashboard = () => {
           </div>
 
           {/* ── Section 2: Notable Achievements ── */}
-          <details style={{marginBottom:12}}>
-            <summary className="section-header" style={{background:'linear-gradient(135deg,#f0fff4,#e6fffa)'}}>
+          <div style={{marginBottom:12}}>
+            <div className="section-header" style={{background:'linear-gradient(135deg,#f0fff4,#e6fffa)', cursor:'default'}}>
               <div style={{display:'flex',alignItems:'center',gap:12}}>
                 <div style={{width:36,height:36,borderRadius:8,background:'#38a169',display:'flex',alignItems:'center',justifyContent:'center',color:'white',fontSize:16}}>🌟</div>
                 <span style={{fontWeight:700,fontSize:16,color:'#276749'}}>2. Notable Achievements</span>
               </div>
-              <svg className="chevron" width="20" height="20" fill="none" stroke="#718096" strokeWidth="2" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg>
-            </summary>
+            </div>
             <div style={{padding:'16px 0 4px'}}>
 
               {/* Top Activity + Most Hours side-by-side */}
