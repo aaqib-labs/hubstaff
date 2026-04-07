@@ -24,8 +24,6 @@
     --text: #1a1d23; --text-muted: #718096;
     --border: #e2e8f0;
   }
-  details > summary { list-style: none; }
-  details > summary::-webkit-details-marker { display: none; }
   .tab-btn { cursor: pointer; border: none; font-family: 'DM Sans', sans-serif; font-weight: 600; font-size: 14px; transition: all 0.2s; }
   .tab-btn:focus { outline: none; }
   @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
@@ -49,8 +47,6 @@
   .cell-green { background: #f0fff4; color: #276749; border: 1px solid #9ae6b4; }
   .cell-orange { background: #fffaf0; color: #c05621; border: 1px solid #fbd38d; }
   .section-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 18px; border-radius: 10px; cursor: pointer; user-select: none; transition: background 0.15s; }
-  .chevron { transition: transform 0.2s; }
-  details[open] .chevron { transform: rotate(180deg); }
   .insight-card { background: var(--card); border-radius: 10px; padding: 18px; border: 1px solid var(--border); }
   .insight-item { display: flex; align-items: flex-start; gap: 8px; padding: 6px 0; font-size: 13.5px; line-height: 1.5; }
   .header-bar { background: linear-gradient(135deg, #1a1d23 0%, #2d3748 100%); color: white; padding: 24px 28px; border-radius: 14px; margin-bottom: 24px; }
@@ -375,7 +371,7 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
-          </details>
+          </div>
 
           {/* ── Section 2: Notable Achievements ── */}
           <details style={{marginBottom:12}}>
@@ -421,7 +417,7 @@ const Dashboard = () => {
                 </div>
               </div>
             </div>
-          </details>
+          </div>
 
         </div>
       )}
@@ -454,7 +450,7 @@ const Dashboard = () => {
                   <div>🟡 <strong>Yellow Warning:</strong> &lt; 45% activity → Low engagement that warrants attention but is not critically low. Needs monitoring.</div>
                   <div><strong>Expected Range:</strong> Varies by role and department expectations.</div>
                 </div>
-              </details>
+              </div>
 
               {/* METRIC H — Total Worked Hours */}
               <details>
@@ -474,7 +470,7 @@ const Dashboard = () => {
                   <div>🟠 <strong>Orange Flag (Investigation Required):</strong> ≥ 200 hours → Exceeding reasonable monthly hours. May indicate workload issues, inefficiency, or time tracking misuse.</div>
                   <div><strong>Target Range:</strong> 160–190 hours per month.</div>
                 </div>
-              </details>
+              </div>
 
               {/* METRIC B — Total Break Time */}
               <details>
@@ -493,7 +489,7 @@ const Dashboard = () => {
                   <div>🟡 <strong>Yellow Warning:</strong> &gt; 10% and &lt; 12% of Total Worked Hours → Higher than target break time. Not critical but needs attention.</div>
                   <div><strong>Target:</strong> &lt; 10% of total worked hours.</div>
                 </div>
-              </details>
+              </div>
 
               {/* METRIC M — Total Manual Hours */}
               <details>
@@ -512,7 +508,7 @@ const Dashboard = () => {
                   <div>🟡 <strong>Yellow Warning:</strong> ≥ 5% of Total Worked Hours → High manual entry that should be monitored. May indicate technical issues or policy non-compliance.</div>
                   <div><strong>Expected Range:</strong> Minimal — most time should be automatically tracked.</div>
                 </div>
-              </details>
+              </div>
 
               {/* METRIC 20 — Low Activity Hours ≤20% */}
               <details>
@@ -530,7 +526,7 @@ const Dashboard = () => {
                   <div>🔴 <strong>Red Violation (Critical):</strong> ≥ 15% of Total Worked Hours → Excessive very low activity requiring intervention. Indicates significant productivity concerns.</div>
                   <div>🟡 <strong>Yellow Warning:</strong> ≥ 7.5% of Total Worked Hours → Higher than ideal very low activity. Should be investigated.</div>
                 </div>
-              </details>
+              </div>
 
               {/* METRIC 30 — Low Activity Hours ≤30% */}
               <details>
@@ -548,7 +544,7 @@ const Dashboard = () => {
                   <div>🔴 <strong>Red Violation (Critical):</strong> ≥ 20% of Total Worked Hours → Excessive low activity indicating potential productivity issues. Requires investigation.</div>
                   <div>🟡 <strong>Yellow Warning:</strong> ≥ 10% of Total Worked Hours → Moderate low activity levels. May require context before escalation.</div>
                 </div>
-              </details>
+              </div>
 
             </div>
           </div>
