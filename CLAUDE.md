@@ -22,7 +22,12 @@ Converts raw Hubstaff time-tracking CSV exports into standalone, interactive HTM
 │   ├── template-2tab.html      → Two-tab dashboard
 │   └── template-3tab.html      → Three-tab dashboard (e.g. Digital Product, Venia)
 └── dashboards/
-    └── dept-YYYY-MM.html       → Generated dashboard files
+    ├── task-agency/            → Task Agency dashboards
+    ├── allintalent/            → allintalent dashboards
+    ├── digital-product/        → Digital Product dashboards
+    ├── media/                  → Media dashboards
+    ├── marketing-media/        → Marketing + Media dashboards
+    └── venia-products/         → Venia Products dashboards
 ```
 
 ---
@@ -260,8 +265,8 @@ print(f"Saved {len(df)} members → {out_path}")
 2. **Extract department data** — Use Python to filter rows by `Team(s)` column for each department
 3. **Pick the right template** — See template column in the department table above
 4. **Populate the dashboard** — Copy the template, embed the JSON data in the `DATA BLOCK` section, fill in month/year/member counts
-5. **Save to `dashboards/`** — Use the correct naming convention
-6. **Update `index.html`** — Add a new card for each dashboard in the correct month group
+5. **Save to `dashboards/{slug}/`** — e.g. `dashboards/task-agency/task-agency-2026-03.html`
+6. **Update the department hub page** (e.g. `task-agency.html`) — add a new card; update the back nav href in the new dashboard to `../../{slug}.html`
 7. **Commit and push** — Use descriptive commit messages; credit Claude as co-author
 
 The data block in each dashboard is marked with:

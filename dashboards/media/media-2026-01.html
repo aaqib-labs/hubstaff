@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Digital Product – January 2026 Performance Dashboard</title>
+<title>Media – January 2026 Performance Dashboard</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prop-types/15.8.1/prop-types.min.js"></script>
@@ -54,9 +54,9 @@
 </head>
 <body>
 <nav style="background:#1a1d23;border-bottom:1px solid #2d3748;padding:11px 24px;display:flex;align-items:center;font-family:'DM Sans',sans-serif;position:sticky;top:0;z-index:999;">
-  <a href="../digital-product.html" style="display:inline-flex;align-items:center;gap:6px;color:#a0aec0;text-decoration:none;font-size:13px;font-weight:500;transition:color 0.15s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#a0aec0'">
+  <a href="../../media.html" style="display:inline-flex;align-items:center;gap:6px;color:#a0aec0;text-decoration:none;font-size:13px;font-weight:500;transition:color 0.15s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#a0aec0'">
     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-    Digital Product
+    Media
   </a>
 </nav>
 <div id="root"></div>
@@ -65,39 +65,24 @@ const { useState, useMemo } = React;
 const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, ReferenceLine } = Recharts;
 
 // ============================================================================
-// DATA — {{DEPT}}, {{MONTH}} {{YEAR}}
+// DATA — Media, January 2026
 // !! THIS BLOCK IS AUTO-POPULATED BY CLAUDE EACH MONTH — DO NOT EDIT MANUALLY !!
 // ============================================================================
 const MONTH = "January";
 const YEAR  = "2026";
-const DEPT  = "Digital Product";
+const DEPT  = "Media";
 
 const data = [
-  { member: "Adam Burdeshaw", activityPercent: 59, totalHours: 187.4, breakPercent: 6.3, manualPercent: 3.6, low20Percent: 0.0, low30Percent: 2.6, redFlags: 0, yellowFlags: 0, totalFlags: 0 },
-  { member: "Bihani Madushika", activityPercent: 52, totalHours: 186.2, breakPercent: 8.6, manualPercent: 0.6, low20Percent: 0.0, low30Percent: 1.1, redFlags: 0, yellowFlags: 0, totalFlags: 0 },
-  { member: "Chathuranga Weerakoon", activityPercent: 53, totalHours: 175.8, breakPercent: 8.3, manualPercent: 0.0, low20Percent: 1.0, low30Percent: 2.2, redFlags: 0, yellowFlags: 0, totalFlags: 0 },
-  { member: "Dilini Pathirana", activityPercent: 48, totalHours: 180.6, breakPercent: 8.9, manualPercent: 0.3, low20Percent: 0.0, low30Percent: 2.1, redFlags: 0, yellowFlags: 0, totalFlags: 0 },
-  { member: "Dr. Yashoda Velananda", activityPercent: 44, totalHours: 172.8, breakPercent: 7.7, manualPercent: 0.0, low20Percent: 1.9, low30Percent: 15.2, redFlags: 0, yellowFlags: 2, totalFlags: 2 },
-  { member: "Hasala Jayasuriya", activityPercent: 55, totalHours: 193.1, breakPercent: 8.1, manualPercent: 0.0, low20Percent: 0.6, low30Percent: 0.7, redFlags: 0, yellowFlags: 0, totalFlags: 0 },
-  { member: "Kunchana Prabashwara", activityPercent: 72, totalHours: 199.8, breakPercent: 8.3, manualPercent: 0.0, low20Percent: 0.1, low30Percent: 0.1, redFlags: 0, yellowFlags: 0, totalFlags: 0 },
-  { member: "Laleesha Wijeratne", activityPercent: 53, totalHours: 173.6, breakPercent: 8.4, manualPercent: 0.7, low20Percent: 0.3, low30Percent: 3.9, redFlags: 0, yellowFlags: 0, totalFlags: 0 },
-  { member: "Mahesh Rajapakse", activityPercent: 34, totalHours: 93.7, breakPercent: 8.9, manualPercent: 0.0, low20Percent: 1.0, low30Percent: 33.0, redFlags: 2, yellowFlags: 1, totalFlags: 3 },
-  { member: "Modhuka Paranagama", activityPercent: 60, totalHours: 174.3, breakPercent: 8.3, manualPercent: 0.6, low20Percent: 0.9, low30Percent: 4.0, redFlags: 0, yellowFlags: 0, totalFlags: 0 },
-  { member: "Muhammad Usman", activityPercent: 56, totalHours: 169.5, breakPercent: 8.4, manualPercent: 0.0, low20Percent: 0.0, low30Percent: 0.0, redFlags: 0, yellowFlags: 0, totalFlags: 0 },
-  { member: "Ramez Sedra", activityPercent: 57, totalHours: 170.0, breakPercent: 7.3, manualPercent: 0.2, low20Percent: 3.2, low30Percent: 5.8, redFlags: 0, yellowFlags: 0, totalFlags: 0 },
-  { member: "Shehara Meadows", activityPercent: 42, totalHours: 170.6, breakPercent: 9.4, manualPercent: 0.0, low20Percent: 8.3, low30Percent: 13.2, redFlags: 0, yellowFlags: 3, totalFlags: 3 },
-  { member: "Thushan Fernando", activityPercent: 52, totalHours: 199.8, breakPercent: 8.5, manualPercent: 0.2, low20Percent: 4.6, low30Percent: 10.2, redFlags: 0, yellowFlags: 1, totalFlags: 1 },
+  { member: "Anna May Rubia", activityPercent: 45, totalHours: 177.0, breakPercent: 9.3, manualPercent: 0.0, low20Percent: 2.0, low30Percent: 11.4, redFlags: 0, yellowFlags: 1, totalFlags: 1 },
+  { member: "Brayden Robinson", activityPercent: 51, totalHours: 144.3, breakPercent: 0.6, manualPercent: 1.6, low20Percent: 0.0, low30Percent: 0.5, redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Farshad Ramsee", activityPercent: 68, totalHours: 197.4, breakPercent: 9.4, manualPercent: 0.0, low20Percent: 0.6, low30Percent: 1.0, redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Fred Butson", activityPercent: 48, totalHours: 210.3, breakPercent: 3.6, manualPercent: 0.2, low20Percent: 1.2, low30Percent: 3.4, redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Kawya Samarasinghe", activityPercent: 63, totalHours: 184.7, breakPercent: 9.6, manualPercent: 0.0, low20Percent: 2.1, low30Percent: 4.4, redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Rannie Belen", activityPercent: 64, totalHours: 161.9, breakPercent: 2.2, manualPercent: 0.0, low20Percent: 0.0, low30Percent: 0.0, redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Ransika Kalutharage", activityPercent: 50, totalHours: 188.0, breakPercent: 8.0, manualPercent: 0.0, low20Percent: 0.0, low30Percent: 1.2, redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Rishonath Siva", activityPercent: 49, totalHours: 162.6, breakPercent: 9.1, manualPercent: 0.0, low20Percent: 0.0, low30Percent: 2.4, redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "sanjula paulis", activityPercent: 51, totalHours: 199.7, breakPercent: 7.6, manualPercent: 1.6, low20Percent: 2.3, low30Percent: 3.8, redFlags: 0, yellowFlags: 0, totalFlags: 0 },
 ];
-
-// Team sub-categories for Tab 3: Team Analytics
-const TEAM_CATEGORIES = {
-  "Site Content": ["Kunchana Prabashwara", "Ramez Sedra", "Shehara Meadows"],
-  "BI & Data": ["Bihani Madushika", "Dilini Pathirana", "Modhuka Paranagama"],
-  "Platform & Engineering": ["Hasala Jayasuriya", "Mahesh Rajapakse", "Thushan Fernando"],
-  "CRM": ["Adam Burdeshaw", "Chathuranga Weerakoon", "Dr. Yashoda Velananda", "Muhammad Usman"],
-  "Catalog": ["Laleesha Wijeratne"],
-  "DP - Leads": ["Adam Burdeshaw", "Bihani Madushika", "Dr. Yashoda Velananda", "Laleesha Wijeratne", "Shehara Meadows"]
-};
 // ============================================================================
 // END DATA BLOCK
 // ============================================================================
@@ -171,7 +156,6 @@ const Dashboard = () => {
   const [tab, setTab] = useState(1);
   const [sortKey, setSortKey] = useState(null);
   const [sortDir, setSortDir] = useState('asc');
-  const [selectedTeam, setSelectedTeam] = useState(Object.keys(TEAM_CATEGORIES)[0]);
 
   const sortedData = useMemo(() => {
     if (!sortKey) return data;
@@ -236,7 +220,6 @@ const Dashboard = () => {
       <div style={{display:'flex',gap:8,marginBottom:20,background:'white',padding:10,borderRadius:10,border:'1px solid #e2e8f0',flexWrap:'wrap'}}>
         <button className="tab-btn" style={tabStyle(1,'#3182ce')} onClick={() => setTab(1)}>📊 Team Overview</button>
         <button className="tab-btn" style={tabStyle(2,'#6b46c1')} onClick={() => setTab(2)}>🌡️ SLA Heatmap</button>
-        <button className="tab-btn" style={tabStyle(3,'#38a169')} onClick={() => setTab(3)}>📈 Team Analytics</button>
       </div>
 
       {/* ── TAB 1: TEAM OVERVIEW ── */}
@@ -563,199 +546,6 @@ const Dashboard = () => {
               ))}
             </div>
           </div>
-        </div>
-      )}
-
-      {/* ── TAB 3: TEAM ANALYTICS ── */}
-      {tab === 3 && (
-        <div className="fade-in" style={{display:'flex',flexDirection:'column',gap:16}}>
-
-          {/* Sub-Team Selector */}
-          <div style={{background:'white',borderRadius:12,padding:20,border:'1px solid #e2e8f0'}}>
-            <div style={{fontWeight:700,fontSize:14,color:'#4a5568',marginBottom:12}}>Select Sub-Team to Analyse:</div>
-            <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(160px,1fr))',gap:10}}>
-              {Object.keys(TEAM_CATEGORIES).map(teamName => (
-                <button
-                  key={teamName}
-                  className="tab-btn"
-                  onClick={() => setSelectedTeam(teamName)}
-                  style={{
-                    padding:'10px 14px',
-                    borderRadius:8,
-                    background: selectedTeam === teamName ? 'linear-gradient(135deg,#38a169,#2f855a)' : '#edf2f7',
-                    color: selectedTeam === teamName ? 'white' : '#4a5568',
-                    fontSize:13,
-                    fontWeight:600,
-                    boxShadow: selectedTeam === teamName ? '0 4px 12px rgba(0,0,0,0.15)' : 'none',
-                    transform: selectedTeam === teamName ? 'translateY(-1px)' : 'none',
-                    textAlign:'left',
-                    lineHeight:1.4,
-                  }}
-                >
-                  {teamName}
-                  <span style={{display:'block',fontSize:11,opacity:0.8,marginTop:2}}>
-                    ({TEAM_CATEGORIES[teamName].length} member{TEAM_CATEGORIES[teamName].length !== 1 ? 's' : ''})
-                  </span>
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Analytics for Selected Sub-Team */}
-          {(() => {
-            const teamMembers = data.filter(m => TEAM_CATEGORIES[selectedTeam].includes(m.member));
-
-            if (teamMembers.length === 0) {
-              return (
-                <div style={{background:'white',borderRadius:12,padding:24,border:'1px solid #e2e8f0',color:'#718096',textAlign:'center'}}>
-                  No data available for this sub-team.
-                </div>
-              );
-            }
-
-            const tAvgActivity  = teamMembers.reduce((s,m) => s + m.activityPercent, 0) / teamMembers.length;
-            const tMaxActivity  = Math.max(...teamMembers.map(m => m.activityPercent));
-            const tMinActivity  = Math.min(...teamMembers.map(m => m.activityPercent));
-            const tAvgHours     = teamMembers.reduce((s,m) => s + m.totalHours, 0) / teamMembers.length;
-            const tMaxHours     = Math.max(...teamMembers.map(m => m.totalHours));
-            const tMinHours     = Math.min(...teamMembers.map(m => m.totalHours));
-            const tAvgBreak     = teamMembers.reduce((s,m) => s + m.breakPercent, 0) / teamMembers.length;
-            const tMaxBreak     = Math.max(...teamMembers.map(m => m.breakPercent));
-            const tMinBreak     = Math.min(...teamMembers.map(m => m.breakPercent));
-            const tAvgLow30     = teamMembers.reduce((s,m) => s + m.low30Percent, 0) / teamMembers.length;
-            const tMaxLow30     = Math.max(...teamMembers.map(m => m.low30Percent));
-            const tTotalRed     = teamMembers.reduce((s,m) => s + m.redFlags, 0);
-            const tTotalYellow  = teamMembers.reduce((s,m) => s + m.yellowFlags, 0);
-            const tWithFlags    = teamMembers.filter(m => m.totalFlags > 0).length;
-
-            const tHighActivity = teamMembers.reduce((a,b) => a.activityPercent > b.activityPercent ? a : b);
-            const tLowActivity  = teamMembers.reduce((a,b) => a.activityPercent < b.activityPercent ? a : b);
-            const tMostHours    = teamMembers.reduce((a,b) => a.totalHours > b.totalHours ? a : b);
-            const tLeastHours   = teamMembers.reduce((a,b) => a.totalHours < b.totalHours ? a : b);
-            const tHighBreak    = teamMembers.reduce((a,b) => a.breakPercent > b.breakPercent ? a : b);
-            const tHighLow30    = teamMembers.reduce((a,b) => a.low30Percent > b.low30Percent ? a : b);
-
-            return (
-              <>
-                {/* Summary Card */}
-                <div style={{background:'linear-gradient(135deg,#f0fff4,#ebf8ff)',borderRadius:12,padding:20,border:'1px solid #9ae6b4'}}>
-                  <div style={{fontWeight:700,fontSize:16,color:'#276749',marginBottom:8}}>{selectedTeam} — Performance Summary</div>
-                  <p style={{fontSize:13,color:'#4a5568',marginBottom:16}}>
-                    Analysis of {teamMembers.length} member{teamMembers.length !== 1 ? 's' : ''} in {selectedTeam} during {MONTH} {YEAR}.
-                  </p>
-                  <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(120px,1fr))',gap:10}}>
-                    {[
-                      {label:'Members',      val:teamMembers.length,           color:'#3182ce'},
-                      {label:'Avg Activity', val:tAvgActivity.toFixed(1)+'%',  color:tAvgActivity<35?'#e53e3e':tAvgActivity<45?'#d69e2e':'#38a169'},
-                      {label:'Avg Hours',    val:tAvgHours.toFixed(1),         color:tAvgHours<130?'#e53e3e':tAvgHours<150?'#d69e2e':'#38a169'},
-                      {label:'Red Flags',    val:tTotalRed,                    color:tTotalRed>0?'#e53e3e':'#38a169'},
-                      {label:'Yellow Flags', val:tTotalYellow,                 color:tTotalYellow>0?'#d69e2e':'#38a169'},
-                    ].map((k,i) => (
-                      <div key={i} style={{background:'white',borderRadius:8,padding:12,textAlign:'center',border:'1px solid #e2e8f0'}}>
-                        <div style={{fontSize:11,color:'#718096',fontWeight:600,textTransform:'uppercase',letterSpacing:'0.04em',marginBottom:4}}>{k.label}</div>
-                        <div style={{fontSize:22,fontWeight:700,color:k.color}}>{k.val}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Member Metrics Table */}
-                <div style={{background:'white',borderRadius:12,padding:20,border:'1px solid #e2e8f0',overflowX:'auto'}}>
-                  <div style={{fontWeight:700,fontSize:15,marginBottom:12,color:'#1a1d23'}}>Individual Member Metrics</div>
-                  <table className="metric-table">
-                    <thead>
-                      <tr>
-                        <th>Member</th>
-                        <th>Activity %</th>
-                        <th>Total Hours</th>
-                        <th>Break %</th>
-                        <th>Low ≤20%</th>
-                        <th>Low ≤30%</th>
-                        <th>Flags</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {[...teamMembers].sort((a,b) => b.activityPercent - a.activityPercent).map((m,i) => (
-                        <tr key={i} style={{background:m.totalFlags>0?'#fff5f5':'white'}}>
-                          <td style={{fontWeight:600,fontSize:13,whiteSpace:'nowrap'}}>{m.member}</td>
-                          <td><HeatCell metric="activity" value={m.activityPercent} fmt={v=>v+'%'}/></td>
-                          <td><HeatCell metric="hours" value={m.totalHours} fmt={v=>v+' hrs'}/></td>
-                          <td><HeatCell metric="breakPct" value={m.breakPercent} fmt={v=>v+'%'}/></td>
-                          <td><HeatCell metric="low20Pct" value={m.low20Percent} fmt={v=>v+'%'}/></td>
-                          <td><HeatCell metric="low30Pct" value={m.low30Percent} fmt={v=>v+'%'}/></td>
-                          <td>
-                            {m.totalFlags === 0
-                              ? <span className="pill pill-green">✅ Clean</span>
-                              : <div style={{display:'flex',gap:4,flexWrap:'wrap'}}>
-                                  {m.redFlags>0 && <span className="pill pill-red">🔴{m.redFlags}</span>}
-                                  {m.yellowFlags>0 && <span className="pill pill-yellow">⚠️{m.yellowFlags}</span>}
-                                </div>
-                            }
-                          </td>
-                        </tr>
-                      ))}
-                    </tbody>
-                  </table>
-                </div>
-
-                {/* Analysis Grid */}
-                <div style={{display:'grid',gridTemplateColumns:'1fr 1fr',gap:16}}>
-
-                  <div className="insight-card" style={{borderTop:'3px solid #3182ce'}}>
-                    <div style={{fontWeight:700,fontSize:13,marginBottom:10,color:'#3182ce'}}>Activity Performance</div>
-                    <div className="insight-item"><span>📈</span><span>Avg activity: <strong>{tAvgActivity.toFixed(1)}%</strong> — {tAvgActivity>=45?'within target.':tAvgActivity>=35?'below 45% target. Coaching recommended.':'below 35% critical threshold.'}</span></div>
-                    <div className="insight-item"><span>🏆</span><span><strong>{tHighActivity.member}</strong> leads at <strong>{tHighActivity.activityPercent}%</strong>.</span></div>
-                    <div className="insight-item"><span>📉</span><span><strong>{tLowActivity.member}</strong> lowest at <strong>{tLowActivity.activityPercent}%</strong>{tLowActivity.activityPercent<35?' — 🔴 red flag.':tLowActivity.activityPercent<45?' — ⚠️ yellow warning.':''}.</span></div>
-                    {(tMaxActivity - tMinActivity) > 30
-                      ? <div className="insight-item"><span>⚠️</span><span style={{color:'#c53030'}}><strong>{tMaxActivity - tMinActivity}%</strong> gap — significant variation worth investigating.</span></div>
-                      : <div className="insight-item"><span>✅</span><span style={{color:'#276749'}}>Only <strong>{tMaxActivity - tMinActivity}%</strong> variation — consistent engagement.</span></div>
-                    }
-                  </div>
-
-                  <div className="insight-card" style={{borderTop:'3px solid #6b46c1'}}>
-                    <div style={{fontWeight:700,fontSize:13,marginBottom:10,color:'#6b46c1'}}>Hours &amp; Availability</div>
-                    <div className="insight-item"><span>📊</span><span>Avg hours: <strong>{tAvgHours.toFixed(1)} hrs</strong>{tAvgHours>=160&&tAvgHours<190?' — on target (160–190).':tAvgHours>=190?' — above 190hr threshold.':' — below target.'}</span></div>
-                    <div className="insight-item"><span>⬆️</span><span><strong>{tMostHours.member}</strong> logged most at <strong>{tMostHours.totalHours} hrs</strong>{tMostHours.totalHours>=190?' (🟠 overwork flag)':''}.</span></div>
-                    <div className="insight-item"><span>⬇️</span><span><strong>{tLeastHours.member}</strong> logged least at <strong>{tLeastHours.totalHours} hrs</strong>{tLeastHours.totalHours<130?' (🔴 red flag)':tLeastHours.totalHours<150?' (⚠️ warning)':''}.</span></div>
-                    {(tMaxHours - tMinHours) > 50
-                      ? <div className="insight-item"><span>⚠️</span><span style={{color:'#b7791f'}}><strong>{(tMaxHours - tMinHours).toFixed(0)}-hr</strong> range — notable availability variance.</span></div>
-                      : <div className="insight-item"><span>✅</span><span style={{color:'#276749'}}><strong>{(tMaxHours - tMinHours).toFixed(0)}-hr</strong> range — consistent availability.</span></div>
-                    }
-                  </div>
-
-                  <div className="insight-card" style={{borderTop:'3px solid #d69e2e'}}>
-                    <div style={{fontWeight:700,fontSize:13,marginBottom:10,color:'#d69e2e'}}>Break Time Patterns</div>
-                    <div className="insight-item"><span>{tAvgBreak>=12?'🔴':tAvgBreak>=10?'⚠️':'✅'}</span><span>Avg break: <strong>{tAvgBreak.toFixed(1)}%</strong> — {tAvgBreak<10?'healthy (< 10%).':tAvgBreak<12?'yellow zone (10–12%).':'exceeds red threshold (≥ 12%).'}</span></div>
-                    <div className="insight-item"><span>📌</span><span><strong>{tHighBreak.member}</strong> has highest break at <strong>{tHighBreak.breakPercent}%</strong>{tHighBreak.breakPercent>=12?' (🔴 red flag)':tHighBreak.breakPercent>=10?' (⚠️ yellow)':''}.</span></div>
-                    <div className="insight-item"><span>ℹ️</span><span>Range: <strong>{tMinBreak.toFixed(1)}%–{tMaxBreak.toFixed(1)}%</strong> across sub-team members.</span></div>
-                  </div>
-
-                  <div className="insight-card" style={{borderTop:'3px solid #dd6b20'}}>
-                    <div style={{fontWeight:700,fontSize:13,marginBottom:10,color:'#dd6b20'}}>Low Activity ≤30%</div>
-                    <div className="insight-item"><span>{tAvgLow30>=20?'🔴':tAvgLow30>=10?'⚠️':'✅'}</span><span>Avg low-activity: <strong>{tAvgLow30.toFixed(1)}%</strong> — {tAvgLow30<10?'healthy.':tAvgLow30<20?'yellow zone (10–20%).':'exceeds red (≥ 20%).'}</span></div>
-                    <div className="insight-item"><span>📌</span><span><strong>{tHighLow30.member}</strong> has highest at <strong>{tHighLow30.low30Percent}%</strong>{tHighLow30.low30Percent>=20?' (🔴 red)':tHighLow30.low30Percent>=10?' (⚠️ yellow)':''}.</span></div>
-                    <div className="insight-item"><span>ℹ️</span><span>Note: low activity may reflect meetings, reading, or legitimate non-keyboard work — apply role context.</span></div>
-                  </div>
-                </div>
-
-                {/* SLA Compliance */}
-                <div className="insight-card" style={{borderLeft:`4px solid ${tTotalRed>0?'#e53e3e':'#d69e2e'}`}}>
-                  <div style={{fontWeight:700,fontSize:15,marginBottom:12,color:'#1a1d23'}}>⚖️ SLA Compliance — {selectedTeam}</div>
-                  {tWithFlags === 0 ? (
-                    <div className="insight-item"><span>🎉</span><span style={{color:'#276749'}}><strong>Excellent!</strong> All {teamMembers.length} members meet all SLA requirements with zero flags.</span></div>
-                  ) : (
-                    <>
-                      <div className="insight-item"><span>📊</span><span><strong>{tWithFlags}</strong> of {teamMembers.length} members ({((tWithFlags/teamMembers.length)*100).toFixed(0)}%) have flags.</span></div>
-                      {tTotalRed > 0 && <div className="insight-item"><span>🔴</span><span style={{color:'#c53030'}}><strong>{tTotalRed} red flag{tTotalRed>1?'s':''}</strong> require immediate attention.</span></div>}
-                      {tTotalYellow > 0 && <div className="insight-item"><span>⚠️</span><span style={{color:'#b7791f'}}><strong>{tTotalYellow} yellow warning{tTotalYellow>1?'s':''}</strong> need monitoring.</span></div>}
-                      {(teamMembers.length - tWithFlags) > 0 && <div className="insight-item"><span>✅</span><span style={{color:'#276749'}}><strong>{teamMembers.length - tWithFlags}</strong> member{(teamMembers.length-tWithFlags)!==1?'s':''} fully compliant.</span></div>}
-                      {tWithFlags > teamMembers.length / 2 && <div className="insight-item"><span>❗</span><span style={{color:'#c53030'}}>Over half the sub-team has violations — consider targeted group review.</span></div>}
-                    </>
-                  )}
-                </div>
-              </>
-            );
-          })()}
         </div>
       )}
 

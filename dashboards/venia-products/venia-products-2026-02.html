@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Digital Product – February 2026 Performance Dashboard</title>
+<title>Venia Products – February 2026 Performance Dashboard</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prop-types/15.8.1/prop-types.min.js"></script>
@@ -25,9 +25,9 @@
 </head>
 <body>
 <nav style="background:#1a1d23;border-bottom:1px solid #2d3748;padding:11px 24px;display:flex;align-items:center;font-family:'DM Sans',sans-serif;position:sticky;top:0;z-index:999;">
-  <a href="../digital-product.html" style="display:inline-flex;align-items:center;gap:6px;color:#a0aec0;text-decoration:none;font-size:13px;font-weight:500;transition:color 0.15s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#a0aec0'">
+  <a href="../../venia-products.html" style="display:inline-flex;align-items:center;gap:6px;color:#a0aec0;text-decoration:none;font-size:13px;font-weight:500;transition:color 0.15s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#a0aec0'">
     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-    Digital Product
+    Venia Products
   </a>
 </nav>
 <div id="root"></div>
@@ -35,38 +35,56 @@
 const { useState, useMemo } = React;
 
 // ============================================================================
-// DATA — Digital Product, February 2026
+// DATA — Venia Products, February 2026
 // !! THIS BLOCK IS AUTO-POPULATED BY CLAUDE EACH MONTH — DO NOT EDIT MANUALLY !!
 // ============================================================================
 const MONTH = "February";
 const YEAR  = "2026";
-const DEPT  = "Digital Product";
+const DEPT  = "Venia Products";
 
 const data = [
-  { member: "Adam Burdeshaw",        activityPercent: 60.0, totalHours: 154.8, breakHours: 10.2, breakPercent: 6.6,  manualHours: 2.8, manualPercent: 1.8, low20Hours: 0.0, low20Percent: 0.0,  low30Hours: 0.0,  low30Percent: 0.0,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
-  { member: "Bihani Madushika",       activityPercent: 52.0, totalHours: 166.7, breakHours: 14.4, breakPercent: 8.6,  manualHours: 8.2, manualPercent: 4.9, low20Hours: 0.2, low20Percent: 0.1,  low30Hours: 8.4,  low30Percent: 5.0,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
-  { member: "Chathuranga Weerakoon",  activityPercent: 53.0, totalHours: 160.6, breakHours: 13.6, breakPercent: 8.5,  manualHours: 8.9, manualPercent: 5.5, low20Hours: 0.8, low20Percent: 0.5,  low30Hours: 1.2,  low30Percent: 0.8,  redFlags: 0, yellowFlags: 1, totalFlags: 1 },
-  { member: "Dr. Yashoda Velananda",  activityPercent: 43.0, totalHours: 160.4, breakHours: 13.8, breakPercent: 8.6,  manualHours: 9.0, manualPercent: 5.6, low20Hours: 1.9, low20Percent: 1.2,  low30Hours: 18.0, low30Percent: 11.2, redFlags: 0, yellowFlags: 3, totalFlags: 3 },
-  { member: "Hasala Jayasuriya",      activityPercent: 57.0, totalHours: 175.8, breakHours: 15.6, breakPercent: 8.9,  manualHours: 0.9, manualPercent: 0.5, low20Hours: 0.9, low20Percent: 0.5,  low30Hours: 2.1,  low30Percent: 1.2,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
-  { member: "Kunchana Prabashwara",   activityPercent: 69.0, totalHours: 187.3, breakHours: 15.8, breakPercent: 8.5,  manualHours: 0.0, manualPercent: 0.0, low20Hours: 0.0, low20Percent: 0.0,  low30Hours: 0.0,  low30Percent: 0.0,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
-  { member: "Laleesha Wijeratne",     activityPercent: 55.0, totalHours: 169.2, breakHours: 13.7, breakPercent: 8.1,  manualHours: 0.6, manualPercent: 0.4, low20Hours: 1.6, low20Percent: 0.9,  low30Hours: 8.1,  low30Percent: 4.8,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
-  { member: "Modhuka Paranagama",     activityPercent: 62.0, totalHours: 172.1, breakHours: 15.2, breakPercent: 8.8,  manualHours: 8.0, manualPercent: 4.6, low20Hours: 2.0, low20Percent: 1.1,  low30Hours: 5.6,  low30Percent: 3.3,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
-  { member: "Muhammad Usman",         activityPercent: 57.0, totalHours: 159.1, breakHours: 14.6, breakPercent: 9.2,  manualHours: 1.4, manualPercent: 0.8, low20Hours: 0.0, low20Percent: 0.0,  low30Hours: 1.2,  low30Percent: 0.8,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
-  { member: "Ramez Sedra",            activityPercent: 54.0, totalHours: 177.0, breakHours: 11.4, breakPercent: 6.4,  manualHours: 0.3, manualPercent: 0.2, low20Hours: 2.6, low20Percent: 1.5,  low30Hours: 6.0,  low30Percent: 3.4,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
-  { member: "Shehara Meadows",        activityPercent: 42.0, totalHours: 155.9, breakHours: 13.1, breakPercent: 8.4,  manualHours: 0.0, manualPercent: 0.0, low20Hours: 9.6, low20Percent: 6.1,  low30Hours: 24.0, low30Percent: 15.4, redFlags: 0, yellowFlags: 2, totalFlags: 2 },
-  { member: "Thushan Fernando",       activityPercent: 52.0, totalHours: 178.5, breakHours: 11.9, breakPercent: 6.7,  manualHours: 0.0, manualPercent: 0.0, low20Hours: 11.1,low20Percent: 6.2,  low30Hours: 24.6, low30Percent: 13.8, redFlags: 0, yellowFlags: 1, totalFlags: 1 },
-  { member: "Upeksha Liyanage",       activityPercent: 60.0, totalHours: 170.8, breakHours: 15.8, breakPercent: 9.3,  manualHours: 0.0, manualPercent: 0.0, low20Hours: 0.0, low20Percent: 0.0,  low30Hours: 7.3,  low30Percent: 4.3,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Adam Burdeshaw",             subTeam: "VP - Systems",       activityPercent: 60.0, totalHours: 154.8, breakHours: 10.2, breakPercent: 6.6,  manualHours: 2.8, manualPercent: 1.8, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 0.0,  low30Percent: 0.0,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Andrés Victoriano",          subTeam: "Support Team",       activityPercent: 50.0, totalHours: 168.8, breakHours: 17.2, breakPercent: 10.2, manualHours: 0.0, manualPercent: 0.0, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 2.0,  low30Percent: 1.2,  redFlags: 0, yellowFlags: 1, totalFlags: 1 },
+  { member: "Carmen Santos",              subTeam: "CAM",                activityPercent: 48.0, totalHours: 142.9, breakHours: 0.1,  breakPercent: 0.1,  manualHours: 0.6, manualPercent: 0.4, low20Hours: 3.8,  low20Percent: 2.6,  low30Hours: 14.7, low30Percent: 10.3, redFlags: 0, yellowFlags: 2, totalFlags: 2 },
+  { member: "Caryl Agamao",               subTeam: "SDR",                activityPercent: 57.0, totalHours: 160.0, breakHours: 12.8, breakPercent: 8.0,  manualHours: 0.0, manualPercent: 0.0, low20Hours: 1.5,  low20Percent: 1.0,  low30Hours: 5.8,  low30Percent: 3.7,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Christine Mayol",            subTeam: "Support Team",       activityPercent: 49.0, totalHours: 127.2, breakHours: 14.5, breakPercent: 11.4, manualHours: 2.1, manualPercent: 1.7, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 1.3,  low30Percent: 1.0,  redFlags: 1, yellowFlags: 1, totalFlags: 2 },
+  { member: "Darren Karunaratne",         subTeam: "Customer Relations", activityPercent: 40.0, totalHours: 164.4, breakHours: 15.8, breakPercent: 9.6,  manualHours: 0.9, manualPercent: 0.6, low20Hours: 4.0,  low20Percent: 2.4,  low30Hours: 32.3, low30Percent: 19.7, redFlags: 0, yellowFlags: 2, totalFlags: 2 },
+  { member: "Denise Marsha Elisa Moscare",subTeam: "SDR",                activityPercent: 45.0, totalHours: 146.9, breakHours: 14.2, breakPercent: 9.7,  manualHours: 5.2, manualPercent: 3.6, low20Hours: 1.7,  low20Percent: 1.1,  low30Hours: 12.4, low30Percent: 8.5,  redFlags: 0, yellowFlags: 1, totalFlags: 1 },
+  { member: "Eden Schweyer",              subTeam: "Leads",              activityPercent: 48.0, totalHours: 154.2, breakHours: 14.6, breakPercent: 9.5,  manualHours: 6.6, manualPercent: 4.3, low20Hours: 2.2,  low20Percent: 1.4,  low30Hours: 4.3,  low30Percent: 2.8,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Erandi Bandaranayake",       subTeam: "Order Processing",   activityPercent: 44.0, totalHours: 155.6, breakHours: 10.0, breakPercent: 6.4,  manualHours: 0.0, manualPercent: 0.0, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 3.4,  low30Percent: 2.2,  redFlags: 0, yellowFlags: 1, totalFlags: 1 },
+  { member: "Farhanah Junainah Umpar",    subTeam: "SDR",                activityPercent: 50.0, totalHours: 152.2, breakHours: 16.4, breakPercent: 10.8, manualHours: 0.0, manualPercent: 0.0, low20Hours: 3.8,  low20Percent: 2.5,  low30Hours: 5.0,  low30Percent: 3.3,  redFlags: 0, yellowFlags: 1, totalFlags: 1 },
+  { member: "Jesus Corral",               subTeam: "CAM",                activityPercent: 63.0, totalHours: 164.7, breakHours: 16.7, breakPercent: 10.1, manualHours: 0.2, manualPercent: 0.1, low20Hours: 1.2,  low20Percent: 0.7,  low30Hours: 1.2,  low30Percent: 0.7,  redFlags: 0, yellowFlags: 1, totalFlags: 1 },
+  { member: "Joan Lopez",                 subTeam: "Support Team",       activityPercent: 55.0, totalHours: 80.6,  breakHours: 8.1,  breakPercent: 10.1, manualHours: 0.0, manualPercent: 0.0, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 0.5,  low30Percent: 0.6,  redFlags: 1, yellowFlags: 1, totalFlags: 2 },
+  { member: "Kianna Xue",                 subTeam: "VP - Systems",       activityPercent: 48.0, totalHours: 136.1, breakHours: 7.2,  breakPercent: 5.3,  manualHours: 0.0, manualPercent: 0.0, low20Hours: 1.6,  low20Percent: 1.2,  low30Hours: 2.4,  low30Percent: 1.7,  redFlags: 0, yellowFlags: 1, totalFlags: 1 },
+  { member: "Kristine Anne Dela Cruz",    subTeam: "SDR",                activityPercent: 52.0, totalHours: 159.8, breakHours: 8.2,  breakPercent: 5.1,  manualHours: 0.0, manualPercent: 0.0, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 0.0,  low30Percent: 0.0,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Ma Aubrey Sustento",         subTeam: "Support Team",       activityPercent: 49.0, totalHours: 168.3, breakHours: 17.7, breakPercent: 10.5, manualHours: 0.0, manualPercent: 0.0, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 1.0,  low30Percent: 0.6,  redFlags: 0, yellowFlags: 1, totalFlags: 1 },
+  { member: "Mary Anne Soriano",          subTeam: "Support Team",       activityPercent: 65.0, totalHours: 158.4, breakHours: 17.9, breakPercent: 11.3, manualHours: 0.0, manualPercent: 0.0, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 0.3,  low30Percent: 0.2,  redFlags: 0, yellowFlags: 1, totalFlags: 1 },
+  { member: "Meredith Goostree",          subTeam: "CAM",                activityPercent: 42.0, totalHours: 151.4, breakHours: 13.8, breakPercent: 9.1,  manualHours: 0.0, manualPercent: 0.0, low20Hours: 4.8,  low20Percent: 3.2,  low30Hours: 8.8,  low30Percent: 5.8,  redFlags: 0, yellowFlags: 1, totalFlags: 1 },
+  { member: "Monica Lopez",               subTeam: "CAM",                activityPercent: 71.0, totalHours: 146.6, breakHours: 15.8, breakPercent: 10.8, manualHours: 0.0, manualPercent: 0.0, low20Hours: 1.0,  low20Percent: 0.7,  low30Hours: 3.6,  low30Percent: 2.4,  redFlags: 0, yellowFlags: 2, totalFlags: 2 },
+  { member: "Ounvin Ranaweera",           subTeam: "Customer Relations", activityPercent: 42.0, totalHours: 161.0, breakHours: 16.3, breakPercent: 10.1, manualHours: 0.6, manualPercent: 0.4, low20Hours: 1.6,  low20Percent: 1.0,  low30Hours: 4.5,  low30Percent: 2.8,  redFlags: 0, yellowFlags: 2, totalFlags: 2 },
+  { member: "Rebecca Corona",             subTeam: "Leads",              activityPercent: 51.0, totalHours: 163.3, breakHours: 17.8, breakPercent: 10.9, manualHours: 0.3, manualPercent: 0.2, low20Hours: 0.4,  low20Percent: 0.2,  low30Hours: 3.2,  low30Percent: 2.0,  redFlags: 0, yellowFlags: 1, totalFlags: 1 },
+  { member: "Sara Higgason",              subTeam: "Support Team",       activityPercent: 72.0, totalHours: 139.4, breakHours: 16.5, breakPercent: 11.8, manualHours: 5.3, manualPercent: 3.8, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 0.0,  low30Percent: 0.0,  redFlags: 0, yellowFlags: 2, totalFlags: 2 },
+  { member: "Sarah Madoro",               subTeam: "SDR",                activityPercent: 57.0, totalHours: 148.2, breakHours: 9.7,  breakPercent: 6.6,  manualHours: 0.0, manualPercent: 0.0, low20Hours: 2.2,  low20Percent: 1.5,  low30Hours: 3.4,  low30Percent: 2.3,  redFlags: 0, yellowFlags: 1, totalFlags: 1 },
+  { member: "Shannon Woods",              subTeam: "CAM",                activityPercent: 70.0, totalHours: 158.1, breakHours: 6.6,  breakPercent: 4.2,  manualHours: 0.0, manualPercent: 0.0, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 1.4,  low30Percent: 0.9,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Shenallie Jayathillake",     subTeam: "Order Processing",   activityPercent: 67.0, totalHours: 164.6, breakHours: 16.3, breakPercent: 9.9,  manualHours: 0.6, manualPercent: 0.3, low20Hours: 1.3,  low20Percent: 0.8,  low30Hours: 1.3,  low30Percent: 0.8,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Subashi Silva",              subTeam: "Order Processing",   activityPercent: 53.0, totalHours: 157.0, breakHours: 14.7, breakPercent: 9.3,  manualHours: 0.0, manualPercent: 0.0, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 0.0,  low30Percent: 0.0,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Vincent Deximo",             subTeam: "Support Team",       activityPercent: 65.0, totalHours: 166.8, breakHours: 17.4, breakPercent: 10.4, manualHours: 0.0, manualPercent: 0.0, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 0.0,  low30Percent: 0.0,  redFlags: 0, yellowFlags: 1, totalFlags: 1 },
+  { member: "leora megan",                subTeam: "Customer Relations", activityPercent: 37.0, totalHours: 151.6, breakHours: 15.1, breakPercent: 10.0, manualHours: 0.0, manualPercent: 0.0, low20Hours: 16.4, low20Percent: 10.8, low30Hours: 50.7, low30Percent: 33.4, redFlags: 1, yellowFlags: 2, totalFlags: 3 },
 ];
 
 // Team sub-categories for Tab 3: Team Analytics
+// Standard Digital Product sub-teams (update member lists each month):
+//   "Site Content Team", "Catalog Team", "BI Team",
+//   "Platform & Engineering Team", "CRM Team", "DP - Leads"
 // Format: { "Sub-Team Name": ["Member 1", "Member 2"], ... }
 const TEAM_CATEGORIES = {
-  "Site Content Team": ["Kunchana Prabashwara", "Ramez Sedra", "Shehara Meadows"],
-  "Catalog Team": ["Laleesha Wijeratne"],
-  "BI Team": ["Bihani Madushika", "Modhuka Paranagama"],
-  "Platform & Engineering Team": ["Hasala Jayasuriya", "Thushan Fernando", "Upeksha Liyanage"],
-  "CRM Team": ["Adam Burdeshaw", "Chathuranga Weerakoon", "Dr. Yashoda Velananda", "Muhammad Usman"],
-  "DP - Leads": ["Adam Burdeshaw", "Bihani Madushika", "Dr. Yashoda Velananda", "Laleesha Wijeratne", "Shehara Meadows"],
+  "Support Team": ["Andrés Victoriano", "Christine Mayol", "Joan Lopez", "Ma Aubrey Sustento", "Mary Anne Soriano", "Sara Higgason", "Vincent Deximo"],
+  "CAM": ["Carmen Santos", "Jesus Corral", "Meredith Goostree", "Monica Lopez", "Shannon Woods"],
+  "SDR": ["Caryl Agamao", "Denise Marsha Elisa Moscare", "Farhanah Junainah Umpar", "Kristine Anne Dela Cruz", "Sarah Madoro"],
+  "Leads": ["Eden Schweyer", "Rebecca Corona"],
+  "Customer Relations": ["Darren Karunaratne", "leora megan", "Ounvin Ranaweera"],
+  "Order Processing": ["Erandi Bandaranayake", "Shenallie Jayathillake", "Subashi Silva"],
+  "VP - Systems": ["Adam Burdeshaw", "Kianna Xue"]
 };
 // ============================================================================
 // END DATA BLOCK
@@ -98,8 +116,7 @@ const checkStatus = (metric, value) => {
   return 'green';
 };
 
-// Compute flags from SLA thresholds — 5 metrics shown in heatmap table
-// Manual % is excluded (not displayed in heatmap, not counted in flags)
+// Compute flags from SLA thresholds — covers all 6 metrics shown in the heatmap table
 // orange (hours ≥200) counts as red/orange flag
 const computeFlags = (m) => {
   const statuses = [
@@ -692,7 +709,7 @@ ReactDOM.render(<Dashboard />, document.getElementById('root'));
 </script>
 <div style="background:#f0f2f5; padding:32px 16px; text-align:center; margin-top:0;">
   <p style="font-family:'DM Sans',sans-serif; font-size:13px; color:#a0aec0; letter-spacing:0.02em;">
-    Generated for WebLife &middot; Digital Product &middot; February 2026 &middot; SLA thresholds per WebLife SLA Violation Legend v1.0
+    Generated for WebLife &middot; Venia Products &middot; February 2026 &middot; SLA thresholds per WebLife SLA Violation Legend v1.0
   </p>
 </div>
 </body>

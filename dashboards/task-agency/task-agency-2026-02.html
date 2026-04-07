@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Venia Products – February 2026 Performance Dashboard</title>
+<title>Task Agency – February 2026 Performance Dashboard</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prop-types/15.8.1/prop-types.min.js"></script>
@@ -25,9 +25,9 @@
 </head>
 <body>
 <nav style="background:#1a1d23;border-bottom:1px solid #2d3748;padding:11px 24px;display:flex;align-items:center;font-family:'DM Sans',sans-serif;position:sticky;top:0;z-index:999;">
-  <a href="../venia-products.html" style="display:inline-flex;align-items:center;gap:6px;color:#a0aec0;text-decoration:none;font-size:13px;font-weight:500;transition:color 0.15s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#a0aec0'">
+  <a href="../../task-agency.html" style="display:inline-flex;align-items:center;gap:6px;color:#a0aec0;text-decoration:none;font-size:13px;font-weight:500;transition:color 0.15s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#a0aec0'">
     <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
-    Venia Products
+    Task Agency
   </a>
 </nav>
 <div id="root"></div>
@@ -35,57 +35,21 @@
 const { useState, useMemo } = React;
 
 // ============================================================================
-// DATA — Venia Products, February 2026
+// DATA — Task Agency, February 2026
 // !! THIS BLOCK IS AUTO-POPULATED BY CLAUDE EACH MONTH — DO NOT EDIT MANUALLY !!
 // ============================================================================
 const MONTH = "February";
 const YEAR  = "2026";
-const DEPT  = "Venia Products";
+const DEPT  = "Task Agency";
 
 const data = [
-  { member: "Adam Burdeshaw",             subTeam: "VP - Systems",       activityPercent: 60.0, totalHours: 154.8, breakHours: 10.2, breakPercent: 6.6,  manualHours: 2.8, manualPercent: 1.8, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 0.0,  low30Percent: 0.0,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
-  { member: "Andrés Victoriano",          subTeam: "Support Team",       activityPercent: 50.0, totalHours: 168.8, breakHours: 17.2, breakPercent: 10.2, manualHours: 0.0, manualPercent: 0.0, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 2.0,  low30Percent: 1.2,  redFlags: 0, yellowFlags: 1, totalFlags: 1 },
-  { member: "Carmen Santos",              subTeam: "CAM",                activityPercent: 48.0, totalHours: 142.9, breakHours: 0.1,  breakPercent: 0.1,  manualHours: 0.6, manualPercent: 0.4, low20Hours: 3.8,  low20Percent: 2.6,  low30Hours: 14.7, low30Percent: 10.3, redFlags: 0, yellowFlags: 2, totalFlags: 2 },
-  { member: "Caryl Agamao",               subTeam: "SDR",                activityPercent: 57.0, totalHours: 160.0, breakHours: 12.8, breakPercent: 8.0,  manualHours: 0.0, manualPercent: 0.0, low20Hours: 1.5,  low20Percent: 1.0,  low30Hours: 5.8,  low30Percent: 3.7,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
-  { member: "Christine Mayol",            subTeam: "Support Team",       activityPercent: 49.0, totalHours: 127.2, breakHours: 14.5, breakPercent: 11.4, manualHours: 2.1, manualPercent: 1.7, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 1.3,  low30Percent: 1.0,  redFlags: 1, yellowFlags: 1, totalFlags: 2 },
-  { member: "Darren Karunaratne",         subTeam: "Customer Relations", activityPercent: 40.0, totalHours: 164.4, breakHours: 15.8, breakPercent: 9.6,  manualHours: 0.9, manualPercent: 0.6, low20Hours: 4.0,  low20Percent: 2.4,  low30Hours: 32.3, low30Percent: 19.7, redFlags: 0, yellowFlags: 2, totalFlags: 2 },
-  { member: "Denise Marsha Elisa Moscare",subTeam: "SDR",                activityPercent: 45.0, totalHours: 146.9, breakHours: 14.2, breakPercent: 9.7,  manualHours: 5.2, manualPercent: 3.6, low20Hours: 1.7,  low20Percent: 1.1,  low30Hours: 12.4, low30Percent: 8.5,  redFlags: 0, yellowFlags: 1, totalFlags: 1 },
-  { member: "Eden Schweyer",              subTeam: "Leads",              activityPercent: 48.0, totalHours: 154.2, breakHours: 14.6, breakPercent: 9.5,  manualHours: 6.6, manualPercent: 4.3, low20Hours: 2.2,  low20Percent: 1.4,  low30Hours: 4.3,  low30Percent: 2.8,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
-  { member: "Erandi Bandaranayake",       subTeam: "Order Processing",   activityPercent: 44.0, totalHours: 155.6, breakHours: 10.0, breakPercent: 6.4,  manualHours: 0.0, manualPercent: 0.0, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 3.4,  low30Percent: 2.2,  redFlags: 0, yellowFlags: 1, totalFlags: 1 },
-  { member: "Farhanah Junainah Umpar",    subTeam: "SDR",                activityPercent: 50.0, totalHours: 152.2, breakHours: 16.4, breakPercent: 10.8, manualHours: 0.0, manualPercent: 0.0, low20Hours: 3.8,  low20Percent: 2.5,  low30Hours: 5.0,  low30Percent: 3.3,  redFlags: 0, yellowFlags: 1, totalFlags: 1 },
-  { member: "Jesus Corral",               subTeam: "CAM",                activityPercent: 63.0, totalHours: 164.7, breakHours: 16.7, breakPercent: 10.1, manualHours: 0.2, manualPercent: 0.1, low20Hours: 1.2,  low20Percent: 0.7,  low30Hours: 1.2,  low30Percent: 0.7,  redFlags: 0, yellowFlags: 1, totalFlags: 1 },
-  { member: "Joan Lopez",                 subTeam: "Support Team",       activityPercent: 55.0, totalHours: 80.6,  breakHours: 8.1,  breakPercent: 10.1, manualHours: 0.0, manualPercent: 0.0, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 0.5,  low30Percent: 0.6,  redFlags: 1, yellowFlags: 1, totalFlags: 2 },
-  { member: "Kianna Xue",                 subTeam: "VP - Systems",       activityPercent: 48.0, totalHours: 136.1, breakHours: 7.2,  breakPercent: 5.3,  manualHours: 0.0, manualPercent: 0.0, low20Hours: 1.6,  low20Percent: 1.2,  low30Hours: 2.4,  low30Percent: 1.7,  redFlags: 0, yellowFlags: 1, totalFlags: 1 },
-  { member: "Kristine Anne Dela Cruz",    subTeam: "SDR",                activityPercent: 52.0, totalHours: 159.8, breakHours: 8.2,  breakPercent: 5.1,  manualHours: 0.0, manualPercent: 0.0, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 0.0,  low30Percent: 0.0,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
-  { member: "Ma Aubrey Sustento",         subTeam: "Support Team",       activityPercent: 49.0, totalHours: 168.3, breakHours: 17.7, breakPercent: 10.5, manualHours: 0.0, manualPercent: 0.0, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 1.0,  low30Percent: 0.6,  redFlags: 0, yellowFlags: 1, totalFlags: 1 },
-  { member: "Mary Anne Soriano",          subTeam: "Support Team",       activityPercent: 65.0, totalHours: 158.4, breakHours: 17.9, breakPercent: 11.3, manualHours: 0.0, manualPercent: 0.0, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 0.3,  low30Percent: 0.2,  redFlags: 0, yellowFlags: 1, totalFlags: 1 },
-  { member: "Meredith Goostree",          subTeam: "CAM",                activityPercent: 42.0, totalHours: 151.4, breakHours: 13.8, breakPercent: 9.1,  manualHours: 0.0, manualPercent: 0.0, low20Hours: 4.8,  low20Percent: 3.2,  low30Hours: 8.8,  low30Percent: 5.8,  redFlags: 0, yellowFlags: 1, totalFlags: 1 },
-  { member: "Monica Lopez",               subTeam: "CAM",                activityPercent: 71.0, totalHours: 146.6, breakHours: 15.8, breakPercent: 10.8, manualHours: 0.0, manualPercent: 0.0, low20Hours: 1.0,  low20Percent: 0.7,  low30Hours: 3.6,  low30Percent: 2.4,  redFlags: 0, yellowFlags: 2, totalFlags: 2 },
-  { member: "Ounvin Ranaweera",           subTeam: "Customer Relations", activityPercent: 42.0, totalHours: 161.0, breakHours: 16.3, breakPercent: 10.1, manualHours: 0.6, manualPercent: 0.4, low20Hours: 1.6,  low20Percent: 1.0,  low30Hours: 4.5,  low30Percent: 2.8,  redFlags: 0, yellowFlags: 2, totalFlags: 2 },
-  { member: "Rebecca Corona",             subTeam: "Leads",              activityPercent: 51.0, totalHours: 163.3, breakHours: 17.8, breakPercent: 10.9, manualHours: 0.3, manualPercent: 0.2, low20Hours: 0.4,  low20Percent: 0.2,  low30Hours: 3.2,  low30Percent: 2.0,  redFlags: 0, yellowFlags: 1, totalFlags: 1 },
-  { member: "Sara Higgason",              subTeam: "Support Team",       activityPercent: 72.0, totalHours: 139.4, breakHours: 16.5, breakPercent: 11.8, manualHours: 5.3, manualPercent: 3.8, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 0.0,  low30Percent: 0.0,  redFlags: 0, yellowFlags: 2, totalFlags: 2 },
-  { member: "Sarah Madoro",               subTeam: "SDR",                activityPercent: 57.0, totalHours: 148.2, breakHours: 9.7,  breakPercent: 6.6,  manualHours: 0.0, manualPercent: 0.0, low20Hours: 2.2,  low20Percent: 1.5,  low30Hours: 3.4,  low30Percent: 2.3,  redFlags: 0, yellowFlags: 1, totalFlags: 1 },
-  { member: "Shannon Woods",              subTeam: "CAM",                activityPercent: 70.0, totalHours: 158.1, breakHours: 6.6,  breakPercent: 4.2,  manualHours: 0.0, manualPercent: 0.0, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 1.4,  low30Percent: 0.9,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
-  { member: "Shenallie Jayathillake",     subTeam: "Order Processing",   activityPercent: 67.0, totalHours: 164.6, breakHours: 16.3, breakPercent: 9.9,  manualHours: 0.6, manualPercent: 0.3, low20Hours: 1.3,  low20Percent: 0.8,  low30Hours: 1.3,  low30Percent: 0.8,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
-  { member: "Subashi Silva",              subTeam: "Order Processing",   activityPercent: 53.0, totalHours: 157.0, breakHours: 14.7, breakPercent: 9.3,  manualHours: 0.0, manualPercent: 0.0, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 0.0,  low30Percent: 0.0,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
-  { member: "Vincent Deximo",             subTeam: "Support Team",       activityPercent: 65.0, totalHours: 166.8, breakHours: 17.4, breakPercent: 10.4, manualHours: 0.0, manualPercent: 0.0, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 0.0,  low30Percent: 0.0,  redFlags: 0, yellowFlags: 1, totalFlags: 1 },
-  { member: "leora megan",                subTeam: "Customer Relations", activityPercent: 37.0, totalHours: 151.6, breakHours: 15.1, breakPercent: 10.0, manualHours: 0.0, manualPercent: 0.0, low20Hours: 16.4, low20Percent: 10.8, low30Hours: 50.7, low30Percent: 33.4, redFlags: 1, yellowFlags: 2, totalFlags: 3 },
+  { member: "Aaqib Hafeel",     activityPercent: 54, totalHours: 162.8, breakHours: 15.1, breakPercent: 9.3,  manualHours: 1.1, manualPercent: 0.7, low20Hours: 2.3,  low20Percent: 1.4, low30Hours: 14.3, low30Percent: 8.8,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Jason Diaz",        activityPercent: 54, totalHours: 153.4, breakHours: 13.8, breakPercent: 9.0,  manualHours: 2.0, manualPercent: 1.3, low20Hours: 0.0,  low20Percent: 0.0, low30Hours: 5.4,  low30Percent: 3.5,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Nawodya De Silva",  activityPercent: 54, totalHours: 160.1, breakHours: 15.5, breakPercent: 9.7,  manualHours: 0.0, manualPercent: 0.0, low20Hours: 0.0,  low20Percent: 0.0, low30Hours: 1.7,  low30Percent: 1.1,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Sean Dehoedt",      activityPercent: 57, totalHours: 192.4, breakHours: 16.5, breakPercent: 8.6,  manualHours: 0.4, manualPercent: 0.2, low20Hours: 1.8,  low20Percent: 0.9, low30Hours: 4.3,  low30Percent: 2.2,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Staffey Murugadas", activityPercent: 57, totalHours: 172.1, breakHours: 16.7, breakPercent: 9.7,  manualHours: 4.8, manualPercent: 2.8, low20Hours: 1.7,  low20Percent: 1.0, low30Hours: 2.8,  low30Percent: 1.6,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Tashia Bernardus",  activityPercent: 43, totalHours: 165.2, breakHours: 15.7, breakPercent: 9.5,  manualHours: 0.0, manualPercent: 0.0, low20Hours: 3.4,  low20Percent: 2.1, low30Hours: 13.0, low30Percent: 7.9,  redFlags: 0, yellowFlags: 1, totalFlags: 1 },
 ];
-
-// Team sub-categories for Tab 3: Team Analytics
-// Standard Digital Product sub-teams (update member lists each month):
-//   "Site Content Team", "Catalog Team", "BI Team",
-//   "Platform & Engineering Team", "CRM Team", "DP - Leads"
-// Format: { "Sub-Team Name": ["Member 1", "Member 2"], ... }
-const TEAM_CATEGORIES = {
-  "Support Team": ["Andrés Victoriano", "Christine Mayol", "Joan Lopez", "Ma Aubrey Sustento", "Mary Anne Soriano", "Sara Higgason", "Vincent Deximo"],
-  "CAM": ["Carmen Santos", "Jesus Corral", "Meredith Goostree", "Monica Lopez", "Shannon Woods"],
-  "SDR": ["Caryl Agamao", "Denise Marsha Elisa Moscare", "Farhanah Junainah Umpar", "Kristine Anne Dela Cruz", "Sarah Madoro"],
-  "Leads": ["Eden Schweyer", "Rebecca Corona"],
-  "Customer Relations": ["Darren Karunaratne", "leora megan", "Ounvin Ranaweera"],
-  "Order Processing": ["Erandi Bandaranayake", "Shenallie Jayathillake", "Subashi Silva"],
-  "VP - Systems": ["Adam Burdeshaw", "Kianna Xue"]
-};
 // ============================================================================
 // END DATA BLOCK
 // ============================================================================
@@ -117,7 +81,7 @@ const checkStatus = (metric, value) => {
 };
 
 // Compute flags from SLA thresholds — covers all 6 metrics shown in the heatmap table
-// orange (hours ≥200) counts as red/orange flag
+// orange (hours >=200) counts as red/orange flag
 const computeFlags = (m) => {
   const statuses = [
     checkStatus('activity',  m.activityPercent),
@@ -157,59 +121,52 @@ const Dashboard = () => {
   // Recompute flags from SLA thresholds — overrides CSV-provided values for accuracy
   data.forEach(m => { const f = computeFlags(m); m.redFlags = f.redFlags; m.yellowFlags = f.yellowFlags; m.totalFlags = f.totalFlags; });
 
-  const [tab, setTab]                   = useState(1);
-  const [sortKey, setSortKey]           = useState(null);
-  const [sortDir, setSortDir]           = useState('asc');
-  const [selectedTeam, setSelectedTeam] = useState(() => Object.keys(TEAM_CATEGORIES)[0]);
-  const [openMetric, setOpenMetric]     = useState(null);
-  const [teamSortKey, setTeamSortKey]   = useState(null);
-  const [teamSortDir, setTeamSortDir]   = useState('asc');
+  const [tab, setTab]                     = useState(1);
+  const [sortKey, setSortKey]             = useState(null);
+  const [sortDir, setSortDir]             = useState('asc');
+  const [activeSubTeam, setActiveSubTeam] = useState('All');
+  const [openMetric, setOpenMetric]       = useState(null);
 
-  const n                = data.length;
-  const avgActivity      = n > 0 ? data.reduce((s, m) => s + m.activityPercent, 0) / n : 0;
-  const avgHours         = n > 0 ? data.reduce((s, m) => s + m.totalHours, 0) / n : 0;
-  const totalRedFlags    = data.reduce((s, m) => s + m.redFlags, 0);
-  const totalYellowFlags = data.reduce((s, m) => s + m.yellowFlags, 0);
-  const totalFlags       = data.reduce((s, m) => s + m.totalFlags, 0);
-  const noViolations     = data.filter(m => m.totalFlags === 0).length;
+  // Derive unique sub-teams from data
+  const subTeams = useMemo(() => {
+    const vals = data.map(m => m.subTeam).filter(Boolean);
+    const unique = [...new Set(vals)].sort();
+    return unique;
+  }, []);
+
+  const showSubTeamBar = subTeams.length > 1;
+
+  // Filtered data for the active sub-team
+  const filteredData = useMemo(() => {
+    if (activeSubTeam === 'All') return data;
+    return data.filter(m => m.subTeam === activeSubTeam);
+  }, [activeSubTeam]);
+
+  const n                = filteredData.length;
+  const avgActivity      = n > 0 ? filteredData.reduce((s, m) => s + m.activityPercent, 0) / n : 0;
+  const avgHours         = n > 0 ? filteredData.reduce((s, m) => s + m.totalHours, 0) / n : 0;
+  const totalRedFlags    = filteredData.reduce((s, m) => s + m.redFlags, 0);
+  const totalYellowFlags = filteredData.reduce((s, m) => s + m.yellowFlags, 0);
+  const totalFlags       = filteredData.reduce((s, m) => s + m.totalFlags, 0);
+  const noViolations     = filteredData.filter(m => m.totalFlags === 0).length;
 
   const sortedData = useMemo(() => {
-    if (!sortKey) return data;
-    return [...data].sort((a, b) => {
+    if (!sortKey) return filteredData;
+    return [...filteredData].sort((a, b) => {
       const av = a[sortKey], bv = b[sortKey];
       if (typeof av === 'number') return sortDir === 'asc' ? av - bv : bv - av;
       return sortDir === 'asc' ? String(av).localeCompare(String(bv)) : String(bv).localeCompare(String(av));
     });
-  }, [sortKey, sortDir]);
+  }, [sortKey, sortDir, filteredData]);
 
   const sort = (key) => {
     if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
     else { setSortKey(key); setSortDir('asc'); }
   };
 
-  const teamSortedMembers = (members) => {
-    if (!teamSortKey) return [...members].sort((a,b) => b.activityPercent - a.activityPercent);
-    return [...members].sort((a, b) => {
-      const av = a[teamSortKey], bv = b[teamSortKey];
-      if (typeof av === 'number') return teamSortDir === 'asc' ? av - bv : bv - av;
-      return teamSortDir === 'asc' ? String(av).localeCompare(String(bv)) : String(bv).localeCompare(String(av));
-    });
-  };
-
-  const teamSort = (key) => {
-    if (teamSortKey === key) setTeamSortDir(d => d === 'asc' ? 'desc' : 'asc');
-    else { setTeamSortKey(key); setTeamSortDir('asc'); }
-  };
-
   const SortIcon = ({ k }) => (
     <span style={{color: sortKey === k ? '#3182ce' : '#cbd5e0', marginLeft: 4}}>
       {sortKey === k ? (sortDir === 'asc' ? '↑' : '↓') : '↕'}
-    </span>
-  );
-
-  const TeamSortIcon = ({ k }) => (
-    <span style={{color: teamSortKey === k ? '#38a169' : '#cbd5e0', marginLeft: 4}}>
-      {teamSortKey === k ? (teamSortDir === 'asc' ? '↑' : '↓') : '↕'}
     </span>
   );
 
@@ -239,6 +196,33 @@ const Dashboard = () => {
         {DEPT} Performance Dashboard - {MONTH} {YEAR}
       </h1>
 
+      {/* SUB-TEAM FILTER BAR — shown only when multiple sub-teams exist */}
+      {showSubTeamBar && (
+        <div style={{display: 'flex', flexWrap: 'wrap', gap: 8, marginBottom: 16, padding: '12px 16px', background: '#ffffff', borderRadius: 8, boxShadow: '0 1px 3px rgba(0,0,0,0.08)', border: '1px solid #e2e8f0'}}>
+          <span style={{fontSize: 13, fontWeight: 600, color: '#718096', alignSelf: 'center', marginRight: 4}}>Filter by Sub-Team:</span>
+          {['All', ...subTeams].map(st => (
+            <button
+              key={st}
+              onClick={() => { setActiveSubTeam(st); setSortKey(null); }}
+              style={{
+                padding: '6px 14px', borderRadius: 9999, fontSize: 13, fontWeight: 500,
+                cursor: 'pointer', transition: 'all 0.15s', fontFamily: 'DM Sans, sans-serif',
+                ...(activeSubTeam === st
+                  ? { background: 'linear-gradient(to right, #2b6cb0, #3182ce)', color: 'white', border: 'none', boxShadow: '0 2px 4px rgba(49,130,206,0.3)' }
+                  : { background: '#edf2f7', color: '#4a5568', border: '1px solid #e2e8f0' })
+              }}
+            >
+              {st}
+              {st !== 'All' && (
+                <span style={{marginLeft: 6, fontSize: 11, opacity: 0.8}}>
+                  ({data.filter(m => m.subTeam === st).length})
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* TAB BUTTON ROW */}
       <div style={{display: 'flex', background: '#ffffff', padding: 12, borderRadius: 8, boxShadow: '0 1px 3px rgba(0,0,0,0.1)', marginBottom: 24, flexWrap: 'wrap'}}>
         {tabBtn(1, 'SLA Overview', 'linear-gradient(to right, #2b6cb0, #3182ce)',
@@ -246,9 +230,6 @@ const Dashboard = () => {
         )}
         {tabBtn(2, 'SLA Heatmap', 'linear-gradient(to right, #553c9a, #6b46c1)',
           <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{marginRight: 8}}><path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
-        )}
-        {tabBtn(3, 'Team Analytics', 'linear-gradient(to right, #276749, #38a169)',
-          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{marginRight: 8}}><path strokeLinecap="round" strokeLinejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path strokeLinecap="round" strokeLinejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
         )}
       </div>
 
@@ -259,7 +240,7 @@ const Dashboard = () => {
         <div className="fade-in" style={{background: '#ffffff', padding: 24, borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)'}}>
 
           <h2 style={{fontSize: 24, fontWeight: 700, color: '#2d3748', borderBottom: '2px solid #e2e8f0', paddingBottom: 12, marginBottom: 24}}>
-            {MONTH} {YEAR} Executive Summary - {DEPT}
+            {MONTH} {YEAR} Executive Summary - {DEPT}{activeSubTeam !== 'All' ? ` — ${activeSubTeam}` : ''}
           </h2>
 
           {/* SECTION 1: Team Overview Summary */}
@@ -274,21 +255,19 @@ const Dashboard = () => {
             </div>
             <div style={{paddingTop: 20}}>
 
-              {/* 6 KPI TILES */}
-              <div style={{display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 16, marginBottom: 24}}>
+              {/* 5 KPI TILES */}
+              <div style={{display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 16, marginBottom: 24}}>
                 {[
-                  { label: 'Total Members',          value: n,                        bg: '#ebf8ff', border: '1px solid #bee3f8', iconColor: '#3182ce', valColor: '#2b6cb0',
+                  { label: 'Total Members',          value: n,                          bg: '#ebf8ff', border: '1px solid #bee3f8', valColor: '#2b6cb0',
                     icon: <svg width="24" height="24" fill="none" stroke="#3182ce" strokeWidth="2" viewBox="0 0 24 24" style={{display:'block',margin:'0 auto 8px'}}><path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg> },
                   { label: 'Average Activity %',     value: avgActivity.toFixed(1)+'%', bg: '#f0fff4', border: '1px solid #9ae6b4', valColor: '#276749',
                     icon: <svg width="24" height="24" fill="none" stroke="#38a169" strokeWidth="2" viewBox="0 0 24 24" style={{display:'block',margin:'0 auto 8px'}}><path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg> },
-                  { label: 'Avg Hours Logged',       value: avgHours.toFixed(1),      bg: '#faf5ff', border: '1px solid #e9d8fd', valColor: '#553c9a',
+                  { label: 'Avg Hours Logged',       value: avgHours.toFixed(1),        bg: '#faf5ff', border: '1px solid #e9d8fd', valColor: '#553c9a',
                     icon: <svg width="24" height="24" fill="none" stroke="#6b46c1" strokeWidth="2" viewBox="0 0 24 24" style={{display:'block',margin:'0 auto 8px'}}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> },
-                  { label: 'Total Red/Orange Flags', value: totalRedFlags,            bg: '#fff5f5', border: '1px solid #fed7d7', valColor: '#c53030',
+                  { label: 'Total Red/Orange Flags', value: totalRedFlags,              bg: '#fff5f5', border: '1px solid #fed7d7', valColor: '#c53030',
                     icon: <svg width="24" height="24" fill="none" stroke="#e53e3e" strokeWidth="2" viewBox="0 0 24 24" style={{display:'block',margin:'0 auto 8px'}}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg> },
-                  { label: 'Total Yellow Flags',     value: totalYellowFlags,         bg: '#fffff0', border: '1px solid #fefcbf', valColor: '#b7791f',
+                  { label: 'Total Yellow Flags',     value: totalYellowFlags,           bg: '#fffff0', border: '1px solid #fefcbf', valColor: '#b7791f',
                     icon: <svg width="24" height="24" fill="none" stroke="#d69e2e" strokeWidth="2" viewBox="0 0 24 24" style={{display:'block',margin:'0 auto 8px'}}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg> },
-                  { label: 'Total Flags',            value: totalFlags,               bg: '#edf2f7', border: '1px solid #e2e8f0', valColor: '#4a5568',
-                    icon: <svg width="24" height="24" fill="none" stroke="#718096" strokeWidth="2" viewBox="0 0 24 24" style={{display:'block',margin:'0 auto 8px'}}><path strokeLinecap="round" strokeLinejoin="round" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/></svg> },
                 ].map((tile, i) => (
                   <div key={i} style={{padding: 16, borderRadius: 8, boxShadow: '0 1px 3px rgba(0,0,0,0.1)', textAlign: 'center', background: tile.bg, border: tile.border}}>
                     {tile.icon}
@@ -300,10 +279,10 @@ const Dashboard = () => {
 
               {/* PERFORMANCE HIGHLIGHTS */}
               {(() => {
-                const redCount    = data.filter(m => m.redFlags > 0).length;
-                const yellowOnly  = data.filter(m => m.yellowFlags > 0 && m.redFlags === 0).length;
-                const bothFlags   = data.filter(m => m.redFlags > 0 && m.yellowFlags > 0).length;
-                const over160     = data.filter(m => m.totalHours > 160);
+                const redCount    = filteredData.filter(m => m.redFlags > 0).length;
+                const yellowOnly  = filteredData.filter(m => m.yellowFlags > 0 && m.redFlags === 0).length;
+                const bothFlags   = filteredData.filter(m => m.redFlags > 0 && m.yellowFlags > 0).length;
+                const over160     = filteredData.filter(m => m.totalHours > 160);
                 const flagSummary = (() => {
                   const parts = [];
                   if (redCount > 0)   parts.push(`${redCount} member${redCount !== 1 ? 's' : ''} had red/orange flags requiring immediate attention`);
@@ -316,7 +295,7 @@ const Dashboard = () => {
                   <div style={{background: '#ebf8ff', padding: 16, borderRadius: 8, border: '1px solid #90cdf4', marginBottom: 8}}>
                     <div style={{fontSize: 18, fontWeight: 600, color: '#1e4e8c', marginBottom: 8}}>{MONTH} {YEAR} Performance Highlights</div>
                     <div style={{fontSize: 14, color: '#4a5568', lineHeight: 1.6}}>
-                      The {DEPT} team maintained an average activity level of {avgActivity.toFixed(1)}% across {n} team member{n !== 1 ? 's' : ''} in {MONTH} {YEAR}.
+                      The {activeSubTeam !== 'All' ? activeSubTeam : DEPT} team maintained an average activity level of {avgActivity.toFixed(1)}% across {n} team member{n !== 1 ? 's' : ''} in {MONTH} {YEAR}.
                       {' '}The team logged an average of {avgHours.toFixed(1)} hours per person, with {over160.length} member{over160.length !== 1 ? 's' : ''} exceeding 160 hours for the month.
                       {' '}{noViolations} member{noViolations !== 1 ? 's' : ''} met all SLA requirements with zero flags
                       {(redCount > 0 || yellowOnly > 0 || bothFlags > 0) ? `, while ${flagSummary}.` : '.'}
@@ -339,16 +318,16 @@ const Dashboard = () => {
             </div>
             <div style={{paddingTop: 20}}>
 
-              {/* 2-col: Highest Activity Levels + High Hours */}
+              {/* 2-col: Top Performers + High Hours */}
               <div style={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, marginBottom: 16}}>
 
-                {/* Highest Activity Levels */}
+                {/* Top Performers */}
                 <div style={{padding: 16, borderRadius: 8, background: 'linear-gradient(135deg, #ebf8ff, #bee3f8)', border: '1px solid #90cdf4'}}>
                   <div style={{fontSize: 18, fontWeight: 600, color: '#1e4e8c', marginBottom: 12, display: 'flex', alignItems: 'center'}}>
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="#1e4e8c" style={{marginRight: 8}}><path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd"/></svg>
                     Highest Activity Levels
                   </div>
-                  {[...data].sort((a,b) => b.activityPercent - a.activityPercent).slice(0,3).map((m, i) => (
+                  {[...filteredData].sort((a,b) => b.activityPercent - a.activityPercent).slice(0,3).map((m, i) => (
                     <div key={i} style={{display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i < 2 ? '1px solid rgba(49,130,206,0.15)' : 'none'}}>
                       <div style={{width: 28, height: 28, borderRadius: 6, background: '#3182ce', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 11, flexShrink: 0}}>{i+1}</div>
                       <div>
@@ -365,7 +344,7 @@ const Dashboard = () => {
                     <svg width="20" height="20" viewBox="0 0 20 20" fill="#553c9a" style={{marginRight: 8}}><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd"/></svg>
                     High Hours Logged
                   </div>
-                  {[...data].sort((a,b) => b.totalHours - a.totalHours).slice(0,3).map((m, i) => (
+                  {[...filteredData].sort((a,b) => b.totalHours - a.totalHours).slice(0,3).map((m, i) => (
                     <div key={i} style={{display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i < 2 ? '1px solid rgba(107,70,193,0.15)' : 'none'}}>
                       <div style={{width: 28, height: 28, borderRadius: 6, background: ['#6b46c1','#805ad5','#9f7aea'][i], color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 11, flexShrink: 0}}>{i+1}</div>
                       <div>
@@ -386,7 +365,7 @@ const Dashboard = () => {
                 {noViolations === 0
                   ? <div style={{fontSize: 13, color: '#718096', fontStyle: 'italic'}}>No members with zero violations this month.</div>
                   : <div style={{display: 'flex', flexWrap: 'wrap', gap: 10}}>
-                      {data.filter(m => m.totalFlags === 0).map((m, i) => (
+                      {filteredData.filter(m => m.totalFlags === 0).map((m, i) => (
                         <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, background: 'white', border: '1px solid #9ae6b4', borderRadius: 8, padding: '8px 12px'}}>
                           <div style={{width: 30, height: 30, borderRadius: '50%', background: '#38a169', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 11, flexShrink: 0}}>
                             {m.member.split(' ').map(w => w[0]).slice(0,2).join('')}
@@ -479,17 +458,19 @@ const Dashboard = () => {
             <span style={{background:'#f0fff4', border:'1px solid #9ae6b4', color:'#276749', padding:'4px 12px', borderRadius:9999, fontSize:12, fontWeight:600}}>✅ Green Within target</span>
             <span style={{background:'#fffaf0', border:'1px solid #fbd38d', color:'#c05621', padding:'4px 12px', borderRadius:9999, fontSize:12, fontWeight:600}}>🟠 Orange Overwork flag</span>
           </div>
-          <h2 style={{fontSize: 24, fontWeight: 700, color: '#2d3748', borderBottom: '2px solid #e2e8f0', paddingBottom: 12, marginBottom: 20}}>Full SLA Heatmap — {MONTH} {YEAR}</h2>
+          <h2 style={{fontSize: 24, fontWeight: 700, color: '#2d3748', borderBottom: '2px solid #e2e8f0', paddingBottom: 12, marginBottom: 20}}>
+            Full SLA Heatmap — {MONTH} {YEAR}{activeSubTeam !== 'All' ? ` — ${activeSubTeam}` : ''}
+          </h2>
           <p style={{fontSize: 14, color: '#4a5568', marginBottom: 20}}>Click column headers to sort. Colors reflect SLA thresholds.</p>
           {(() => {
             const th = {color:'#718096', fontWeight:600, fontSize:12, textTransform:'uppercase', letterSpacing:'0.05em', padding:'12px 16px', borderBottom:'2px solid #e2e8f0', textAlign:'center', cursor:'pointer', whiteSpace:'nowrap'};
             const td = {padding:'13px 16px', borderBottom:'1px solid #e2e8f0', verticalAlign:'middle', textAlign:'center', fontSize:15};
-            const avgBrk = n > 0 ? data.reduce((s,m) => s + m.breakPercent, 0) / n : 0;
-            const avgL20 = n > 0 ? data.reduce((s,m) => s + m.low20Percent, 0) / n : 0;
-            const avgL30 = n > 0 ? data.reduce((s,m) => s + m.low30Percent, 0) / n : 0;
-            const avgRed = n > 0 ? data.reduce((s,m) => s + m.redFlags, 0) / n : 0;
-            const avgYel = n > 0 ? data.reduce((s,m) => s + m.yellowFlags, 0) / n : 0;
-            const avgTot = n > 0 ? data.reduce((s,m) => s + m.totalFlags, 0) / n : 0;
+            const avgBrk = n > 0 ? filteredData.reduce((s,m) => s + m.breakPercent, 0) / n : 0;
+            const avgL20 = n > 0 ? filteredData.reduce((s,m) => s + m.low20Percent, 0) / n : 0;
+            const avgL30 = n > 0 ? filteredData.reduce((s,m) => s + m.low30Percent, 0) / n : 0;
+            const avgRed = n > 0 ? filteredData.reduce((s,m) => s + m.redFlags, 0) / n : 0;
+            const avgYel = n > 0 ? filteredData.reduce((s,m) => s + m.yellowFlags, 0) / n : 0;
+            const avgTot = n > 0 ? filteredData.reduce((s,m) => s + m.totalFlags, 0) / n : 0;
             return (
               <>
               <div style={{width:'100%', overflowX:'auto'}}>
@@ -561,146 +542,6 @@ const Dashboard = () => {
         </div>
       )}
 
-      {/* ══════════════════════════════════════════
-          TAB 3 — TEAM ANALYTICS
-          ══════════════════════════════════════════ */}
-      {tab === 3 && (
-        <div className="fade-in" style={{background: '#ffffff', padding: 24, borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)'}}>
-
-          {/* TEAM SELECTOR */}
-          <div style={{fontSize: 14, fontWeight: 600, color: '#4a5568', marginBottom: 12}}>Select Team to Compare:</div>
-          <div style={{display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, marginBottom: 24}}>
-            {Object.keys(TEAM_CATEGORIES).map(teamName => (
-              <button key={teamName} onClick={() => { setSelectedTeam(teamName); setTeamSortKey(null); }} style={{
-                padding: '12px 16px', borderRadius: 8, fontWeight: 500, transition: 'all 0.2s',
-                cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', textAlign: 'left',
-                ...(selectedTeam === teamName
-                  ? { background: 'linear-gradient(to right, #276749, #38a169)', color: 'white', boxShadow: '0 4px 12px rgba(0,0,0,0.15)', transform: 'scale(1.05)', border: 'none' }
-                  : { background: '#edf2f7', color: '#4a5568', border: '1px solid #cbd5e0' })
-              }}>
-                <span style={{display: 'block', fontSize: 14}}>{teamName}</span>
-                <span style={{display: 'block', fontSize: 12, marginTop: 4, opacity: 0.8}}>{TEAM_CATEGORIES[teamName].length} member{TEAM_CATEGORIES[teamName].length !== 1 ? 's' : ''}</span>
-              </button>
-            ))}
-          </div>
-
-          {/* ANALYTICS */}
-          {(() => {
-            const teamMembers = data.filter(m => TEAM_CATEGORIES[selectedTeam] && TEAM_CATEGORIES[selectedTeam].includes(m.member));
-            if (teamMembers.length === 0) return <div style={{color:'#718096',textAlign:'center',padding:40}}>No data available for this team.</div>;
-
-            const tm           = teamMembers.length;
-            const tAvgActivity = teamMembers.reduce((s,m) => s + m.activityPercent, 0) / tm;
-            const tAvgHours    = teamMembers.reduce((s,m) => s + m.totalHours, 0) / tm;
-            const tTotalRed    = teamMembers.reduce((s,m) => s + m.redFlags, 0);
-            const tTotalYellow = teamMembers.reduce((s,m) => s + m.yellowFlags, 0);
-            const tCompliant   = teamMembers.filter(m => m.totalFlags === 0).length;
-            const tHigh        = teamMembers.reduce((a,b) => a.activityPercent > b.activityPercent ? a : b);
-            const tLow         = teamMembers.reduce((a,b) => a.activityPercent < b.activityPercent ? a : b);
-            const tMostHrs     = teamMembers.reduce((a,b) => a.totalHours > b.totalHours ? a : b);
-            const tLeastHrs    = teamMembers.reduce((a,b) => a.totalHours < b.totalHours ? a : b);
-
-            // Key Highlights
-            const conclusions = [];
-            conclusions.push({ color: '#276749', text: `${tHigh.member} leads the team with the highest activity at ${tHigh.activityPercent.toFixed(1)}%, maintaining strong engagement throughout the month.` });
-            const actS = checkStatus('activity', tLow.activityPercent);
-            conclusions.push({ color: actS==='red'?'#c53030':actS==='yellow'?'#b7791f':'#276749', text: `${tLow.member} recorded the lowest activity at ${tLow.activityPercent.toFixed(1)}%${actS==='red'?' — critical SLA violation requiring immediate attention':actS==='yellow'?' — yellow warning, close monitoring recommended':' — within acceptable range'}.` });
-            const over160 = teamMembers.filter(m => m.totalHours >= 160).length;
-            conclusions.push({ color: over160===tm?'#276749':'#b7791f', text: `${over160} of ${tm} member${tm!==1?'s':''} met the 160-hour monthly target; ${tMostHrs.member} logged the most at ${tMostHrs.totalHours.toFixed(1)} hrs and ${tLeastHrs.member} the least at ${tLeastHrs.totalHours.toFixed(1)} hrs.` });
-            if (tTotalRed + tTotalYellow > 0) {
-              const flagged = teamMembers.filter(m => m.totalFlags > 0).length;
-              conclusions.push({ color: tTotalRed>0?'#c53030':'#b7791f', text: `${flagged} member${flagged!==1?'s have':' has'} SLA violations: ${tTotalRed} red/orange flag${tTotalRed!==1?'s':''} and ${tTotalYellow} yellow flag${tTotalYellow!==1?'s':''} across the team.` });
-            }
-            if (tCompliant > 0) {
-              conclusions.push({ color: '#276749', text: `${tCompliant} member${tCompliant!==1?'s are':' is'} fully SLA-compliant with zero violations: ${teamMembers.filter(m=>m.totalFlags===0).map(m=>m.member).join(', ')}.` });
-            }
-            const breakConcern = teamMembers.filter(m => checkStatus('breakPct', m.breakPercent) !== 'green');
-            if (breakConcern.length > 0) {
-              conclusions.push({ color: breakConcern.some(m=>checkStatus('breakPct',m.breakPercent)==='red')?'#c53030':'#b7791f', text: `${breakConcern.length} member${breakConcern.length!==1?'s':''} (${breakConcern.map(m=>m.member).join(', ')}) have elevated break time percentages above the 10% target.` });
-            } else {
-              const l30c = teamMembers.filter(m => checkStatus('low30Pct', m.low30Percent) !== 'green');
-              if (l30c.length > 0) conclusions.push({ color: l30c.some(m=>checkStatus('low30Pct',m.low30Percent)==='red')?'#c53030':'#b7791f', text: `${l30c.length} member${l30c.length!==1?'s':''} (${l30c.map(m=>m.member).join(', ')}) show elevated low activity ≤30% periods, indicating reduced engagement.` });
-            }
-
-            return (
-              <>
-                {/* PERFORMANCE SUMMARY */}
-                <div style={{background:'linear-gradient(to right,#f0fff4,#ebf8ff)',padding:24,borderRadius:8,border:'1px solid #9ae6b4',marginBottom:24}}>
-                  <div style={{fontSize:20,fontWeight:700,color:'#1c4532',marginBottom:16}}>{selectedTeam} — Performance Summary</div>
-                  <div style={{fontSize:14,color:'#4a5568',marginBottom:16}}>This analysis compares {tm} member{tm!==1?'s':''} in {selectedTeam} during {MONTH} {YEAR}.</div>
-                  <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:16}}>
-                    {[
-                      {label:'Avg Activity', value:tAvgActivity.toFixed(1)+'%', color:'#276749'},
-                      {label:'Avg Hours',    value:tAvgHours.toFixed(1),        color:'#2b6cb0'},
-                      {label:'Total Red Flags',  value:tTotalRed,               color:'#c53030'},
-                      {label:'Total Yellow',     value:tTotalYellow,            color:'#b7791f'},
-                    ].map((tile,i) => (
-                      <div key={i} style={{background:'#ffffff',padding:12,borderRadius:8,boxShadow:'0 1px 3px rgba(0,0,0,0.1)'}}>
-                        <div style={{fontSize:12,color:'#718096'}}>{tile.label}</div>
-                        <div style={{fontSize:20,fontWeight:700,color:tile.color}}>{tile.value}</div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* INDIVIDUAL MEMBER METRICS */}
-                <div style={{marginBottom:16}}>
-                  <div style={{fontSize:18,fontWeight:700,color:'#2d3748',marginBottom:16}}>Individual Member Metrics</div>
-                  <div style={{overflowX:'auto'}}>
-                    <table className="metric-table">
-                      <thead>
-                        <tr>
-                          <th onClick={()=>teamSort('member')}>Member<TeamSortIcon k="member"/></th>
-                          <th onClick={()=>teamSort('activityPercent')}>Activity %<TeamSortIcon k="activityPercent"/></th>
-                          <th onClick={()=>teamSort('totalHours')}>Hours<TeamSortIcon k="totalHours"/></th>
-                          <th onClick={()=>teamSort('breakPercent')}>Break %<TeamSortIcon k="breakPercent"/></th>
-                          <th onClick={()=>teamSort('low20Percent')}>Low Act ≤20%<TeamSortIcon k="low20Percent"/></th>
-                          <th onClick={()=>teamSort('low30Percent')}>Low Act ≤30%<TeamSortIcon k="low30Percent"/></th>
-                          <th onClick={()=>teamSort('totalFlags')}>Flags<TeamSortIcon k="totalFlags"/></th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {teamSortedMembers(teamMembers).map((m,i) => (
-                          <tr key={i} style={{background:'transparent'}}>
-                            <td style={{fontWeight:600,color:'#1a202c',fontSize:13,whiteSpace:'nowrap'}}>{m.member}</td>
-                            <td style={{fontFamily:'DM Mono,monospace',fontSize:12,...cellStyle('activity',m.activityPercent)}}>{m.activityPercent.toFixed(1)}%</td>
-                            <td style={{fontFamily:'DM Mono,monospace',fontSize:12,...cellStyle('hours',m.totalHours)}}>{m.totalHours.toFixed(1)}</td>
-                            <td style={{fontFamily:'DM Mono,monospace',fontSize:12,...cellStyle('breakPct',m.breakPercent)}}>{m.breakPercent.toFixed(1)}%</td>
-                            <td style={{fontFamily:'DM Mono,monospace',fontSize:12,...cellStyle('low20Pct',m.low20Percent)}}>{m.low20Percent.toFixed(1)}%</td>
-                            <td style={{fontFamily:'DM Mono,monospace',fontSize:12,...cellStyle('low30Pct',m.low30Percent)}}>{m.low30Percent.toFixed(1)}%</td>
-                            <td>
-                              {m.totalFlags===0
-                                ? <span style={{color:'#276749',fontWeight:600}}>✓</span>
-                                : <div style={{display:'flex',gap:4,flexWrap:'wrap'}}>
-                                    {m.redFlags>0    && <span style={{color:'#c53030',fontWeight:700,fontSize:12}}>🔴 {m.redFlags}</span>}
-                                    {m.yellowFlags>0 && <span style={{color:'#b7791f',fontWeight:700,fontSize:12}}>⚠️ {m.yellowFlags}</span>}
-                                  </div>
-                              }
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
-                  </div>
-                </div>
-
-                {/* KEY CONCLUSIONS */}
-                <div style={{background:'#f7fafc',padding:20,borderRadius:8,border:'1px solid #e2e8f0',marginTop:16}}>
-                  <div style={{fontSize:16,fontWeight:700,color:'#2d3748',marginBottom:12}}>📋 Key Highlights</div>
-                  {conclusions.map((c,i) => (
-                    <div key={i} style={{display:'flex',alignItems:'flex-start',gap:8,fontSize:14,color:'#4a5568',lineHeight:1.6,marginBottom:8}}>
-                      <span style={{color:c.color,fontWeight:700,flexShrink:0,fontSize:16}}>●</span>
-                      <span>{c.text}</span>
-                    </div>
-                  ))}
-                </div>
-              </>
-            );
-          })()}
-
-        </div>
-      )}
-
     </div>
   );
 };
@@ -709,7 +550,7 @@ ReactDOM.render(<Dashboard />, document.getElementById('root'));
 </script>
 <div style="background:#f0f2f5; padding:32px 16px; text-align:center; margin-top:0;">
   <p style="font-family:'DM Sans',sans-serif; font-size:13px; color:#a0aec0; letter-spacing:0.02em;">
-    Generated for WebLife &middot; Venia Products &middot; February 2026 &middot; SLA thresholds per WebLife SLA Violation Legend v1.0
+    Generated for WebLife &middot; Task Agency &middot; February 2026 &middot; SLA thresholds per WebLife SLA Violation Legend v1.0
   </p>
 </div>
 </body>
