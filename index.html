@@ -12,14 +12,13 @@
   .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 6px; }
   .header p { color: #a0aec0; font-size: 15px; }
   .container { max-width: 900px; margin: 0 auto; padding: 32px 16px; }
-  .month-group { margin-bottom: 36px; }
-  .month-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #718096; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; }
-  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; }
+  .section-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #718096; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 12px; margin-bottom: 36px; }
   .card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 20px; text-decoration: none; color: inherit; transition: transform 0.15s, box-shadow 0.15s; display: flex; flex-direction: column; gap: 6px; }
   .card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.09); }
-  .card-dept { font-weight: 700; font-size: 15px; color: #1a1d23; }
-  .card-meta { font-size: 12px; color: #718096; }
-  .card-badge { display: inline-block; margin-top: 8px; padding: 3px 10px; border-radius: 9999px; font-size: 11px; font-weight: 600; background: #ebf8ff; color: #2b6cb0; border: 1px solid #bee3f8; }
+  .card-dept { font-weight: 700; font-size: 17px; color: #1a1d23; }
+  .card-meta { font-size: 13px; color: #718096; }
+  .card-badge { display: inline-block; margin-top: 10px; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 600; background: #ebf8ff; color: #2b6cb0; border: 1px solid #bee3f8; }
   .footer { text-align: center; padding: 24px; font-size: 12px; color: #a0aec0; }
 </style>
 </head>
@@ -29,84 +28,44 @@
   <div style="max-width:900px;margin:0 auto;">
     <div style="font-size:11px;font-weight:600;letter-spacing:0.1em;color:#a0aec0;text-transform:uppercase;margin-bottom:8px;">WebLife</div>
     <h1>Performance Dashboards</h1>
-    <p>Monthly Hubstaff performance reports by department — share these links with your managers.</p>
+    <p>Monthly Hubstaff performance reports by department — click a department to view all monthly reports.</p>
   </div>
 </div>
 
 <div class="container">
 
-  <div class="month-group">
-    <div class="month-label">January 2026</div>
-    <div class="grid">
-      <a class="card" href="dashboards/task-agency-2026-01.html">
-        <div class="card-dept">Task Agency</div>
-        <div class="card-meta">7 team members · January 2026</div>
-        <span class="card-badge">View Dashboard →</span>
-      </a>
-      <a class="card" href="dashboards/allintalent-2026-01.html">
-        <div class="card-dept">allintalent</div>
-        <div class="card-meta">7 team members · January 2026</div>
-        <span class="card-badge">View Dashboard →</span>
-      </a>
-      <a class="card" href="dashboards/digital-product-2026-01.html">
-        <div class="card-dept">Digital Product</div>
-        <div class="card-meta">14 team members · January 2026</div>
-        <span class="card-badge">View Dashboard →</span>
-      </a>
-      <a class="card" href="dashboards/media-2026-01.html">
-        <div class="card-dept">Media</div>
-        <div class="card-meta">9 team members · January 2026</div>
-        <span class="card-badge">View Dashboard →</span>
-      </a>
-      <!-- Future dashboards will be added here each month -->
-    </div>
-  </div>
-
-  <div class="month-group">
-    <div class="month-label">February 2026</div>
-    <div class="grid">
-      <a class="card" href="dashboards/task-agency-2026-02.html">
-        <div class="card-dept">Task Agency</div>
-        <div class="card-meta">6 team members · February 2026</div>
-        <span class="card-badge">View Dashboard →</span>
-      </a>
-      <a class="card" href="dashboards/digital-product-2026-02.html">
-        <div class="card-dept">Digital Product</div>
-        <div class="card-meta">14 team members · February 2026</div>
-        <span class="card-badge">View Dashboard →</span>
-      </a>
-      <a class="card" href="dashboards/allintalent-2026-02.html">
-        <div class="card-dept">allintalent</div>
-        <div class="card-meta">7 team members · February 2026</div>
-        <span class="card-badge">View Dashboard →</span>
-      </a>
-      <a class="card" href="dashboards/media-2026-02.html">
-        <div class="card-dept">Media</div>
-        <div class="card-meta">8 team members · February 2026</div>
-        <span class="card-badge">View Dashboard →</span>
-      </a>
-      <a class="card" href="dashboards/marketing-media-2026-02.html">
-        <div class="card-dept">Marketing + Media</div>
-        <div class="card-meta">12 team members · February 2026</div>
-        <span class="card-badge">View Dashboard →</span>
-      </a>
-      <a class="card" href="dashboards/venia-products-2026-02.html">
-        <div class="card-dept">Venia Products</div>
-        <div class="card-meta">27 team members · February 2026</div>
-        <span class="card-badge">View Dashboard →</span>
-      </a>
-    </div>
-  </div>
-
-  <div class="month-group">
-    <div class="month-label">March 2026</div>
-    <div class="grid">
-      <a class="card" href="dashboards/task-agency-2026-03.html">
-        <div class="card-dept">Task Agency</div>
-        <div class="card-meta">7 team members · March 2026</div>
-        <span class="card-badge">View Dashboard →</span>
-      </a>
-    </div>
+  <div class="section-label">Departments</div>
+  <div class="grid">
+    <a class="card" href="task-agency.html">
+      <div class="card-dept">Task Agency</div>
+      <div class="card-meta">Jan · Feb · Mar 2026</div>
+      <span class="card-badge">View All Reports →</span>
+    </a>
+    <a class="card" href="allintalent.html">
+      <div class="card-dept">allintalent</div>
+      <div class="card-meta">Jan · Feb 2026</div>
+      <span class="card-badge">View All Reports →</span>
+    </a>
+    <a class="card" href="digital-product.html">
+      <div class="card-dept">Digital Product</div>
+      <div class="card-meta">Jan · Feb 2026</div>
+      <span class="card-badge">View All Reports →</span>
+    </a>
+    <a class="card" href="media.html">
+      <div class="card-dept">Media</div>
+      <div class="card-meta">Jan · Feb 2026</div>
+      <span class="card-badge">View All Reports →</span>
+    </a>
+    <a class="card" href="marketing-media.html">
+      <div class="card-dept">Marketing + Media</div>
+      <div class="card-meta">Feb 2026</div>
+      <span class="card-badge">View All Reports →</span>
+    </a>
+    <a class="card" href="venia-products.html">
+      <div class="card-dept">Venia Products</div>
+      <div class="card-meta">Feb 2026</div>
+      <span class="card-badge">View All Reports →</span>
+    </a>
   </div>
 
 </div>

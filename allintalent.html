@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>allintalent · Performance Dashboards</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #f0f2f5; color: #1a1d23; min-height: 100vh; }
+  .header { background: linear-gradient(135deg, #1a1d23 0%, #2d3748 100%); color: white; padding: 40px 32px; }
+  .back-link { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: #a0aec0; text-decoration: none; margin-bottom: 16px; transition: color 0.15s; }
+  .back-link:hover { color: white; }
+  .header-dept { font-size: 11px; font-weight: 600; letter-spacing: 0.1em; color: #a0aec0; text-transform: uppercase; margin-bottom: 8px; }
+  .header h1 { font-size: 28px; font-weight: 700; margin-bottom: 6px; }
+  .header p { color: #a0aec0; font-size: 15px; }
+  .container { max-width: 900px; margin: 0 auto; padding: 32px 16px; }
+  .section-label { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; color: #718096; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 2px solid #e2e8f0; }
+  .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 12px; margin-bottom: 36px; }
+  .card { background: white; border-radius: 12px; border: 1px solid #e2e8f0; padding: 20px; text-decoration: none; color: inherit; transition: transform 0.15s, box-shadow 0.15s; display: flex; flex-direction: column; gap: 6px; }
+  .card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.09); }
+  .card-month { font-weight: 700; font-size: 18px; color: #1a1d23; }
+  .card-meta { font-size: 13px; color: #718096; }
+  .card-badge { display: inline-block; margin-top: 10px; padding: 4px 12px; border-radius: 9999px; font-size: 12px; font-weight: 600; background: #ebf8ff; color: #2b6cb0; border: 1px solid #bee3f8; }
+  .footer { text-align: center; padding: 24px; font-size: 12px; color: #a0aec0; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div style="max-width:900px;margin:0 auto;">
+    <a class="back-link" href="index.html">
+      <svg width="14" height="14" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7"/></svg>
+      All Departments
+    </a>
+    <div class="header-dept">WebLife · Department Hub</div>
+    <h1>allintalent</h1>
+    <p>Monthly performance dashboards — click a month to view the full report.</p>
+  </div>
+</div>
+
+<div class="container">
+
+  <div class="section-label">2026</div>
+  <div class="grid">
+    <a class="card" href="dashboards/allintalent-2026-02.html">
+      <div class="card-month">February 2026</div>
+      <div class="card-meta">7 team members</div>
+      <span class="card-badge">View Dashboard →</span>
+    </a>
+    <a class="card" href="dashboards/allintalent-2026-01.html">
+      <div class="card-month">January 2026</div>
+      <div class="card-meta">7 team members</div>
+      <span class="card-badge">View Dashboard →</span>
+    </a>
+  </div>
+
+</div>
+
+<div class="footer">
+  WebLife · allintalent · Hubstaff Performance Reporting System · Powered by Claude Code
+</div>
+
+</body>
+</html>
