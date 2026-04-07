@@ -12,22 +12,29 @@ Converts raw Hubstaff time-tracking CSV exports into standalone, interactive HTM
 
 ```
 /
-├── index.html                  → Hub page linking to all dashboards (update each month)
+├── index.html                  → Master hub page linking to all department hubs
 ├── CLAUDE.md                   → This file
 ├── .gitignore
-├── data/
-│   └── YYYY-MM-master.csv      → Raw Hubstaff export for that month
+├── data/                       → Raw Hubstaff CSVs (local only, gitignored)
+│   └── YYYY-MM-master.csv
+├── hubs/                       → Department hub pages (one per department)
+│   ├── task-agency.html
+│   ├── allintalent.html
+│   ├── digital-product.html
+│   ├── media.html
+│   ├── marketing-media.html
+│   └── venia-products.html
 ├── template/
 │   ├── dashboard-template.html → Single-tab dashboard (most departments)
 │   ├── template-2tab.html      → Two-tab dashboard
 │   └── template-3tab.html      → Three-tab dashboard (e.g. Digital Product, Venia)
 └── dashboards/
-    ├── task-agency/            → Task Agency dashboards
-    ├── allintalent/            → allintalent dashboards
-    ├── digital-product/        → Digital Product dashboards
-    ├── media/                  → Media dashboards
-    ├── marketing-media/        → Marketing + Media dashboards
-    └── venia-products/         → Venia Products dashboards
+    ├── task-agency/            → Task Agency monthly dashboards
+    ├── allintalent/            → allintalent monthly dashboards
+    ├── digital-product/        → Digital Product monthly dashboards
+    ├── media/                  → Media monthly dashboards
+    ├── marketing-media/        → Marketing + Media monthly dashboards
+    └── venia-products/         → Venia Products monthly dashboards
 ```
 
 ---
@@ -266,7 +273,7 @@ print(f"Saved {len(df)} members → {out_path}")
 3. **Pick the right template** — See template column in the department table above
 4. **Populate the dashboard** — Copy the template, embed the JSON data in the `DATA BLOCK` section, fill in month/year/member counts
 5. **Save to `dashboards/{slug}/`** — e.g. `dashboards/task-agency/task-agency-2026-03.html`
-6. **Update the department hub page** (e.g. `task-agency.html`) — add a new card; update the back nav href in the new dashboard to `../../{slug}.html`
+6. **Update the department hub page** (e.g. `hubs/task-agency.html`) — add a new card at the top as "Latest Report", move the old latest to "Previous Reports"; set back nav href in the new dashboard to `../../hubs/{slug}.html`
 7. **Commit and push** — Use descriptive commit messages; credit Claude as co-author
 
 The data block in each dashboard is marked with:
