@@ -7,7 +7,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/prop-types/15.8.1/prop-types.min.js"></script>
-<script src="https://unpkg.com/recharts@2.8.0/umd/Recharts.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
 <style>
@@ -62,7 +61,6 @@
 <div id="root"></div>
 <script type="text/babel">
 const { useState, useMemo } = React;
-const { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, ReferenceLine } = Recharts;
 
 // ============================================================================
 // DATA — allintalent, January 2026
@@ -380,14 +378,14 @@ const Dashboard = () => {
                 </div>
                 <div className="insight-card" style={{display:'flex',flexDirection:'column',alignItems:'center'}}>
                   <div style={{fontWeight:700,marginBottom:12,fontSize:14,color:'#4a5568',alignSelf:'flex-start'}}>SLA Status Distribution</div>
-                  <ResponsiveContainer width="100%" height={200}>
-                    <PieChart>
-                      <Pie data={pieData} cx="50%" cy="50%" innerRadius={55} outerRadius={85} paddingAngle={3} dataKey="value" label={({value})=>`${value}`} labelLine={false}>
-                        {pieData.map((e,i)=><Cell key={i} fill={e.color} />)}
-                      </Pie>
-                      <Tooltip formatter={(v,n)=>[v+' members',n]} />
-                    </PieChart>
-                  </ResponsiveContainer>
+                  <div style={{width:'100%',padding:'16px 0',display:'flex',justifyContent:'center',gap:12,flexWrap:'wrap'}}>
+                    {pieData.map((e,i)=>(
+                      <div key={i} style={{textAlign:'center',padding:'14px 18px',borderRadius:10,background:'#f7fafc',border:`2px solid ${e.color}`,minWidth:90}}>
+                        <div style={{fontSize:30,fontWeight:700,color:e.color,lineHeight:1}}>{e.value}</div>
+                        <div style={{fontSize:11,color:'#718096',marginTop:5}}>{e.name}</div>
+                      </div>
+                    ))}
+                  </div>
                   <div style={{display:'flex',flexWrap:'wrap',gap:8,justifyContent:'center',marginTop:8}}>
                     {pieData.map((e,i)=>(
                       <div key={i} style={{display:'flex',alignItems:'center',gap:5,fontSize:12}}>

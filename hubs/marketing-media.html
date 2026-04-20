@@ -32,6 +32,14 @@
   .badge-latest { display: inline-block; background: linear-gradient(135deg, #c6f6d5, #9ae6b4); color: #22543d; font-size: 11px; font-weight: 700; padding: 3px 10px; border-radius: 9999px; letter-spacing: 0.04em; text-transform: uppercase; }
   .view-btn { display: inline-flex; align-items: center; gap: 5px; background: #2b6cb0; color: white; font-size: 13px; font-weight: 600; padding: 8px 16px; border-radius: 8px; transition: background 0.15s; white-space: nowrap; }
   .latest-card:hover .view-btn { background: #2c5282; }
+  .prev-card { background: white; border-radius: 14px; border: 1px solid #e2e8f0; padding: 20px 24px; margin-bottom: 10px; text-decoration: none; color: inherit; display: flex; align-items: center; gap: 16px; transition: transform 0.15s, box-shadow 0.15s; }
+  .prev-card:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(0,0,0,0.08); }
+  .prev-card .card-month-badge { min-width: 52px; height: 52px; background: #f7fafc; border: 1px solid #e2e8f0; }
+  .prev-card .card-month-abbr { color: #4a5568; }
+  .prev-card .card-month-year { color: #a0aec0; }
+  .prev-card .card-title { font-size: 16px; }
+  .prev-view { display: inline-flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; color: #3182ce; white-space: nowrap; }
+  .prev-card:hover .prev-view { color: #2b6cb0; }
   .footer { text-align: center; padding: 28px; font-size: 12px; color: #a0aec0; border-top: 1px solid #e2e8f0; margin-top: 8px; }
 </style>
 </head>
