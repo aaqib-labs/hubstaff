@@ -1,0 +1,72 @@
+{
+  "_readme": "This file is read by Claude Cowork each month to post dashboard links to ClickUp. To trigger delivery, say: 'Post [Month] [Year] dashboards to ClickUp'. Update task_id values if ClickUp tasks are ever recreated.",
+
+  "base_url": "https://aaqib-labs.github.io/hubstaff/dashboards",
+
+  "departments": [
+    {
+      "name": "Task Agency",
+      "slug": "task-agency",
+      "clickup_task_id": "86ex86p2v",
+      "greeting": "Hi Sean,",
+      "hiring_managers": [
+        { "name": "Sean De Hoedt", "clickup_id": 95554135 }
+      ],
+      "comment_assignee_id": 95554135
+    },
+    {
+      "name": "Digital Product",
+      "slug": "digital-product",
+      "clickup_task_id": "86ex86t2n",
+      "greeting": "Hi Adam and Dr. Yashoda,",
+      "hiring_managers": [
+        { "name": "Adam Burdeshaw", "clickup_id": 48177119 },
+        { "name": "Dr. Yashoda Velananda", "clickup_id": 89593630 }
+      ],
+      "comment_assignee_id": 89593630
+    },
+    {
+      "name": "Marketing + Media",
+      "slug": "marketing-media",
+      "clickup_task_id": "86ex86t2j",
+      "greeting": "Hi Lucas and Saduka,",
+      "hiring_managers": [
+        { "name": "Lucas", "clickup_id": 12616997 },
+        { "name": "Saduka Sachintha", "clickup_id": 95459820 }
+      ],
+      "comment_assignee_id": 95459820
+    },
+    {
+      "name": "Media",
+      "slug": "media",
+      "clickup_task_id": "86ex86t2g",
+      "greeting": "Hi Rannie,",
+      "hiring_managers": [
+        { "name": "Rannie Belen", "clickup_id": 89559997 }
+      ],
+      "comment_assignee_id": 89559997
+    },
+    {
+      "name": "allintalent",
+      "slug": "allintalent",
+      "clickup_task_id": "86ex86t2k",
+      "greeting": "Hi Kushani,",
+      "hiring_managers": [
+        { "name": "Kushani Kalpage", "clickup_id": 95543804 }
+      ],
+      "comment_assignee_id": 95543804
+    },
+    {
+      "name": "Venia Products",
+      "slug": "venia-products",
+      "clickup_task_id": "86ex86t2h",
+      "greeting": "Hi Eden,",
+      "hiring_managers": [
+        { "name": "Eden Schweyer", "clickup_id": 89451390 }
+      ],
+      "comment_assignee_id": 89451390
+    }
+  ],
+
+  "comment_template": "{greeting}\n\nThe **{department} {month} {year}** performance dashboard is ready for your review.\n\n🔗 {dashboard_url}\n\nThis covers activity %, total hours, break time, low activity flags, and SLA compliance for the full month of {month}. Let me know if you have any questions!\n\n— Aaqib"
+}

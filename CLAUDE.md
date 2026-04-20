@@ -86,7 +86,7 @@ Raw file location: `data/YYYY-MM-master.csv`
 |---|---|---|---|
 | Activity % | < 35% | < 45% | — |
 | Total Hours | < 160 hrs | — | ≥ 200 hrs |
-| Break % | ≥ 12% | ≥ 10% | — |
+| Break % | ≥ 12% | > 10% | — |
 | Manual % | ≥ 10% | ≥ 5% | — |
 | Low Activity ≤20% | ≥ 15% | ≥ 7.5% | — |
 | Low Activity ≤30% | ≥ 20% | ≥ 10% | — |
@@ -135,7 +135,7 @@ Members not present in Files 3 or 4 get `0.0` for those low-activity columns.
 | Hours red | `H🔴` | Total Worked Hours < 160 |
 | Hours orange | `H🟠` | Total Worked Hours ≥ 200 — **legend only, not counted in flags** |
 | Break red | `B🔴` | Break % ≥ 12% |
-| Break yellow | `B⚠️` | Break % ≥ 10% (and < 12%) |
+| Break yellow | `B⚠️` | Break % > 10% (and < 12%) |
 | Manual red | `M🔴` | Manual % ≥ 10% |
 | Manual yellow | `M⚠️` | Manual % ≥ 5% (and < 10%) |
 | Low Act ≤20% red | `20🔴` | Low Activity % (≤20%) ≥ 15% |
