@@ -73,7 +73,7 @@ Raw file location: `data/YYYY-MM-master.csv`
 - `Low Activity % (≤30%)` — those hours as % of total
 - `SLA Violation Legend` — calculated SLA flags, format: `MetricCode🔴/⚠️/🟠`, comma-separated (e.g. `A🔴, H🔴, 20⚠️`). Blank if fully compliant.
 - `Red Flag Count` — number of 🔴 flags
-- `Yellow Flag Count` — number of ⚠️ flags (orange `H🟠` is NOT counted)
+- `Yellow Flag Count` — number of ⚠️ flags only (orange `H🟠` is NOT counted here — it counts with red)
 - `Total Flags` — Red Flag Count + Yellow Flag Count
 
 > **Note:** `Total Manual Hours` and `Manual % of Total` are included in the master CSV but are **never shown in dashboards**. They are collected for record-keeping only.
@@ -133,7 +133,7 @@ Members not present in Files 3 or 4 get `0.0` for those low-activity columns.
 | Activity red | `A🔴` | Activity % < 35% |
 | Activity yellow | `A⚠️` | Activity % < 45% (and ≥ 35%) |
 | Hours red | `H🔴` | Total Worked Hours < 160 |
-| Hours orange | `H🟠` | Total Worked Hours ≥ 200 — **legend only, not counted in flags** |
+| Hours orange | `H🟠` | Total Worked Hours ≥ 200 — **counted together with red in the "Red/Orange Flags" total** |
 | Break red | `B🔴` | Break % ≥ 12% |
 | Break yellow | `B⚠️` | Break % > 10% (and < 12%) |
 | Manual red | `M🔴` | Manual % ≥ 10% |
@@ -143,7 +143,7 @@ Members not present in Files 3 or 4 get `0.0` for those low-activity columns.
 | Low Act ≤30% red | `30🔴` | Low Activity % (≤30%) ≥ 20% |
 | Low Act ≤30% yellow | `30⚠️` | Low Activity % (≤30%) ≥ 10% (and < 20%) |
 
-`Red Flag Count` = count of 🔴 flags. `Yellow Flag Count` = count of ⚠️ flags. Orange (`H🟠`) does **not** count toward either.
+`Red Flag Count` = count of 🔴 flags **plus** 🟠 orange. `Yellow Flag Count` = count of ⚠️ flags only. The dashboard label reads "Red/Orange Flags" to reflect this.
 
 **SLA Violation Legend format:** `MetricCode + emoji`, comma-separated, reds first then yellows then orange. Leave blank if fully compliant.
 ```
@@ -225,7 +225,7 @@ def sla_flags(row):
     if act < 35:      reds.append('A🔴')
     elif act < 45:    yellows.append('A⚠️')
     if hrs < 160:     reds.append('H🔴')
-    elif hrs >= 200:  oranges.append('H🟠')  # legend only, not counted
+    elif hrs >= 200:  oranges.append('H🟠')  # counted with red in Red/Orange Flags total
     if brk >= 12:     reds.append('B🔴')
     elif brk >= 10:   yellows.append('B⚠️')
     if man >= 10:     reds.append('M🔴')

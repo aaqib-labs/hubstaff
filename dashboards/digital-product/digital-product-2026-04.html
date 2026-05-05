@@ -1,0 +1,702 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Digital Product – April 2026 Performance Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prop-types/15.8.1/prop-types.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: #f7fafc; color: #1a202c; font-size: 16.5px; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  .fade-in { animation: fadeIn 0.25s ease; }
+  .metric-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  .metric-table thead { background: #f7fafc; }
+  .metric-table th { color: #718096; font-weight: 600; font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; padding: 10px 12px; border-bottom: 2px solid #e2e8f0; text-align: left; cursor: pointer; white-space: nowrap; }
+  .metric-table th:hover { background: #edf2f7; }
+  .metric-table td { padding: 11px 12px; border-bottom: 1px solid #e2e8f0; vertical-align: middle; }
+  .metric-table tr:last-child td { border-bottom: none; }
+  .metric-table tr:hover td { background: #f7fafc; }
+</style>
+</head>
+<body>
+<nav style="background:#1a1d23;border-bottom:1px solid #2d3748;padding:11px 24px;display:flex;align-items:center;font-family:'DM Sans',sans-serif;position:sticky;top:0;z-index:999;">
+  <a href="../../hubs/digital-product.html" style="display:inline-flex;align-items:center;gap:6px;color:#a0aec0;text-decoration:none;font-size:13px;font-weight:500;transition:color 0.15s;" onmouseover="this.style.color='white'" onmouseout="this.style.color='#a0aec0'">
+    <svg width="14" height="14" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/></svg>
+    Digital Product
+  </a>
+</nav>
+<div id="root"></div>
+<script type="text/babel">
+const { useState, useMemo } = React;
+
+// ============================================================================
+// DATA — Digital Product, April 2026
+// !! THIS BLOCK IS AUTO-POPULATED BY CLAUDE EACH MONTH — DO NOT EDIT MANUALLY !!
+// ============================================================================
+const MONTH = "April";
+const YEAR  = "2026";
+const DEPT  = "Digital Product";
+
+const data = [
+  { member: "Adam Burdeshaw",        activityPercent: 55.0, totalHours: 195.2, breakHours: 13.4, breakPercent: 6.8,  manualHours: 6.2,  manualPercent: 3.2, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 4.4,  low30Percent: 2.3,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Bihani Madushika",      activityPercent: 49.0, totalHours: 170.1, breakHours: 12.8, breakPercent: 7.5,  manualHours: 0.0,  manualPercent: 0.0, low20Hours: 0.4,  low20Percent: 0.2,  low30Hours: 10.7, low30Percent: 6.3,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Chathuranga Weerakoon", activityPercent: 51.0, totalHours: 169.8, breakHours: 15.3, breakPercent: 9.0,  manualHours: 0.0,  manualPercent: 0.0, low20Hours: 1.2,  low20Percent: 0.7,  low30Hours: 1.2,  low30Percent: 0.7,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Dr. Yashoda Velananda", activityPercent: 46.0, totalHours: 174.9, breakHours: 14.6, breakPercent: 8.3,  manualHours: 1.1,  manualPercent: 0.6, low20Hours: 0.7,  low20Percent: 0.4,  low30Hours: 1.8,  low30Percent: 1.0,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Hasala Jayasuriya",     activityPercent: 53.0, totalHours: 184.3, breakHours: 14.9, breakPercent: 8.1,  manualHours: 0.0,  manualPercent: 0.0, low20Hours: 1.8,  low20Percent: 1.0,  low30Hours: 1.9,  low30Percent: 1.0,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Jomal Mathew",          activityPercent: 59.0, totalHours: 179.3, breakHours: 18.3, breakPercent: 10.2, manualHours: 0.5,  manualPercent: 0.3, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 9.6,  low30Percent: 5.4,  redFlags: 0, yellowFlags: 1, totalFlags: 1 },
+  { member: "Kianna Xue",            activityPercent: 47.0, totalHours: 151.1, breakHours: 9.8,  breakPercent: 6.5,  manualHours: 0.0,  manualPercent: 0.0, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 8.9,  low30Percent: 5.9,  redFlags: 1, yellowFlags: 0, totalFlags: 1 },
+  { member: "Kunchana Prabashwara",  activityPercent: 70.0, totalHours: 194.2, breakHours: 15.8, breakPercent: 8.2,  manualHours: 0.0,  manualPercent: 0.0, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 0.0,  low30Percent: 0.0,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Laleesha Wijeratne",    activityPercent: 48.0, totalHours: 173.6, breakHours: 12.9, breakPercent: 7.4,  manualHours: 0.5,  manualPercent: 0.3, low20Hours: 10.4, low20Percent: 6.0,  low30Hours: 28.1, low30Percent: 16.2, redFlags: 0, yellowFlags: 1, totalFlags: 1 },
+  { member: "Modhuka Paranagama",    activityPercent: 57.0, totalHours: 186.0, breakHours: 16.6, breakPercent: 8.9,  manualHours: 1.2,  manualPercent: 0.6, low20Hours: 2.7,  low20Percent: 1.4,  low30Hours: 7.5,  low30Percent: 4.1,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Muhammad Usman",        activityPercent: 61.0, totalHours: 162.4, breakHours: 9.8,  breakPercent: 6.0,  manualHours: 1.3,  manualPercent: 0.8, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 0.0,  low30Percent: 0.0,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Nishantha Hettiarachchi",activityPercent: 32.0, totalHours: 229.9, breakHours: 7.5,  breakPercent: 3.3,  manualHours: 0.0,  manualPercent: 0.0, low20Hours: 9.2,  low20Percent: 4.0,  low30Hours: 65.8, low30Percent: 28.6, redFlags: 2, yellowFlags: 0, totalFlags: 3 },
+  { member: "Ramez Sedra",           activityPercent: 51.0, totalHours: 173.5, breakHours: 13.7, breakPercent: 7.9,  manualHours: 0.0,  manualPercent: 0.0, low20Hours: 4.1,  low20Percent: 2.3,  low30Hours: 9.4,  low30Percent: 5.4,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Shehara Meadows",       activityPercent: 33.0, totalHours: 159.5, breakHours: 13.3, breakPercent: 8.3,  manualHours: 8.2,  manualPercent: 5.2, low20Hours: 11.7, low20Percent: 7.4,  low30Hours: 49.3, low30Percent: 30.9, redFlags: 3, yellowFlags: 1, totalFlags: 4 },
+  { member: "Thushan Fernando",      activityPercent: 52.0, totalHours: 187.4, breakHours: 16.3, breakPercent: 8.7,  manualHours: 0.0,  manualPercent: 0.0, low20Hours: 2.8,  low20Percent: 1.5,  low30Hours: 11.7, low30Percent: 6.2,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Upeksha Liyanage",      activityPercent: 58.0, totalHours: 184.8, breakHours: 15.0, breakPercent: 8.1,  manualHours: 0.0,  manualPercent: 0.0, low20Hours: 1.7,  low20Percent: 0.9,  low30Hours: 14.2, low30Percent: 7.7,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+];
+
+// Team sub-categories for Tab 3: Team Analytics
+// Format: { "Sub-Team Name": ["Member 1", "Member 2"], ... }
+const TEAM_CATEGORIES = {
+  "Site Content Team": ["Kunchana Prabashwara", "Ramez Sedra", "Shehara Meadows"],
+  "Catalog Team": ["Jomal Mathew", "Laleesha Wijeratne"],
+  "BI Team": ["Bihani Madushika", "Modhuka Paranagama"],
+  "Platform & Engineering Team": ["Hasala Jayasuriya", "Nishantha Hettiarachchi", "Thushan Fernando", "Upeksha Liyanage"],
+  "CRM Team": ["Adam Burdeshaw", "Chathuranga Weerakoon", "Dr. Yashoda Velananda", "Kianna Xue", "Muhammad Usman"],
+  "DP - Leads": ["Adam Burdeshaw", "Bihani Madushika", "Dr. Yashoda Velananda", "Laleesha Wijeratne", "Nishantha Hettiarachchi", "Shehara Meadows"],
+};
+// ============================================================================
+// END DATA BLOCK
+// ============================================================================
+
+// ============================================================================
+// SLA THRESHOLDS — locked, do not change
+// ============================================================================
+const SLA = {
+  activity:  { red: 35,  yellow: 45 },
+  hours:     { red: 160, orange: 200 },
+  breakPct:  { red: 12,  yellow: 10.1 },
+  manualPct: { red: 10,  yellow: 5 },
+  low20Pct:  { red: 15,  yellow: 7.5 },
+  low30Pct:  { red: 20,  yellow: 10 },
+};
+
+const checkStatus = (metric, value) => {
+  const t = SLA[metric];
+  if (!t) return 'green';
+  if (metric === 'activity' || metric === 'hours') {
+    if (value < t.red) return 'red';
+    if (t.yellow && value < t.yellow) return 'yellow';
+    if (t.orange && value >= t.orange) return 'orange';
+    return 'green';
+  }
+  if (value >= t.red) return 'red';
+  if (value >= t.yellow) return 'yellow';
+  return 'green';
+};
+
+// Compute flags from SLA thresholds — 5 metrics shown in heatmap table
+// Manual % is excluded (not displayed in heatmap, not counted in flags)
+// orange (hours ≥200) counts as red/orange flag
+const computeFlags = (m) => {
+  const statuses = [
+    checkStatus('activity',  m.activityPercent),
+    checkStatus('hours',     m.totalHours),
+    checkStatus('breakPct',  m.breakPercent),
+    checkStatus('low20Pct',  m.low20Percent),
+    checkStatus('low30Pct',  m.low30Percent),
+  ];
+  const red    = statuses.filter(s => s === 'red' || s === 'orange').length;
+  const yellow = statuses.filter(s => s === 'yellow').length;
+  return { redFlags: red, yellowFlags: yellow, totalFlags: red + yellow };
+};
+
+// Returns text color + fontWeight based on SLA status (no cell background)
+const cellStyle = (metric, value) => {
+  const s = checkStatus(metric, value);
+  if (s === 'red')    return { color: '#c53030', fontWeight: 700 };
+  if (s === 'yellow') return { color: '#b7791f', fontWeight: 600 };
+  if (s === 'orange') return { color: '#c05621', fontWeight: 600 };
+  return { color: '#1a202c', fontWeight: 400 };
+};
+
+// Returns pill badge style for Tab 2 heatmap cell values
+const pillStyle = (metric, value) => {
+  const s = checkStatus(metric, value);
+  const base = { display:'inline-block', padding:'5px 12px', borderRadius:6, fontSize:13, fontWeight:600, textAlign:'center', minWidth:90 };
+  if (s === 'red')    return { ...base, background:'#fff5f5', color:'#c53030', border:'1px solid #fed7d7' };
+  if (s === 'yellow') return { ...base, background:'#fffff0', color:'#b7791f', border:'1px solid #fefcbf' };
+  if (s === 'orange') return { ...base, background:'#fffaf0', color:'#c05621', border:'1px solid #fbd38d' };
+  return { ...base, background:'#f0fff4', color:'#276749', border:'1px solid #9ae6b4' };
+};
+
+// ============================================================================
+// MAIN COMPONENT
+// ============================================================================
+const Dashboard = () => {
+  // Recompute flags from SLA thresholds — overrides CSV-provided values for accuracy
+  data.forEach(m => { const f = computeFlags(m); m.redFlags = f.redFlags; m.yellowFlags = f.yellowFlags; m.totalFlags = f.totalFlags; });
+
+  const [tab, setTab]                   = useState(1);
+  const [sortKey, setSortKey]           = useState(null);
+  const [sortDir, setSortDir]           = useState('asc');
+  const [selectedTeam, setSelectedTeam] = useState(() => Object.keys(TEAM_CATEGORIES)[0]);
+  const [openMetric, setOpenMetric]     = useState(null);
+  const [teamSortKey, setTeamSortKey]   = useState(null);
+  const [teamSortDir, setTeamSortDir]   = useState('asc');
+
+  const n                = data.length;
+  const avgActivity      = n > 0 ? data.reduce((s, m) => s + m.activityPercent, 0) / n : 0;
+  const avgHours         = n > 0 ? data.reduce((s, m) => s + m.totalHours, 0) / n : 0;
+  const totalRedFlags    = data.reduce((s, m) => s + m.redFlags, 0);
+  const totalYellowFlags = data.reduce((s, m) => s + m.yellowFlags, 0);
+  const totalFlags       = data.reduce((s, m) => s + m.totalFlags, 0);
+  const noViolations     = data.filter(m => m.totalFlags === 0).length;
+
+  const sortedData = useMemo(() => {
+    if (!sortKey) return data;
+    return [...data].sort((a, b) => {
+      const av = a[sortKey], bv = b[sortKey];
+      if (typeof av === 'number') return sortDir === 'asc' ? av - bv : bv - av;
+      return sortDir === 'asc' ? String(av).localeCompare(String(bv)) : String(bv).localeCompare(String(av));
+    });
+  }, [sortKey, sortDir]);
+
+  const sort = (key) => {
+    if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+    else { setSortKey(key); setSortDir('asc'); }
+  };
+
+  const teamSortedMembers = (members) => {
+    if (!teamSortKey) return [...members].sort((a,b) => b.activityPercent - a.activityPercent);
+    return [...members].sort((a, b) => {
+      const av = a[teamSortKey], bv = b[teamSortKey];
+      if (typeof av === 'number') return teamSortDir === 'asc' ? av - bv : bv - av;
+      return teamSortDir === 'asc' ? String(av).localeCompare(String(bv)) : String(bv).localeCompare(String(av));
+    });
+  };
+
+  const teamSort = (key) => {
+    if (teamSortKey === key) setTeamSortDir(d => d === 'asc' ? 'desc' : 'asc');
+    else { setTeamSortKey(key); setTeamSortDir('asc'); }
+  };
+
+  const SortIcon = ({ k }) => (
+    <span style={{color: sortKey === k ? '#3182ce' : '#cbd5e0', marginLeft: 4}}>
+      {sortKey === k ? (sortDir === 'asc' ? '↑' : '↓') : '↕'}
+    </span>
+  );
+
+  const TeamSortIcon = ({ k }) => (
+    <span style={{color: teamSortKey === k ? '#38a169' : '#cbd5e0', marginLeft: 4}}>
+      {teamSortKey === k ? (teamSortDir === 'asc' ? '↑' : '↓') : '↕'}
+    </span>
+  );
+
+  const tabBtn = (t, label, gradActive, icon) => (
+    <button
+      key={t}
+      onClick={() => setTab(t)}
+      style={{
+        padding: '14px 24px', fontWeight: 500, fontSize: 16, borderRadius: 8,
+        transition: 'all 0.2s', marginRight: 12, border: 'none', cursor: 'pointer',
+        display: 'flex', alignItems: 'center', fontFamily: 'DM Sans, sans-serif',
+        ...(tab === t
+          ? { background: gradActive, color: 'white', boxShadow: '0 4px 6px rgba(0,0,0,0.1)', transform: 'scale(1.05)' }
+          : { background: '#edf2f7', color: '#4a5568' })
+      }}
+    >
+      {icon}
+      {label}
+    </button>
+  );
+
+  return (
+    <div style={{maxWidth: 1400, margin: '0 auto', padding: '20px 16px'}}>
+
+      {/* PAGE TITLE */}
+      <h1 style={{fontSize: 24, fontWeight: 700, color: '#2d3748', marginBottom: 24}}>
+        {DEPT} Performance Dashboard - {MONTH} {YEAR}
+      </h1>
+
+      {/* TAB BUTTON ROW */}
+      <div style={{display: 'flex', background: '#ffffff', padding: 12, borderRadius: 8, boxShadow: '0 1px 3px rgba(0,0,0,0.1)', marginBottom: 24, flexWrap: 'wrap'}}>
+        {tabBtn(1, 'SLA Overview', 'linear-gradient(to right, #2b6cb0, #3182ce)',
+          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{marginRight: 8}}><path strokeLinecap="round" strokeLinejoin="round" d="M9 17V7m0 10a2 2 0 01-2 2H5a2 2 0 01-2-2V7a2 2 0 012-2h2a2 2 0 012 2m0 10a2 2 0 002 2h2a2 2 0 002-2M9 7a2 2 0 012-2h2a2 2 0 012 2m0 10V7m0 10a2 2 0 002 2h2a2 2 0 002-2V7a2 2 0 00-2-2h-2a2 2 0 00-2 2"/></svg>
+        )}
+        {tabBtn(2, 'SLA Heatmap', 'linear-gradient(to right, #553c9a, #6b46c1)',
+          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{marginRight: 8}}><path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+        )}
+        {tabBtn(3, 'Team Analytics', 'linear-gradient(to right, #276749, #38a169)',
+          <svg width="20" height="20" fill="none" stroke="currentColor" strokeWidth="2" viewBox="0 0 24 24" style={{marginRight: 8}}><path strokeLinecap="round" strokeLinejoin="round" d="M11 3.055A9.001 9.001 0 1020.945 13H11V3.055z"/><path strokeLinecap="round" strokeLinejoin="round" d="M20.488 9H15V3.512A9.025 9.025 0 0120.488 9z"/></svg>
+        )}
+      </div>
+
+      {/* ══════════════════════════════════════════
+          TAB 1 — SLA OVERVIEW
+          ══════════════════════════════════════════ */}
+      {tab === 1 && (
+        <div className="fade-in" style={{background: '#ffffff', padding: 24, borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)'}}>
+
+          <h2 style={{fontSize: 24, fontWeight: 700, color: '#2d3748', borderBottom: '2px solid #e2e8f0', paddingBottom: 12, marginBottom: 24}}>
+            {MONTH} {YEAR} Executive Summary - {DEPT}
+          </h2>
+
+          {/* SECTION 1: Team Overview Summary */}
+          <div style={{marginBottom: 16}}>
+            <div style={{display: 'flex', alignItems: 'center', padding: 16, borderRadius: 8, background: 'linear-gradient(135deg, #ebf8ff, #e6fffa)', border: '1px solid #90cdf4', boxShadow: '0 1px 3px rgba(0,0,0,0.1)'}}>
+              <div style={{display: 'flex', alignItems: 'center'}}>
+                <div style={{width: 36, height: 36, borderRadius: 9999, background: '#3182ce', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12}}>
+                  <svg width="24" height="24" fill="none" stroke="white" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+                </div>
+                <span style={{fontSize: 20, fontWeight: 700, color: '#1e4e8c'}}>1. Team Overview Summary</span>
+              </div>
+            </div>
+            <div style={{paddingTop: 20}}>
+
+              {/* 6 KPI TILES */}
+              <div style={{display: 'grid', gridTemplateColumns: 'repeat(6, 1fr)', gap: 16, marginBottom: 24}}>
+                {[
+                  { label: 'Total Members',          value: n,                        bg: '#ebf8ff', border: '1px solid #bee3f8', iconColor: '#3182ce', valColor: '#2b6cb0',
+                    icon: <svg width="24" height="24" fill="none" stroke="#3182ce" strokeWidth="2" viewBox="0 0 24 24" style={{display:'block',margin:'0 auto 8px'}}><path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/></svg> },
+                  { label: 'Average Activity %',     value: avgActivity.toFixed(1)+'%', bg: '#f0fff4', border: '1px solid #9ae6b4', valColor: '#276749',
+                    icon: <svg width="24" height="24" fill="none" stroke="#38a169" strokeWidth="2" viewBox="0 0 24 24" style={{display:'block',margin:'0 auto 8px'}}><path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg> },
+                  { label: 'Avg Hours Logged',       value: avgHours.toFixed(1),      bg: '#faf5ff', border: '1px solid #e9d8fd', valColor: '#553c9a',
+                    icon: <svg width="24" height="24" fill="none" stroke="#6b46c1" strokeWidth="2" viewBox="0 0 24 24" style={{display:'block',margin:'0 auto 8px'}}><path strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/></svg> },
+                  { label: 'Total Red/Orange Flags', value: totalRedFlags,            bg: '#fff5f5', border: '1px solid #fed7d7', valColor: '#c53030',
+                    icon: <svg width="24" height="24" fill="none" stroke="#e53e3e" strokeWidth="2" viewBox="0 0 24 24" style={{display:'block',margin:'0 auto 8px'}}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg> },
+                  { label: 'Total Yellow Flags',     value: totalYellowFlags,         bg: '#fffff0', border: '1px solid #fefcbf', valColor: '#b7791f',
+                    icon: <svg width="24" height="24" fill="none" stroke="#d69e2e" strokeWidth="2" viewBox="0 0 24 24" style={{display:'block',margin:'0 auto 8px'}}><path strokeLinecap="round" strokeLinejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg> },
+                  { label: 'Total Flags',            value: totalFlags,               bg: '#edf2f7', border: '1px solid #e2e8f0', valColor: '#4a5568',
+                    icon: <svg width="24" height="24" fill="none" stroke="#718096" strokeWidth="2" viewBox="0 0 24 24" style={{display:'block',margin:'0 auto 8px'}}><path strokeLinecap="round" strokeLinejoin="round" d="M3 21v-4m0 0V5a2 2 0 012-2h6.5l1 1H21l-3 6 3 6h-8.5l-1-1H5a2 2 0 00-2 2zm9-13.5V9"/></svg> },
+                ].map((tile, i) => (
+                  <div key={i} style={{padding: 16, borderRadius: 8, boxShadow: '0 1px 3px rgba(0,0,0,0.1)', textAlign: 'center', background: tile.bg, border: tile.border}}>
+                    {tile.icon}
+                    <div style={{fontSize: 14, color: '#718096'}}>{tile.label}</div>
+                    <div style={{fontSize: 24, fontWeight: 700, color: tile.valColor}}>{tile.value}</div>
+                  </div>
+                ))}
+              </div>
+
+              {/* PERFORMANCE HIGHLIGHTS */}
+              {(() => {
+                const redCount    = data.filter(m => m.redFlags > 0).length;
+                const yellowOnly  = data.filter(m => m.yellowFlags > 0 && m.redFlags === 0).length;
+                const bothFlags   = data.filter(m => m.redFlags > 0 && m.yellowFlags > 0).length;
+                const over160     = data.filter(m => m.totalHours > 160);
+                const flagSummary = (() => {
+                  const parts = [];
+                  if (redCount > 0)   parts.push(`${redCount} member${redCount !== 1 ? 's' : ''} had red/orange flags requiring immediate attention`);
+                  if (yellowOnly > 0) parts.push(`${yellowOnly} member${yellowOnly !== 1 ? 's' : ''} had yellow warnings requiring monitoring`);
+                  if (bothFlags > 0)  parts.push(`${bothFlags} member${bothFlags !== 1 ? 's' : ''} had both red/orange and yellow flags`);
+                  if (parts.length === 0) return `all ${n} member${n !== 1 ? 's' : ''} met SLA requirements with zero flags`;
+                  return parts.join(', and ');
+                })();
+                return (
+                  <div style={{background: '#ebf8ff', padding: 16, borderRadius: 8, border: '1px solid #90cdf4', marginBottom: 8}}>
+                    <div style={{fontSize: 18, fontWeight: 600, color: '#1e4e8c', marginBottom: 8}}>{MONTH} {YEAR} Performance Highlights</div>
+                    <div style={{fontSize: 14, color: '#4a5568', lineHeight: 1.6}}>
+                      The {DEPT} team maintained an average activity level of {avgActivity.toFixed(1)}% across {n} team member{n !== 1 ? 's' : ''} in {MONTH} {YEAR}.
+                      {' '}The team logged an average of {avgHours.toFixed(1)} hours per person, with {over160.length} member{over160.length !== 1 ? 's' : ''} exceeding 160 hours for the month.
+                      {' '}{noViolations} member{noViolations !== 1 ? 's' : ''} met all SLA requirements with zero flags
+                      {(redCount > 0 || yellowOnly > 0 || bothFlags > 0) ? `, while ${flagSummary}.` : '.'}
+                    </div>
+                  </div>
+                );
+              })()}
+            </div>
+          </div>
+
+          {/* SECTION 2: Notable Achievements */}
+          <div style={{marginBottom: 16}}>
+            <div style={{display: 'flex', alignItems: 'center', padding: 16, borderRadius: 8, background: 'linear-gradient(135deg, #f0fff4, #e6fffa)', border: '1px solid #68d391', boxShadow: '0 1px 3px rgba(0,0,0,0.1)'}}>
+              <div style={{display: 'flex', alignItems: 'center'}}>
+                <div style={{width: 36, height: 36, borderRadius: 9999, background: '#38a169', display: 'flex', alignItems: 'center', justifyContent: 'center', marginRight: 12}}>
+                  <svg width="24" height="24" fill="none" stroke="white" strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+                </div>
+                <span style={{fontSize: 20, fontWeight: 700, color: '#1c4532'}}>2. Notable Achievements</span>
+              </div>
+            </div>
+            <div style={{paddingTop: 20}}>
+
+              {/* 2-col: Highest Activity Levels + High Hours */}
+              <div style={{display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 16, marginBottom: 16}}>
+
+                {/* Highest Activity Levels */}
+                <div style={{padding: 16, borderRadius: 8, background: 'linear-gradient(135deg, #ebf8ff, #bee3f8)', border: '1px solid #90cdf4'}}>
+                  <div style={{fontSize: 18, fontWeight: 600, color: '#1e4e8c', marginBottom: 12, display: 'flex', alignItems: 'center'}}>
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="#1e4e8c" style={{marginRight: 8}}><path fillRule="evenodd" d="M5.293 9.707a1 1 0 010-1.414l4-4a1 1 0 011.414 0l4 4a1 1 0 01-1.414 1.414L11 7.414V15a1 1 0 11-2 0V7.414L6.707 9.707a1 1 0 01-1.414 0z" clipRule="evenodd"/></svg>
+                    Highest Activity Levels
+                  </div>
+                  {[...data].sort((a,b) => b.activityPercent - a.activityPercent).slice(0,3).map((m, i) => (
+                    <div key={i} style={{display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i < 2 ? '1px solid rgba(49,130,206,0.15)' : 'none'}}>
+                      <div style={{width: 28, height: 28, borderRadius: 6, background: '#3182ce', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 11, flexShrink: 0}}>{i+1}</div>
+                      <div>
+                        <div style={{fontWeight: 600, fontSize: 13}}>{m.member}</div>
+                        <div style={{fontSize: 12, color: '#4a5568'}}>{m.activityPercent}% activity</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* High Hours */}
+                <div style={{padding: 16, borderRadius: 8, background: 'linear-gradient(135deg, #faf5ff, #e9d8fd)', border: '1px solid #d6bcfa'}}>
+                  <div style={{fontSize: 18, fontWeight: 600, color: '#553c9a', marginBottom: 12, display: 'flex', alignItems: 'center'}}>
+                    <svg width="20" height="20" viewBox="0 0 20 20" fill="#553c9a" style={{marginRight: 8}}><path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-12a1 1 0 10-2 0v4a1 1 0 00.293.707l2.828 2.829a1 1 0 101.415-1.415L11 9.586V6z" clipRule="evenodd"/></svg>
+                    High Hours Logged
+                  </div>
+                  {[...data].sort((a,b) => b.totalHours - a.totalHours).slice(0,3).map((m, i) => (
+                    <div key={i} style={{display: 'flex', alignItems: 'center', gap: 10, padding: '8px 0', borderBottom: i < 2 ? '1px solid rgba(107,70,193,0.15)' : 'none'}}>
+                      <div style={{width: 28, height: 28, borderRadius: 6, background: ['#6b46c1','#805ad5','#9f7aea'][i], color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 11, flexShrink: 0}}>{i+1}</div>
+                      <div>
+                        <div style={{fontWeight: 600, fontSize: 13}}>{m.member}</div>
+                        <div style={{fontSize: 12, color: '#4a5568'}}>{m.totalHours.toFixed(1)} hours</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              {/* Zero Violations — full width */}
+              <div style={{padding: 16, borderRadius: 8, background: 'linear-gradient(135deg, #f0fff4, #9ae6b4)', border: '1px solid #68d391'}}>
+                <div style={{fontSize: 18, fontWeight: 600, color: '#1c4532', marginBottom: 12, display: 'flex', alignItems: 'center'}}>
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="#1c4532" style={{marginRight: 8}}><path fillRule="evenodd" d="M6.267 3.455a3.066 3.066 0 001.745-.723 3.066 3.066 0 013.976 0 3.066 3.066 0 001.745.723 3.066 3.066 0 012.812 2.812c.051.643.304 1.254.723 1.745a3.066 3.066 0 010 3.976 3.066 3.066 0 00-.723 1.745 3.066 3.066 0 01-2.812 2.812 3.066 3.066 0 00-1.745.723 3.066 3.066 0 01-3.976 0 3.066 3.066 0 00-1.745-.723 3.066 3.066 0 01-2.812-2.812 3.066 3.066 0 00-.723-1.745 3.066 3.066 0 010-3.976 3.066 3.066 0 00.723-1.745 3.066 3.066 0 012.812-2.812zm7.44 5.252a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clipRule="evenodd"/></svg>
+                  Zero Violations
+                </div>
+                {noViolations === 0
+                  ? <div style={{fontSize: 13, color: '#718096', fontStyle: 'italic'}}>No members with zero violations this month.</div>
+                  : <div style={{display: 'flex', flexWrap: 'wrap', gap: 10}}>
+                      {data.filter(m => m.totalFlags === 0).map((m, i) => (
+                        <div key={i} style={{display: 'flex', alignItems: 'center', gap: 8, background: 'white', border: '1px solid #9ae6b4', borderRadius: 8, padding: '8px 12px'}}>
+                          <div style={{width: 30, height: 30, borderRadius: '50%', background: '#38a169', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 700, fontSize: 11, flexShrink: 0}}>
+                            {m.member.split(' ').map(w => w[0]).slice(0,2).join('')}
+                          </div>
+                          <div>
+                            <div style={{fontWeight: 600, fontSize: 12}}>{m.member}</div>
+                            <div style={{display: 'flex', gap: 4, marginTop: 2}}>
+                              <span style={{fontSize: 10, fontWeight: 600, background: '#ebf8ff', color: '#3182ce', border: '1px solid #bee3f8', padding: '1px 6px', borderRadius: 9999}}>{m.activityPercent}%</span>
+                              <span style={{fontSize: 10, fontWeight: 600, background: '#faf5ff', color: '#6b46c1', border: '1px solid #e9d8fd', padding: '1px 6px', borderRadius: 9999}}>{m.totalHours.toFixed(1)} hrs</span>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                }
+              </div>
+            </div>
+          </div>
+
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════
+          TAB 2 — SLA HEATMAP
+          ══════════════════════════════════════════ */}
+      {tab === 2 && (
+        <div className="fade-in">
+
+          {/* CARD 1 — SLA Violation Legend */}
+          <div style={{background:'#ffffff', borderRadius:8, padding:24, border:'1px solid #e2e8f0', boxShadow:'0 2px 8px rgba(0,0,0,0.08)', marginBottom:24}}>
+            <h2 style={{fontSize:20, fontWeight:700, color:'#2d3748', marginBottom:16}}>SLA Violation Legend</h2>
+            {(() => {
+              const legendMetrics = [
+              { notation: 'A', label: 'Activity Level',          summary: 'Red < 35%  |  Yellow < 45%', headerBg:'linear-gradient(135deg,#ebf8ff,#e6fffa)', badgeBg:'#3182ce',
+                body: <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:14}}><div style={{display:'flex', flexDirection:'column', gap:8}}><div style={{background:'#fff5f5', border:'1px solid #fed7d7', borderRadius:6, padding:'10px 12px'}}><p style={{color:'#c53030', fontWeight:600, fontSize:13}}>🔴 Red Violation (Critical): &lt; 35% activity</p><p style={{fontSize:13, marginTop:4, color:'#4a5568'}}>→ Very low engagement indicating potential productivity issues. Requires immediate review.</p></div><div style={{background:'#fffff0', border:'1px solid #fefcbf', borderRadius:6, padding:'10px 12px'}}><p style={{color:'#b7791f', fontWeight:600, fontSize:13}}>🟡 Yellow Warning: &lt; 45% activity</p><p style={{fontSize:13, marginTop:4, color:'#4a5568'}}>→ Low engagement that warrants attention but is not critically low. Needs monitoring.</p></div></div><div style={{background:'#f8fafc', borderRadius:8, padding:12}}><p><strong>What it measures:</strong> Employee engagement via keyboard and mouse activity during tracked work time.</p><p style={{marginTop:8}}><strong>How it's measured:</strong> Tracks mouse movements, keyboard activity, and application focus time. Represents the percentage of working time where active engagement with work tools is detected.</p><p style={{marginTop:10, fontSize:12, color:'#718096'}}><strong>Expected Range:</strong> Varies by role and department expectations.</p></div></div> },
+              { notation: 'H', label: 'Total Worked Hours',       summary: 'Red < 160h  |  Orange ≥ 200h', headerBg:'linear-gradient(135deg,#ebf8ff,#e6fffa)', badgeBg:'#6b46c1',
+                body: <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:14}}><div style={{display:'flex', flexDirection:'column', gap:8}}><div style={{background:'#fff5f5', border:'1px solid #fed7d7', borderRadius:6, padding:'10px 12px'}}><p style={{color:'#c53030', fontWeight:600, fontSize:13}}>🔴 Red Violation (Critical): &lt; 160 hours</p><p style={{fontSize:13, marginTop:4, color:'#4a5568'}}>→ Below expected monthly hours. Requires immediate attention.</p></div><div style={{background:'#fffaf0', border:'1px solid #fbd38d', borderRadius:6, padding:'10px 12px'}}><p style={{color:'#c05621', fontWeight:600, fontSize:13}}>🟠 Orange Flag (Investigation Required): ≥ 200 hours</p><p style={{fontSize:13, marginTop:4, color:'#4a5568'}}>→ Exceeding reasonable monthly workload — may indicate work life balance issues, workload adjustments.</p></div></div><div style={{background:'#f8fafc', borderRadius:8, padding:12}}><p><strong>What it measures:</strong> Total logged hours in Hubstaff during the month relative to expected hours.</p><p style={{marginTop:8}}><strong>How it's measured:</strong> Captures all time logged by the team member during the month, including both active and inactive periods. Target is 160+ hours per month (full-time schedule).</p><p style={{marginTop:10, fontSize:12, color:'#718096'}}><strong>Target Range:</strong> 160–190 hours per month.</p></div></div> },
+              { notation: 'B', label: 'Total Break Time',         summary: 'Red ≥ 12%  |  Yellow > 10%', headerBg:'linear-gradient(135deg,#ebf8ff,#e6fffa)', badgeBg:'#d69e2e',
+                body: <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:14}}><div style={{display:'flex', flexDirection:'column', gap:8}}><div style={{background:'#fff5f5', border:'1px solid #fed7d7', borderRadius:6, padding:'10px 12px'}}><p style={{color:'#c53030', fontWeight:600, fontSize:13}}>🔴 Red Violation (Critical): ≥ 12% of Total Worked Hours</p><p style={{fontSize:13, marginTop:4, color:'#4a5568'}}>→ Excessive break time reducing overall productive hours. Requires immediate intervention.</p></div><div style={{background:'#fffff0', border:'1px solid #fefcbf', borderRadius:6, padding:'10px 12px'}}><p style={{color:'#b7791f', fontWeight:600, fontSize:13}}>🟡 Yellow Warning: &gt; 10% and &lt; 12% of Total Worked Hours</p><p style={{fontSize:13, marginTop:4, color:'#4a5568'}}>→ Higher than target break time. Not critical but needs attention.</p></div></div><div style={{background:'#f8fafc', borderRadius:8, padding:12}}><p><strong>What it measures:</strong> Total time spent on breaks as a percentage of total worked hours.</p><p style={{marginTop:8}}><strong>How it's measured:</strong> Tracks periods when team members are on official breaks and not actively working. Displayed as "X.X (X.X%)" showing both actual hours on break and percentage of total logged time. Target is to keep breaks below 10% to maximise productive hours.</p><p style={{marginTop:10, fontSize:12, color:'#718096'}}><strong>Target:</strong> &lt; 10% of total worked hours.</p></div></div> },
+              { notation: '20', label: 'Low Activity ≤20%', summary: 'Red ≥ 15%  |  Yellow ≥ 7.5%', headerBg:'linear-gradient(135deg,#ebf8ff,#e6fffa)', badgeBg:'#e53e3e',
+                body: <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:14}}><div style={{display:'flex', flexDirection:'column', gap:8}}><div style={{background:'#fff5f5', border:'1px solid #fed7d7', borderRadius:6, padding:'10px 12px'}}><p style={{color:'#c53030', fontWeight:600, fontSize:13}}>🔴 Red Violation (Critical): ≥ 15% of Total Worked Hours</p><p style={{fontSize:13, marginTop:4, color:'#4a5568'}}>→ Excessive very low activity requiring intervention. Indicates significant productivity concerns.</p></div><div style={{background:'#fffff0', border:'1px solid #fefcbf', borderRadius:6, padding:'10px 12px'}}><p style={{color:'#b7791f', fontWeight:600, fontSize:13}}>🟡 Yellow Warning: ≥ 7.5% of Total Worked Hours</p><p style={{fontSize:13, marginTop:4, color:'#4a5568'}}>→ Higher than ideal very low activity. Should be investigated.</p></div></div><div style={{background:'#f8fafc', borderRadius:8, padding:12}}><p><strong>What it measures:</strong> Time spent with activity level at or below 20%, indicating very minimal engagement.</p><p style={{marginTop:8}}><strong>How it's measured:</strong> Tracks periods when an employee's activity fell below 20%. Displayed as "X.X (X.X%)" showing both hours at this level and percentage of total logged time. May indicate stepping away from work, distractions, or system idle time.</p></div></div> },
+              { notation: '30', label: 'Low Activity ≤30%', summary: 'Red ≥ 20%  |  Yellow ≥ 10%', headerBg:'linear-gradient(135deg,#ebf8ff,#e6fffa)', badgeBg:'#dd6b20',
+                body: <div style={{display:'grid', gridTemplateColumns:'1fr 1fr', gap:14}}><div style={{display:'flex', flexDirection:'column', gap:8}}><div style={{background:'#fff5f5', border:'1px solid #fed7d7', borderRadius:6, padding:'10px 12px'}}><p style={{color:'#c53030', fontWeight:600, fontSize:13}}>🔴 Red Violation (Critical): ≥ 20% of Total Worked Hours</p><p style={{fontSize:13, marginTop:4, color:'#4a5568'}}>→ Excessive low activity indicating potential productivity issues. Requires investigation.</p></div><div style={{background:'#fffff0', border:'1px solid #fefcbf', borderRadius:6, padding:'10px 12px'}}><p style={{color:'#b7791f', fontWeight:600, fontSize:13}}>🟡 Yellow Warning: ≥ 10% of Total Worked Hours</p><p style={{fontSize:13, marginTop:4, color:'#4a5568'}}>→ Moderate low activity levels. May require context before escalation.</p></div></div><div style={{background:'#f8fafc', borderRadius:8, padding:12}}><p><strong>What it measures:</strong> Time spent with activity level at or below 30%, representing low but not necessarily inactive engagement.</p><p style={{marginTop:8}}><strong>How it's measured:</strong> Broader metric capturing time when activity falls below 30%. Displayed as "X.X (X.X%)" showing hours and percentage of total time. Captures both ≤20% activity PLUS additional low activity between 20–30%. May indicate reduced productivity, meetings without computer interaction, or reading activities.</p></div></div> },
+              ];
+              const active = legendMetrics.find(m => m.notation === openMetric);
+              return (
+                <>
+                  {/* Blue selector container */}
+                  <div style={{background:'#dbeafe', borderRadius:8, padding:16}}>
+                    <div style={{marginBottom:12}}>
+                      <span style={{fontWeight:700, fontSize:13, color:'#1e40af'}}>How SLA Metrics Are Monitored: </span>
+                      <span style={{fontSize:13, color:'#4a5568'}}>Click on each category below to see thresholds and violation criteria</span>
+                    </div>
+                    <div style={{display:'grid', gridTemplateColumns:'repeat(2, 1fr)', gap:10}}>
+                      {legendMetrics.map(metric => {
+                        const isActive = openMetric === metric.notation;
+                        return (
+                          <button key={metric.notation}
+                            onClick={() => setOpenMetric(isActive ? null : metric.notation)}
+                            style={{padding:'11px 16px', borderRadius:8, cursor:'pointer', display:'flex', alignItems:'center', justifyContent:'space-between', fontFamily:'DM Sans, sans-serif', fontSize:14, fontWeight: isActive ? 600 : 400, background: isActive ? '#3b82f6' : '#ffffff', color: isActive ? '#ffffff' : '#374151', border: isActive ? 'none' : '1px solid #e2e8f0', boxShadow:'0 1px 3px rgba(0,0,0,0.06)', transition:'all 0.15s'}}
+                          >
+                            <span>{metric.label} ({metric.notation})</span>
+                            <svg style={{flexShrink:0, transform:isActive?'rotate(180deg)':'rotate(0deg)', transition:'transform 0.2s'}} width="16" height="16" fill="none" stroke={isActive?'#ffffff':'#9ca3af'} strokeWidth="2" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7"/></svg>
+                          </button>
+                        );
+                      })}
+                      <div />{/* empty — row 3 col 2 */}
+                    </div>
+                  </div>
+                  {/* Detail panel */}
+                  {active && (
+                    <div style={{marginTop:16, background:'#ffffff', borderRadius:8, padding:'16px 20px', border:'1px solid #bfdbfe'}}>
+                      <h3 style={{fontSize:16, fontWeight:700, color:'#1e40af', marginBottom:12}}>{active.label} ({active.notation}) — Monitoring Criteria</h3>
+                      <div style={{fontSize:14, color:'#4a5568', lineHeight:1.7}}>{active.body}</div>
+                    </div>
+                  )}
+                </>
+              );
+            })()}
+          </div>
+
+          {/* CARD 2 — Full SLA Heatmap */}
+          <div style={{background:'#ffffff', borderRadius:8, padding:24, border:'1px solid #e2e8f0', boxShadow:'0 2px 8px rgba(0,0,0,0.08)'}}>
+
+          {/* PART 2: Heatmap Table */}
+          {/* COLOR LEGEND PILLS */}
+          <div style={{display:'flex', flexWrap:'wrap', gap:8, marginBottom:16}}>
+            <span style={{background:'#fff5f5', border:'1px solid #fed7d7', color:'#c53030', padding:'4px 12px', borderRadius:9999, fontSize:12, fontWeight:600}}>🔴 Red Critical</span>
+            <span style={{background:'#fffff0', border:'1px solid #fefcbf', color:'#b7791f', padding:'4px 12px', borderRadius:9999, fontSize:12, fontWeight:600}}>⚠️ Yellow Warning</span>
+            <span style={{background:'#f0fff4', border:'1px solid #9ae6b4', color:'#276749', padding:'4px 12px', borderRadius:9999, fontSize:12, fontWeight:600}}>✅ Green Within target</span>
+            <span style={{background:'#fffaf0', border:'1px solid #fbd38d', color:'#c05621', padding:'4px 12px', borderRadius:9999, fontSize:12, fontWeight:600}}>🟠 Orange Overwork flag</span>
+          </div>
+          <h2 style={{fontSize: 24, fontWeight: 700, color: '#2d3748', borderBottom: '2px solid #e2e8f0', paddingBottom: 12, marginBottom: 20}}>Full SLA Heatmap — {MONTH} {YEAR}</h2>
+          <p style={{fontSize: 14, color: '#4a5568', marginBottom: 20}}>Click column headers to sort. Colors reflect SLA thresholds.</p>
+          {(() => {
+            const th = {color:'#718096', fontWeight:600, fontSize:12, textTransform:'uppercase', letterSpacing:'0.05em', padding:'12px 16px', borderBottom:'2px solid #e2e8f0', textAlign:'center', cursor:'pointer', whiteSpace:'nowrap'};
+            const td = {padding:'13px 16px', borderBottom:'1px solid #e2e8f0', verticalAlign:'middle', textAlign:'center', fontSize:15};
+            const avgBrk = n > 0 ? data.reduce((s,m) => s + m.breakPercent, 0) / n : 0;
+            const avgL20 = n > 0 ? data.reduce((s,m) => s + m.low20Percent, 0) / n : 0;
+            const avgL30 = n > 0 ? data.reduce((s,m) => s + m.low30Percent, 0) / n : 0;
+            const avgRed = n > 0 ? data.reduce((s,m) => s + m.redFlags, 0) / n : 0;
+            const avgYel = n > 0 ? data.reduce((s,m) => s + m.yellowFlags, 0) / n : 0;
+            const avgTot = n > 0 ? data.reduce((s,m) => s + m.totalFlags, 0) / n : 0;
+            return (
+              <>
+              <div style={{width:'100%', overflowX:'auto'}}>
+                <table style={{width:'100%', minWidth:1080, borderCollapse:'collapse', fontSize:15, tableLayout:'fixed'}}>
+                  <colgroup>
+                    <col style={{width:'20%'}} />
+                    <col style={{width:'10%'}} />
+                    <col style={{width:'10%'}} />
+                    <col style={{width:'10%'}} />
+                    <col style={{width:'12%'}} />
+                    <col style={{width:'12%'}} />
+                    <col style={{width:'10%'}} />
+                    <col style={{width:'9%'}} />
+                    <col style={{width:'7%'}} />
+                  </colgroup>
+                  <thead>
+                    <tr>
+                      <th onClick={() => sort('member')} style={{...th, textAlign:'left'}}>MEMBER<SortIcon k="member"/></th>
+                      <th onClick={() => sort('activityPercent')} style={th}>ACTIVITY %<SortIcon k="activityPercent"/></th>
+                      <th onClick={() => sort('totalHours')} style={th}>TOTAL HOURS<SortIcon k="totalHours"/></th>
+                      <th onClick={() => sort('breakPercent')} style={th}>BREAK TIME<SortIcon k="breakPercent"/></th>
+                      <th onClick={() => sort('low20Percent')} style={th}>LOW ACTIVITY ≤20%<SortIcon k="low20Percent"/></th>
+                      <th onClick={() => sort('low30Percent')} style={th}>LOW ACTIVITY ≤30%<SortIcon k="low30Percent"/></th>
+                      <th onClick={() => sort('redFlags')} style={th}>RED/ORANGE FLAGS<SortIcon k="redFlags"/></th>
+                      <th onClick={() => sort('yellowFlags')} style={th}>YELLOW FLAGS<SortIcon k="yellowFlags"/></th>
+                      <th onClick={() => sort('totalFlags')} style={th}>TOTAL FLAGS<SortIcon k="totalFlags"/></th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {sortedData.map((m, i) => (
+                      <tr key={i} onMouseEnter={e => e.currentTarget.style.background='#f7fafc'} onMouseLeave={e => e.currentTarget.style.background='transparent'}>
+                        <td style={{...td, textAlign:'left', fontWeight:600, color:'#1a202c'}}>{m.member}</td>
+                        <td style={td}><span style={pillStyle('activity',  m.activityPercent)}>{m.activityPercent.toFixed(1)}%</span></td>
+                        <td style={td}><span style={pillStyle('hours',     m.totalHours)}>{m.totalHours.toFixed(1)} hrs</span></td>
+                        <td style={td}><span style={pillStyle('breakPct',  m.breakPercent)}>{(m.breakHours||0).toFixed(1)} ({m.breakPercent.toFixed(1)}%)</span></td>
+                        <td style={td}><span style={pillStyle('low20Pct',  m.low20Percent)}>{(m.low20Hours||0).toFixed(1)} ({m.low20Percent.toFixed(1)}%)</span></td>
+                        <td style={td}><span style={pillStyle('low30Pct',  m.low30Percent)}>{(m.low30Hours||0).toFixed(1)} ({m.low30Percent.toFixed(1)}%)</span></td>
+                        <td style={td}>
+                          {m.redFlags > 0
+                            ? <span style={{display:'inline-flex', alignItems:'center', justifyContent:'center', width:32, height:32, borderRadius:9999, background:'#e53e3e', color:'white', fontSize:13, fontWeight:700}}>{m.redFlags}</span>
+                            : <span style={{color:'#718096'}}>0</span>}
+                        </td>
+                        <td style={td}>
+                          {m.yellowFlags > 0
+                            ? <span style={{display:'inline-flex', alignItems:'center', justifyContent:'center', minWidth:36, height:32, padding:'0 8px', borderRadius:9999, background:'#d69e2e', color:'white', fontSize:13, fontWeight:700}}>⚠️ {m.yellowFlags}</span>
+                            : <span style={{color:'#718096'}}>0</span>}
+                        </td>
+                        <td style={td}><span style={{fontWeight:700, color:m.totalFlags===0?'#276749':m.redFlags>0?'#c53030':'#b7791f'}}>{m.totalFlags}</span></td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+              <div style={{marginTop:12, background:'#f7fafc', border:'1px solid #e2e8f0', borderRadius:8, padding:'10px 16px'}}>
+                <div style={{fontSize:11, fontWeight:700, color:'#a0aec0', textTransform:'uppercase', letterSpacing:'0.08em', marginBottom:8}}>Team Averages</div>
+                <div style={{display:'flex', flexWrap:'wrap', alignItems:'center', gap:'6px 20px'}}>
+                  <span style={{fontSize:13, color:'#4a5568'}}>Activity: <span style={{...pillStyle('activity', avgActivity), padding:'3px 10px', fontSize:13}}>{avgActivity.toFixed(1)}%</span></span>
+                  <span style={{fontSize:13, color:'#4a5568'}}>Hours: <span style={{...pillStyle('hours', avgHours), padding:'3px 10px', fontSize:13}}>{avgHours.toFixed(1)} hrs</span></span>
+                  <span style={{fontSize:13, color:'#4a5568'}}>Break%: <span style={{...pillStyle('breakPct', avgBrk), padding:'3px 10px', fontSize:13}}>{avgBrk.toFixed(1)}%</span></span>
+                  <span style={{fontSize:13, color:'#4a5568'}}>Low20%: <span style={{...pillStyle('low20Pct', avgL20), padding:'3px 10px', fontSize:13}}>{avgL20.toFixed(1)}%</span></span>
+                  <span style={{fontSize:13, color:'#4a5568'}}>Low30%: <span style={{...pillStyle('low30Pct', avgL30), padding:'3px 10px', fontSize:13}}>{avgL30.toFixed(1)}%</span></span>
+                </div>
+              </div>
+              </>
+            );
+          })()}
+          </div>
+
+        </div>
+      )}
+
+      {/* ══════════════════════════════════════════
+          TAB 3 — TEAM ANALYTICS
+          ══════════════════════════════════════════ */}
+      {tab === 3 && (
+        <div className="fade-in" style={{background: '#ffffff', padding: 24, borderRadius: 8, boxShadow: '0 2px 8px rgba(0,0,0,0.08)'}}>
+
+          {/* TEAM SELECTOR */}
+          <div style={{fontSize: 14, fontWeight: 600, color: '#4a5568', marginBottom: 12}}>Select Team to Compare:</div>
+          <div style={{display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: 12, marginBottom: 24}}>
+            {Object.keys(TEAM_CATEGORIES).map(teamName => (
+              <button key={teamName} onClick={() => { setSelectedTeam(teamName); setTeamSortKey(null); }} style={{
+                padding: '12px 16px', borderRadius: 8, fontWeight: 500, transition: 'all 0.2s',
+                cursor: 'pointer', fontFamily: 'DM Sans, sans-serif', textAlign: 'left',
+                ...(selectedTeam === teamName
+                  ? { background: 'linear-gradient(to right, #276749, #38a169)', color: 'white', boxShadow: '0 4px 12px rgba(0,0,0,0.15)', transform: 'scale(1.05)', border: 'none' }
+                  : { background: '#edf2f7', color: '#4a5568', border: '1px solid #cbd5e0' })
+              }}>
+                <span style={{display: 'block', fontSize: 14}}>{teamName}</span>
+                <span style={{display: 'block', fontSize: 12, marginTop: 4, opacity: 0.8}}>{TEAM_CATEGORIES[teamName].length} member{TEAM_CATEGORIES[teamName].length !== 1 ? 's' : ''}</span>
+              </button>
+            ))}
+          </div>
+
+          {/* ANALYTICS */}
+          {(() => {
+            const teamMembers = data.filter(m => TEAM_CATEGORIES[selectedTeam] && TEAM_CATEGORIES[selectedTeam].includes(m.member));
+            if (teamMembers.length === 0) return <div style={{color:'#718096',textAlign:'center',padding:40}}>No data available for this team.</div>;
+
+            const tm           = teamMembers.length;
+            const tAvgActivity = teamMembers.reduce((s,m) => s + m.activityPercent, 0) / tm;
+            const tAvgHours    = teamMembers.reduce((s,m) => s + m.totalHours, 0) / tm;
+            const tTotalRed    = teamMembers.reduce((s,m) => s + m.redFlags, 0);
+            const tTotalYellow = teamMembers.reduce((s,m) => s + m.yellowFlags, 0);
+            const tCompliant   = teamMembers.filter(m => m.totalFlags === 0).length;
+            const tHigh        = teamMembers.reduce((a,b) => a.activityPercent > b.activityPercent ? a : b);
+            const tLow         = teamMembers.reduce((a,b) => a.activityPercent < b.activityPercent ? a : b);
+            const tMostHrs     = teamMembers.reduce((a,b) => a.totalHours > b.totalHours ? a : b);
+            const tLeastHrs    = teamMembers.reduce((a,b) => a.totalHours < b.totalHours ? a : b);
+
+            // Key Highlights
+            const conclusions = [];
+            conclusions.push({ color: '#276749', text: `${tHigh.member} leads the team with the highest activity at ${tHigh.activityPercent.toFixed(1)}%, maintaining strong engagement throughout the month.` });
+            const actS = checkStatus('activity', tLow.activityPercent);
+            conclusions.push({ color: actS==='red'?'#c53030':actS==='yellow'?'#b7791f':'#276749', text: `${tLow.member} recorded the lowest activity at ${tLow.activityPercent.toFixed(1)}%${actS==='red'?' — critical SLA violation requiring immediate attention':actS==='yellow'?' — yellow warning, close monitoring recommended':' — within acceptable range'}.` });
+            const over160 = teamMembers.filter(m => m.totalHours >= 160).length;
+            conclusions.push({ color: over160===tm?'#276749':'#b7791f', text: `${over160} of ${tm} member${tm!==1?'s':''} met the 160-hour monthly target; ${tMostHrs.member} logged the most at ${tMostHrs.totalHours.toFixed(1)} hrs and ${tLeastHrs.member} the least at ${tLeastHrs.totalHours.toFixed(1)} hrs.` });
+            if (tTotalRed + tTotalYellow > 0) {
+              const flagged = teamMembers.filter(m => m.totalFlags > 0).length;
+              conclusions.push({ color: tTotalRed>0?'#c53030':'#b7791f', text: `${flagged} member${flagged!==1?'s have':' has'} SLA violations: ${tTotalRed} red/orange flag${tTotalRed!==1?'s':''} and ${tTotalYellow} yellow flag${tTotalYellow!==1?'s':''} across the team.` });
+            }
+            if (tCompliant > 0) {
+              conclusions.push({ color: '#276749', text: `${tCompliant} member${tCompliant!==1?'s are':' is'} fully SLA-compliant with zero violations: ${teamMembers.filter(m=>m.totalFlags===0).map(m=>m.member).join(', ')}.` });
+            }
+            const breakConcern = teamMembers.filter(m => checkStatus('breakPct', m.breakPercent) !== 'green');
+            if (breakConcern.length > 0) {
+              conclusions.push({ color: breakConcern.some(m=>checkStatus('breakPct',m.breakPercent)==='red')?'#c53030':'#b7791f', text: `${breakConcern.length} member${breakConcern.length!==1?'s':''} (${breakConcern.map(m=>m.member).join(', ')}) have elevated break time percentages above the 10% target.` });
+            } else {
+              const l30c = teamMembers.filter(m => checkStatus('low30Pct', m.low30Percent) !== 'green');
+              if (l30c.length > 0) conclusions.push({ color: l30c.some(m=>checkStatus('low30Pct',m.low30Percent)==='red')?'#c53030':'#b7791f', text: `${l30c.length} member${l30c.length!==1?'s':''} (${l30c.map(m=>m.member).join(', ')}) show elevated low activity ≤30% periods, indicating reduced engagement.` });
+            }
+
+            return (
+              <>
+                {/* PERFORMANCE SUMMARY */}
+                <div style={{background:'linear-gradient(to right,#f0fff4,#ebf8ff)',padding:24,borderRadius:8,border:'1px solid #9ae6b4',marginBottom:24}}>
+                  <div style={{fontSize:20,fontWeight:700,color:'#1c4532',marginBottom:16}}>{selectedTeam} — Performance Summary</div>
+                  <div style={{fontSize:14,color:'#4a5568',marginBottom:16}}>This analysis compares {tm} member{tm!==1?'s':''} in {selectedTeam} during {MONTH} {YEAR}.</div>
+                  <div style={{display:'grid',gridTemplateColumns:'repeat(4,1fr)',gap:16}}>
+                    {[
+                      {label:'Avg Activity', value:tAvgActivity.toFixed(1)+'%', color:'#276749'},
+                      {label:'Avg Hours',    value:tAvgHours.toFixed(1),        color:'#2b6cb0'},
+                      {label:'Total Red Flags',  value:tTotalRed,               color:'#c53030'},
+                      {label:'Total Yellow',     value:tTotalYellow,            color:'#b7791f'},
+                    ].map((tile,i) => (
+                      <div key={i} style={{background:'#ffffff',padding:12,borderRadius:8,boxShadow:'0 1px 3px rgba(0,0,0,0.1)'}}>
+                        <div style={{fontSize:12,color:'#718096'}}>{tile.label}</div>
+                        <div style={{fontSize:20,fontWeight:700,color:tile.color}}>{tile.value}</div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+
+                {/* INDIVIDUAL MEMBER METRICS */}
+                <div style={{marginBottom:16}}>
+                  <div style={{fontSize:18,fontWeight:700,color:'#2d3748',marginBottom:16}}>Individual Member Metrics</div>
+                  <div style={{overflowX:'auto'}}>
+                    <table className="metric-table">
+                      <thead>
+                        <tr>
+                          <th onClick={()=>teamSort('member')}>Member<TeamSortIcon k="member"/></th>
+                          <th onClick={()=>teamSort('activityPercent')}>Activity %<TeamSortIcon k="activityPercent"/></th>
+                          <th onClick={()=>teamSort('totalHours')}>Hours<TeamSortIcon k="totalHours"/></th>
+                          <th onClick={()=>teamSort('breakPercent')}>Break %<TeamSortIcon k="breakPercent"/></th>
+                          <th onClick={()=>teamSort('low20Percent')}>Low Act ≤20%<TeamSortIcon k="low20Percent"/></th>
+                          <th onClick={()=>teamSort('low30Percent')}>Low Act ≤30%<TeamSortIcon k="low30Percent"/></th>
+                          <th onClick={()=>teamSort('totalFlags')}>Flags<TeamSortIcon k="totalFlags"/></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {teamSortedMembers(teamMembers).map((m,i) => (
+                          <tr key={i} style={{background:'transparent'}}>
+                            <td style={{fontWeight:600,color:'#1a202c',fontSize:13,whiteSpace:'nowrap'}}>{m.member}</td>
+                            <td style={{fontFamily:'DM Mono,monospace',fontSize:12,...cellStyle('activity',m.activityPercent)}}>{m.activityPercent.toFixed(1)}%</td>
+                            <td style={{fontFamily:'DM Mono,monospace',fontSize:12,...cellStyle('hours',m.totalHours)}}>{m.totalHours.toFixed(1)}</td>
+                            <td style={{fontFamily:'DM Mono,monospace',fontSize:12,...cellStyle('breakPct',m.breakPercent)}}>{m.breakPercent.toFixed(1)}%</td>
+                            <td style={{fontFamily:'DM Mono,monospace',fontSize:12,...cellStyle('low20Pct',m.low20Percent)}}>{m.low20Percent.toFixed(1)}%</td>
+                            <td style={{fontFamily:'DM Mono,monospace',fontSize:12,...cellStyle('low30Pct',m.low30Percent)}}>{m.low30Percent.toFixed(1)}%</td>
+                            <td>
+                              {m.totalFlags===0
+                                ? <span style={{color:'#276749',fontWeight:600}}>✓</span>
+                                : <div style={{display:'flex',gap:4,flexWrap:'wrap'}}>
+                                    {m.redFlags>0    && <span style={{color:'#c53030',fontWeight:700,fontSize:12}}>🔴 {m.redFlags}</span>}
+                                    {m.yellowFlags>0 && <span style={{color:'#b7791f',fontWeight:700,fontSize:12}}>⚠️ {m.yellowFlags}</span>}
+                                  </div>
+                              }
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+
+                {/* KEY CONCLUSIONS */}
+                <div style={{background:'#f7fafc',padding:20,borderRadius:8,border:'1px solid #e2e8f0',marginTop:16}}>
+                  <div style={{fontSize:16,fontWeight:700,color:'#2d3748',marginBottom:12}}>📋 Key Highlights</div>
+                  {conclusions.map((c,i) => (
+                    <div key={i} style={{display:'flex',alignItems:'flex-start',gap:8,fontSize:14,color:'#4a5568',lineHeight:1.6,marginBottom:8}}>
+                      <span style={{color:c.color,fontWeight:700,flexShrink:0,fontSize:16}}>●</span>
+                      <span>{c.text}</span>
+                    </div>
+                  ))}
+                </div>
+              </>
+            );
+          })()}
+
+        </div>
+      )}
+
+    </div>
+  );
+};
+
+ReactDOM.render(<Dashboard />, document.getElementById('root'));
+</script>
+<div style="background:#f0f2f5; padding:32px 16px; text-align:center; margin-top:0;">
+  <p style="font-family:'DM Sans',sans-serif; font-size:13px; color:#a0aec0; letter-spacing:0.02em;">
+    Generated for WebLife &middot; Digital Product &middot; March 2026 &middot; SLA thresholds per WebLife SLA Violation Legend v1.0
+  </p>
+</div>
+</body>
+</html>
