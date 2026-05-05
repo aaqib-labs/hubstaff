@@ -91,9 +91,10 @@ const computeFlags = (m) => {
     checkStatus('low20Pct',  m.low20Percent),
     checkStatus('low30Pct',  m.low30Percent),
   ];
-  const red    = statuses.filter(s => s === 'red' || s === 'orange').length;
+  const red    = statuses.filter(s => s === 'red').length;
+  const orange = statuses.filter(s => s === 'orange').length;
   const yellow = statuses.filter(s => s === 'yellow').length;
-  return { redFlags: red, yellowFlags: yellow, totalFlags: red + yellow };
+  return { redFlags: red, orangeFlags: orange, yellowFlags: yellow, totalFlags: red + orange + yellow };
 };
 
 // Returns text color + fontWeight based on SLA status (no cell background)
@@ -120,7 +121,7 @@ const pillStyle = (metric, value) => {
 // ============================================================================
 const Dashboard = () => {
   // Recompute flags from SLA thresholds — overrides CSV-provided values for accuracy
-  data.forEach(m => { const f = computeFlags(m); m.redFlags = f.redFlags; m.yellowFlags = f.yellowFlags; m.totalFlags = f.totalFlags; });
+  data.forEach(m => { const f = computeFlags(m); m.redFlags = f.redFlags; m.orangeFlags = f.orangeFlags; m.yellowFlags = f.yellowFlags; m.totalFlags = f.totalFlags; });
 
   const [tab, setTab]                     = useState(1);
   const [sortKey, setSortKey]             = useState(null);
@@ -510,16 +511,18 @@ const Dashboard = () => {
                         <td style={td}><span style={pillStyle('low20Pct',  m.low20Percent)}>{(m.low20Hours||0).toFixed(1)} ({m.low20Percent.toFixed(1)}%)</span></td>
                         <td style={td}><span style={pillStyle('low30Pct',  m.low30Percent)}>{(m.low30Hours||0).toFixed(1)} ({m.low30Percent.toFixed(1)}%)</span></td>
                         <td style={td}>
-                          {m.redFlags > 0
-                            ? <span style={{display:'inline-flex', alignItems:'center', justifyContent:'center', width:32, height:32, borderRadius:9999, background:'#e53e3e', color:'white', fontSize:13, fontWeight:700}}>{m.redFlags}</span>
-                            : <span style={{color:'#718096'}}>0</span>}
+                          <div style={{display:'flex', alignItems:'center', gap:4}}>
+                            {m.redFlags > 0 && <span style={{display:'inline-flex', alignItems:'center', justifyContent:'center', width:32, height:32, borderRadius:9999, background:'#e53e3e', color:'white', fontSize:13, fontWeight:700}}>{m.redFlags}</span>}
+                            {m.orangeFlags > 0 && <span style={{display:'inline-flex', alignItems:'center', justifyContent:'center', width:32, height:32, borderRadius:9999, background:'#dd6b20', color:'white', fontSize:13, fontWeight:700}}>{m.orangeFlags}</span>}
+                            {m.redFlags === 0 && m.orangeFlags === 0 && <span style={{color:'#718096'}}>0</span>}
+                          </div>
                         </td>
                         <td style={td}>
                           {m.yellowFlags > 0
                             ? <span style={{display:'inline-flex', alignItems:'center', justifyContent:'center', minWidth:36, height:32, padding:'0 8px', borderRadius:9999, background:'#d69e2e', color:'white', fontSize:13, fontWeight:700}}>⚠️ {m.yellowFlags}</span>
                             : <span style={{color:'#718096'}}>0</span>}
                         </td>
-                        <td style={td}><span style={{fontWeight:700, color:m.totalFlags===0?'#276749':m.redFlags>0?'#c53030':'#b7791f'}}>{m.totalFlags}</span></td>
+                        <td style={td}><span style={{fontWeight:700, color:m.totalFlags===0?'#276749':m.redFlags>0?'#c53030':m.orangeFlags>0?'#c05621':'#b7791f'}}>{m.totalFlags}</span></td>
                       </tr>
                     ))}
                   </tbody>
