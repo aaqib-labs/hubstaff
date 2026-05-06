@@ -25,7 +25,6 @@ Converts raw Hubstaff time-tracking CSV exports into standalone, interactive HTM
 │   ├── marketing-media.html
 │   └── venia-products.html
 ├── template/
-│   ├── dashboard-template.html → Single-tab dashboard (most departments)
 │   ├── template-2tab.html      → Two-tab dashboard
 │   └── template-3tab.html      → Three-tab dashboard (e.g. Digital Product, Venia)
 └── dashboards/
@@ -297,7 +296,6 @@ The data block in each dashboard is marked with:
 
 | Template file | Tabs | When to use |
 |---|---|---|
-| `dashboard-template.html` | 3 (Overview / Heatmap / Comparisons) | Departments with no sub-teams |
 | `template-2tab.html` | 2 (Overview / Heatmap) | Departments that only need two views |
 | `template-3tab.html` | 3 (Overview / Heatmap / Team Analytics) | Departments with sub-teams |
 
