@@ -155,7 +155,7 @@ const Dashboard = () => {
   const n                = data.length;
   const avgActivity      = n > 0 ? data.reduce((s, m) => s + m.activityPercent, 0) / n : 0;
   const avgHours         = n > 0 ? data.reduce((s, m) => s + m.totalHours, 0) / n : 0;
-  const totalRedFlags    = data.reduce((s, m) => s + m.redFlags, 0);
+  const totalRedFlags    = data.reduce((s, m) => s + m.redFlags + (m.orangeFlags || 0), 0);
   const totalYellowFlags = data.reduce((s, m) => s + m.yellowFlags, 0);
   const totalFlags       = data.reduce((s, m) => s + m.totalFlags, 0);
   const noViolations     = data.filter(m => m.totalFlags === 0).length;
@@ -287,9 +287,9 @@ const Dashboard = () => {
 
               {/* PERFORMANCE HIGHLIGHTS */}
               {(() => {
-                const redCount    = data.filter(m => m.redFlags > 0).length;
-                const yellowOnly  = data.filter(m => m.yellowFlags > 0 && m.redFlags === 0).length;
-                const bothFlags   = data.filter(m => m.redFlags > 0 && m.yellowFlags > 0).length;
+                const redCount    = data.filter(m => m.redFlags > 0 || m.orangeFlags > 0).length;
+                const yellowOnly  = data.filter(m => m.yellowFlags > 0 && m.redFlags === 0 && m.orangeFlags === 0).length;
+                const bothFlags   = data.filter(m => (m.redFlags > 0 || m.orangeFlags > 0) && m.yellowFlags > 0).length;
                 const over160     = data.filter(m => m.totalHours > 160);
                 const flagSummary = (() => {
                   const parts = [];
@@ -474,7 +474,7 @@ const Dashboard = () => {
             const avgBrk = n > 0 ? data.reduce((s,m) => s + m.breakPercent, 0) / n : 0;
             const avgL20 = n > 0 ? data.reduce((s,m) => s + m.low20Percent, 0) / n : 0;
             const avgL30 = n > 0 ? data.reduce((s,m) => s + m.low30Percent, 0) / n : 0;
-            const avgRed = n > 0 ? data.reduce((s,m) => s + m.redFlags, 0) / n : 0;
+            const avgRed = n > 0 ? data.reduce((s,m) => s + m.redFlags + (m.orangeFlags || 0), 0) / n : 0;
             const avgYel = n > 0 ? data.reduce((s,m) => s + m.yellowFlags, 0) / n : 0;
             const avgTot = n > 0 ? data.reduce((s,m) => s + m.totalFlags, 0) / n : 0;
             return (
@@ -581,7 +581,7 @@ const Dashboard = () => {
             const tm           = teamMembers.length;
             const tAvgActivity = teamMembers.reduce((s,m) => s + m.activityPercent, 0) / tm;
             const tAvgHours    = teamMembers.reduce((s,m) => s + m.totalHours, 0) / tm;
-            const tTotalRed    = teamMembers.reduce((s,m) => s + m.redFlags, 0);
+            const tTotalRed    = teamMembers.reduce((s,m) => s + m.redFlags + (m.orangeFlags || 0), 0);
             const tTotalYellow = teamMembers.reduce((s,m) => s + m.yellowFlags, 0);
             const tCompliant   = teamMembers.filter(m => m.totalFlags === 0).length;
             const tHigh        = teamMembers.reduce((a,b) => a.activityPercent > b.activityPercent ? a : b);
