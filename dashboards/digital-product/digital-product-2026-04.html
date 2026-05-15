@@ -48,7 +48,7 @@ const data = [
   { member: "Chathuranga Weerakoon", activityPercent: 51.0, totalHours: 169.8, breakHours: 15.3, breakPercent: 9.0,  manualHours: 0.0,  manualPercent: 0.0, low20Hours: 1.2,  low20Percent: 0.7,  low30Hours: 1.2,  low30Percent: 0.7,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
   { member: "Dr. Yashoda Velananda", activityPercent: 46.0, totalHours: 174.9, breakHours: 14.6, breakPercent: 8.3,  manualHours: 1.1,  manualPercent: 0.6, low20Hours: 0.7,  low20Percent: 0.4,  low30Hours: 1.8,  low30Percent: 1.0,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
   { member: "Hasala Jayasuriya",     activityPercent: 53.0, totalHours: 184.3, breakHours: 14.9, breakPercent: 8.1,  manualHours: 0.0,  manualPercent: 0.0, low20Hours: 1.8,  low20Percent: 1.0,  low30Hours: 1.9,  low30Percent: 1.0,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
-  { member: "Jomal Mathew",          activityPercent: 59.0, totalHours: 179.3, breakHours: 18.3, breakPercent: 10.0, manualHours: 0.5,  manualPercent: 0.3, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 9.6,  low30Percent: 5.4,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
+  { member: "Jomal Mathew",          activityPercent: 59.0, totalHours: 179.3, breakHours: 18.3, breakPercent: 10.2, manualHours: 0.5,  manualPercent: 0.3, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 9.6,  low30Percent: 5.4,  breakExempt: true, redFlags: 0, yellowFlags: 0, totalFlags: 0 },
   { member: "Kianna Xue",            activityPercent: 47.0, totalHours: 151.1, breakHours: 9.8,  breakPercent: 6.5,  manualHours: 0.0,  manualPercent: 0.0, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 8.9,  low30Percent: 5.9,  redFlags: 1, yellowFlags: 0, totalFlags: 1 },
   { member: "Kunchana Prabashwara",  activityPercent: 70.0, totalHours: 194.2, breakHours: 15.8, breakPercent: 8.2,  manualHours: 0.0,  manualPercent: 0.0, low20Hours: 0.0,  low20Percent: 0.0,  low30Hours: 0.0,  low30Percent: 0.0,  redFlags: 0, yellowFlags: 0, totalFlags: 0 },
   { member: "Laleesha Wijeratne",    activityPercent: 48.0, totalHours: 173.6, breakHours: 12.9, breakPercent: 7.4,  manualHours: 0.5,  manualPercent: 0.3, low20Hours: 10.4, low20Percent: 6.0,  low30Hours: 28.1, low30Percent: 16.2, redFlags: 0, yellowFlags: 1, totalFlags: 1 },
@@ -101,6 +101,9 @@ const checkStatus = (metric, value) => {
   return 'green';
 };
 
+// breakExempt: true on a member suppresses break styling/flags (management discretion)
+const brkPct = (m) => m.breakExempt ? 0 : m.breakPercent;
+
 // Compute flags from SLA thresholds — 5 metrics shown in heatmap table
 // Manual % is excluded (not displayed in heatmap, not counted in flags)
 // orange (hours ≥200) counts as red/orange flag
@@ -108,7 +111,7 @@ const computeFlags = (m) => {
   const statuses = [
     checkStatus('activity',  m.activityPercent),
     checkStatus('hours',     m.totalHours),
-    checkStatus('breakPct',  m.breakPercent),
+    checkStatus('breakPct',  brkPct(m)),
     checkStatus('low20Pct',  m.low20Percent),
     checkStatus('low30Pct',  m.low30Percent),
   ];
@@ -511,7 +514,7 @@ const Dashboard = () => {
                         <td style={{...td, textAlign:'left', fontWeight:600, color:'#1a202c'}}>{m.member}</td>
                         <td style={td}><span style={pillStyle('activity',  m.activityPercent)}>{m.activityPercent.toFixed(1)}%</span></td>
                         <td style={td}><span style={pillStyle('hours',     m.totalHours)}>{m.totalHours.toFixed(1)} hrs</span></td>
-                        <td style={td}><span style={pillStyle('breakPct',  m.breakPercent)}>{(m.breakHours||0).toFixed(1)} ({m.breakPercent.toFixed(1)}%)</span></td>
+                        <td style={td}><span style={pillStyle('breakPct',  brkPct(m))}>{(m.breakHours||0).toFixed(1)} ({m.breakPercent.toFixed(1)}%)</span></td>
                         <td style={td}><span style={pillStyle('low20Pct',  m.low20Percent)}>{(m.low20Hours||0).toFixed(1)} ({m.low20Percent.toFixed(1)}%)</span></td>
                         <td style={td}><span style={pillStyle('low30Pct',  m.low30Percent)}>{(m.low30Hours||0).toFixed(1)} ({m.low30Percent.toFixed(1)}%)</span></td>
                         <td style={td}>
@@ -603,9 +606,9 @@ const Dashboard = () => {
             if (tCompliant > 0) {
               conclusions.push({ color: '#276749', text: `${tCompliant} member${tCompliant!==1?'s are':' is'} fully SLA-compliant with zero violations: ${teamMembers.filter(m=>m.totalFlags===0).map(m=>m.member).join(', ')}.` });
             }
-            const breakConcern = teamMembers.filter(m => checkStatus('breakPct', m.breakPercent) !== 'green');
+            const breakConcern = teamMembers.filter(m => checkStatus('breakPct', brkPct(m)) !== 'green');
             if (breakConcern.length > 0) {
-              conclusions.push({ color: breakConcern.some(m=>checkStatus('breakPct',m.breakPercent)==='red')?'#c53030':'#b7791f', text: `${breakConcern.length} member${breakConcern.length!==1?'s':''} (${breakConcern.map(m=>m.member).join(', ')}) have elevated break time percentages above the 10% target.` });
+              conclusions.push({ color: breakConcern.some(m=>checkStatus('breakPct',brkPct(m))==='red')?'#c53030':'#b7791f', text: `${breakConcern.length} member${breakConcern.length!==1?'s':''} (${breakConcern.map(m=>m.member).join(', ')}) have elevated break time percentages above the 10% target.` });
             } else {
               const l30c = teamMembers.filter(m => checkStatus('low30Pct', m.low30Percent) !== 'green');
               if (l30c.length > 0) conclusions.push({ color: l30c.some(m=>checkStatus('low30Pct',m.low30Percent)==='red')?'#c53030':'#b7791f', text: `${l30c.length} member${l30c.length!==1?'s':''} (${l30c.map(m=>m.member).join(', ')}) show elevated low activity ≤30% periods, indicating reduced engagement.` });
